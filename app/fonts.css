@@ -1,0 +1,41 @@
+/* Default Global Font will be Geist Sans */
+
+html,
+body {
+  font-family: var(--font-geist-sans);
+}
+
+/* JetBrains Mono */
+.jetbrains-mono {
+  font-family: var(--font-jetbrains-mono);
+}
+
+/* Geist Mono */
+.geist-mono {
+  font-family: var(--font-geist-mono);
+}
+
+/* Geist Sans */
+.geist-sans {
+  font-family: var(--font-geist-sans);
+}
+
+/* Instrument Serif */
+.instrument-serif {
+  font-family: var(--font-instrument-serif);
+}
+
+/* Instrument Sans */
+.instrument-sans {
+  font-family: var(--font-instrument-sans);
+}
+
+/* Urbanist */
+.urbanist {
+  font-family: var(--font-urbanist);
+}
+
+/* Bricolage Grotesque */
+.bricolage-grotesque {
+  font-family: var(--font-bricolage-grotesque);
+}
