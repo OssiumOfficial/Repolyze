@@ -149,7 +149,7 @@ function AnalysisHeaderSkeleton() {
               <Skeleton className="w-8 h-8 rounded-md shrink-0" />
               <div className="flex-1 min-w-0 space-y-1.5">
                 <Skeleton className="h-4 w-12" />
-                <Skeleton className="h-3 w-full max-w-[4rem]" />
+                <Skeleton className="h-3 w-full max-w-16" />
               </div>
             </div>
           ))}
@@ -205,7 +205,7 @@ function AnalysisHeaderSkeleton() {
 // --- File Tree Skeleton ---
 function FileTreeSkeleton() {
   return (
-    <Card className="border-border/60 h-[450px] sm:h-[500px] lg:h-[600px] flex flex-col">
+    <Card className="border-border/60 h-112.5 sm:h-125 lg:h-150 flex flex-col">
       <CardHeader className="shrink-0 p-4 border-b border-border/50 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -284,7 +284,7 @@ function ScoreCardSkeleton() {
 // --- AI Insights Skeleton ---
 function AIInsightsSkeleton() {
   return (
-    <Card className="border-border/60 h-full min-h-[500px] flex flex-col">
+    <Card className="border-border/60 h-full min-h-125 flex flex-col">
       <CardHeader className="shrink-0 p-4 border-b border-border/50 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -472,7 +472,7 @@ function RecommendationsSkeleton() {
                 <Skeleton className="w-10 h-10 rounded-lg shrink-0" />
                 <div className="flex-1 space-y-2 min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <Skeleton className="h-4 w-1/2 min-w-[120px]" />
+                    <Skeleton className="h-4 w-1/2 min-w-30" />
                     <Skeleton className="h-5 w-20 rounded-full" />
                   </div>
                   <Skeleton className="h-3 w-full" />
