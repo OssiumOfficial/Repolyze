@@ -83,7 +83,7 @@ export function ScoreCard({ scores }: ScoreCardProps) {
                   strokeWidth="8"
                   className="stroke-muted"
                 />
-                
+
                 {/* Progress arc */}
                 <motion.circle
                   cx="60"
@@ -96,18 +96,19 @@ export function ScoreCard({ scores }: ScoreCardProps) {
                   strokeDasharray={circumference}
                   initial={{ strokeDashoffset: circumference }}
                   animate={{
-                    strokeDashoffset: circumference * (1 - scores.overall / 100),
+                    strokeDashoffset:
+                      circumference * (1 - scores.overall / 100),
                   }}
                   transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
                 />
-                
+
                 {/* Tick marks */}
                 {[0, 25, 50, 75, 100].map((tick) => {
                   const angle = (tick / 100) * 360 - 90;
                   const radians = (angle * Math.PI) / 180;
                   const innerRadius = 44;
                   const outerRadius = 48;
-                  
+
                   return (
                     <line
                       key={tick}
@@ -211,7 +212,11 @@ export function ScoreCard({ scores }: ScoreCardProps) {
           />
           <FooterStat
             label="Medium"
-            count={scoreConfig.filter(({ key }) => scores[key] >= 40 && scores[key] < 70).length}
+            count={
+              scoreConfig.filter(
+                ({ key }) => scores[key] >= 40 && scores[key] < 70
+              ).length
+            }
             total={scoreConfig.length}
           />
           <FooterStat
