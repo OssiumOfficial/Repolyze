@@ -119,9 +119,9 @@ const TechnicalFrame = ({
         
         {/* Corner Brackets (Based on score color) */}
         <div className={cn("absolute -top-px -left-px w-4 h-4 border-t-2 border-l-2", styles.text, "border-current")} />
-        <div className={cn("absolute -top-[1px] -right-[1px] w-4 h-4 border-t-2 border-r-2", styles.text, "border-current")} />
-        <div className={cn("absolute -bottom-[1px] -left-[1px] w-4 h-4 border-b-2 border-l-2", styles.text, "border-current")} />
-        <div className={cn("absolute -bottom-[1px] -right-[1px] w-4 h-4 border-b-2 border-r-2", styles.text, "border-current")} />
+        <div className={cn("absolute -top-px -right-px w-4 h-4 border-t-2 border-r-2", styles.text, "border-current")} />
+        <div className={cn("absolute -bottom-px -left-px w-4 h-4 border-b-2 border-l-2", styles.text, "border-current")} />
+        <div className={cn("absolute -bottom-px -right-px w-4 h-4 border-b-2 border-r-2", styles.text, "border-current")} />
 
         {/* Top Label */}
         <div className="absolute -top-3 left-6 px-2 bg-[#050505] text-[9px] font-mono text-zinc-500 uppercase tracking-widest border-x border-zinc-900">
@@ -166,13 +166,13 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
     // ==========================================
     if (variant === "compact") {
       return (
-        <div ref={ref} className="w-full max-w-[440px]">
+        <div ref={ref} className="w-full max-w-110">
           <TechnicalFrame config={config}>
             <div className={cn(cardBase, "flex flex-col")}>
               <NoiseOverlay />
               
               {/* Gradient Top Line */}
-              <div className={cn("h-0.5 w-full bg-gradient-to-r", styles.gradient)} />
+              <div className={cn("h-0.5 w-full bg-linear-to-r", styles.gradient)} />
 
               <div className="p-5 relative z-10">
                 {/* Header */}
@@ -247,7 +247,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
       ];
 
       return (
-        <div ref={ref} className="w-full max-w-[600px]">
+        <div ref={ref} className="w-full max-w-150">
           <TechnicalFrame config={config}>
             <div className={cardBase}>
               <NoiseOverlay />
@@ -274,7 +274,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
                         </div>
                         <p className="text-sm text-zinc-400 font-mono mb-2">@{data.ownerLogin}</p>
                         {data.description && (
-                          <p className="text-xs text-zinc-500 line-clamp-1 max-w-[300px]">
+                          <p className="text-xs text-zinc-500 line-clamp-1 max-w-75">
                             {data.description}
                           </p>
                         )}
@@ -342,7 +342,7 @@ export const ShareCard = forwardRef<HTMLDivElement, ShareCardProps>(
     // DEFAULT VARIANT
     // ==========================================
     return (
-      <div ref={ref} className="w-full max-w-[500px]">
+      <div ref={ref} className="w-full max-w-125">
         <TechnicalFrame config={config}>
           <div className={cardBase}>
             <NoiseOverlay />
