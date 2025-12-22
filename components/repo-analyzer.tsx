@@ -133,6 +133,7 @@ export function RepoAnalyzer() {
                   metadata={result.metadata}
                   techStack={result.techStack}
                   summary={result.summary}
+                  result={result}
                 />
               </motion.section>
 

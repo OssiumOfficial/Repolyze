@@ -112,6 +112,10 @@ export function useAnalysis() {
                         edges: [],
                       },
                       techStack: analysisData.techStack || [],
+                      whatItDoes: analysisData.whatItDoes || "",
+                      targetAudience: analysisData.targetAudience || "",
+                      howToRun: analysisData.howToRun || [],
+                      keyFolders: analysisData.keyFolders || [],
                     });
                   }
                 } catch (parseError) {

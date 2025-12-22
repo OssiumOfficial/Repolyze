@@ -279,7 +279,7 @@ export function AutomationsPanel({
       </CardHeader>
       
       <CardContent className="flex-1 min-h-0 p-0 sm:p-0">
-        <ScrollArea className="h-125 sm:h-150 px-4 sm:px-6 pb-4">
+        <ScrollArea className="px-4 sm:px-6 pb-4">
           <div className="space-y-3 pt-1">
             {safeAutomations.map((automation, index) => (
               <AutomationItem

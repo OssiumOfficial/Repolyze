@@ -250,7 +250,7 @@ export function FileTree({ tree, stats }: FileTreeProps) {
   }, [tree]);
 
   return (
-    <Card className="flex flex-col h-125 sm:h-140 lg:h-150 border-border/60 overflow-hidden">
+    <Card className="flex flex-col h-125 sm:h-140 lg:h-150 border-border/60 overflow-hidden py-0 gap-0">
       {/* Header */}
       <div className="shrink-0 p-4 border-b border-border/50 space-y-3 bg-muted/20">
         {/* Title Row */}

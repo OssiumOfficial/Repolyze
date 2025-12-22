@@ -62,7 +62,7 @@ export function AIInsights({ insights }: AIInsightsProps) {
   }, []);
 
   return (
-    <Card className="flex flex-col h-125 sm:h-140 lg:h-155 border-border/60">
+    <Card className="flex flex-col h-125 sm:h-140 lg:h-155 border-border/60 gap-0">
       {/* Header */}
       <CardHeader className="shrink-0 p-4 space-y-3 border-b border-border/50">
         {/* Title */}

@@ -72,36 +72,104 @@ ${filesContent}
 
 ---
 
-Return JSON analysis:
+Analyze this repository and return a comprehensive JSON response. Be specific, actionable, and thorough.
 
 \`\`\`json
 {
-  "summary": "2-3 sentence summary",
-  "techStack": ["tech1", "tech2"],
+  "summary": "2-3 sentence technical summary of the repository",
+  "whatItDoes": "A plain English explanation (2-3 sentences) of what this project does and its main purpose - written for someone unfamiliar with the codebase",
+  "targetAudience": "Who should use this project (be specific, e.g., 'Frontend developers building React applications who need a component library')",
+  "techStack": ["Technology1", "Technology2", "Framework1"],
+  "howToRun": [
+    "git clone https://github.com/${metadata.fullName}.git",
+    "cd ${metadata.name}",
+    "npm install",
+    "npm run dev"
+  ],
+  "keyFolders": [
+    {"name": "folder-name/", "description": "What this folder contains and its purpose"}
+  ],
   "scores": {
-    "overall": 75, "codeQuality": 80, "documentation": 70,
-    "security": 75, "maintainability": 80, "testCoverage": 60, "dependencies": 75
+    "overall": 75,
+    "codeQuality": 80,
+    "documentation": 70,
+    "security": 75,
+    "maintainability": 80,
+    "testCoverage": 60,
+    "dependencies": 75
   },
   "insights": [
-    {"type": "strength|weakness|suggestion|warning", "category": "Cat", "title": "Title", "description": "Desc", "priority": "low|medium|high|critical", "affectedFiles": ["file.ts"]}
+    {
+      "type": "strength|weakness|suggestion|warning",
+      "category": "Category Name",
+      "title": "Brief Title",
+      "description": "Detailed explanation of the insight",
+      "priority": "low|medium|high|critical",
+      "affectedFiles": ["path/to/file.ts"]
+    }
   ],
   "refactors": [
-    {"id": "ref-1", "title": "Title", "description": "Desc", "impact": "high", "effort": "medium", "category": "Cat", "files": ["file.ts"]}
+    {
+      "id": "ref-1",
+      "title": "Refactor Title",
+      "description": "What should be refactored and why",
+      "impact": "low|medium|high",
+      "effort": "low|medium|high",
+      "category": "Category",
+      "files": ["path/to/file.ts"],
+      "suggestedCode": "// Optional code example"
+    }
   ],
   "automations": [
-    {"id": "auto-1", "type": "issue", "title": "Title", "description": "Desc", "body": "Body", "labels": ["enhancement"], "priority": "medium"}
+    {
+      "id": "auto-1",
+      "type": "issue|pull-request|workflow",
+      "title": "Issue/PR Title",
+      "description": "Brief description",
+      "body": "Full markdown body for the issue or PR",
+      "labels": ["enhancement", "good-first-issue"],
+      "priority": "low|medium|high"
+    }
   ],
   "architecture": [
-    {"id": "arch-1", "name": "Name", "type": "frontend", "description": "Desc", "technologies": ["React"], "connections": ["arch-2"]}
+    {
+      "id": "arch-1",
+      "name": "Component Name",
+      "type": "frontend|backend|database|service|external|middleware",
+      "description": "What this component does",
+      "technologies": ["React", "TypeScript"],
+      "connections": ["arch-2"]
+    }
   ],
   "dataFlow": {
-    "nodes": [{"id": "df-1", "name": "Name", "type": "source", "description": "Desc"}],
-    "edges": [{"from": "df-1", "to": "df-2", "label": "Label"}]
+    "nodes": [
+      {"id": "df-1", "name": "Node Name", "type": "source|process|store|output", "description": "Description"}
+    ],
+    "edges": [
+      {"from": "df-1", "to": "df-2", "label": "Data flow label", "dataType": "JSON"}
+    ]
   }
 }
 \`\`\`
 
-Provide 4-6 insights, 2-3 refactors, 2-3 automations, 2-4 architecture components.`;
+## Requirements:
+- **whatItDoes**: Explain like you're telling a friend what this project is about
+- **targetAudience**: Be specific about who would benefit from this project
+- **techStack**: List all detected technologies, frameworks, and tools (${
+      metadata.language
+        ? `primary language is ${metadata.language}`
+        : "detect the primary language"
+    })
+- **howToRun**: Provide actual working commands based on the detected package manager and framework
+- **keyFolders**: Explain 4-8 key directories from the file structure shown above
+- **scores**: Rate 0-100 based on actual code quality visible in the files
+- **insights**: Provide 4-6 insights (mix of strengths, weaknesses, suggestions, warnings)
+- **refactors**: Suggest 2-3 specific refactoring improvements
+- **automations**: Suggest 2-3 GitHub issues or PRs that could improve the project
+- **architecture**: Identify 2-4 main architectural components
+- **dataFlow**: Map 3-5 data flow nodes showing how data moves through the system
+
+Be specific to THIS repository based on the actual files and structure shown.`;
 
     const result = await streamText({
       model,
@@ -150,7 +218,7 @@ Provide 4-6 insights, 2-3 refactors, 2-3 automations, 2-4 architecture component
 
     return new Response(customStream, {
       headers: {
-        "Content-Type": "text/event-stream",
+        "Content-Type": "text-event-stream",
         "Cache-Control": "no-cache",
         Connection: "keep-alive",
       },

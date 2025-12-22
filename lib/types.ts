@@ -120,6 +120,10 @@ export interface AnalysisResult {
     totalDirectories: number;
     languages: Record<string, number>;
   };
+  whatItDoes?: string;
+  targetAudience?: string;
+  howToRun?: string[];
+  keyFolders?: { name: string; description: string }[];
 }
 
 export type AnalysisStage =
