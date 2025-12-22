@@ -112,13 +112,13 @@ const TechnicalFrame = ({
   return (
     <div className={cn("relative bg-[#050505] p-8", className)}>
       {/* Background Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] pointer-events-none" />
       
       {/* Main Border Box (No Radius) */}
       <div className="relative h-full border border-zinc-800 bg-zinc-950/50 backdrop-blur-sm">
         
         {/* Corner Brackets (Based on score color) */}
-        <div className={cn("absolute -top-[1px] -left-[1px] w-4 h-4 border-t-2 border-l-2", styles.text, "border-current")} />
+        <div className={cn("absolute -top-px -left-px w-4 h-4 border-t-2 border-l-2", styles.text, "border-current")} />
         <div className={cn("absolute -top-[1px] -right-[1px] w-4 h-4 border-t-2 border-r-2", styles.text, "border-current")} />
         <div className={cn("absolute -bottom-[1px] -left-[1px] w-4 h-4 border-b-2 border-l-2", styles.text, "border-current")} />
         <div className={cn("absolute -bottom-[1px] -right-[1px] w-4 h-4 border-b-2 border-r-2", styles.text, "border-current")} />
