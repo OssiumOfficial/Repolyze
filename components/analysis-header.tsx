@@ -88,7 +88,7 @@ export function AnalysisHeader({
 
   return (
     <>
-      <Card className="border-border/60 overflow-hidden">
+      <Card className="border-border/60 overflow-hidden p-0 bg-background">
         {/* Main Header Section */}
         <div className="p-4 sm:p-6">
           {/* Top Row: Avatar, Info, Actions */}

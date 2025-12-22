@@ -10,22 +10,19 @@ import {
   Twitter,
   Linkedin,
   Link2,
-  ImageIcon,
   Loader2,
   Sparkles,
-  X,
+  ImageIcon,
+  ChevronRight,
 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ShareCard } from "@/components/share-card";
 import {
   ShareCardData,
@@ -47,11 +44,11 @@ interface ShareModalProps {
 
 type CardVariant = "compact" | "default" | "detailed";
 
-const variantSizes: Record<CardVariant, string> = {
-  compact: "420×220",
-  default: "500×380",
-  detailed: "600×520",
-};
+const variants: { id: CardVariant; label: string; desc: string }[] = [
+  { id: "compact", label: "Compact", desc: "Minimal • Twitter" },
+  { id: "default", label: "Default", desc: "Balanced view" },
+  { id: "detailed", label: "Detailed", desc: "Full breakdown" },
+];
 
 export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
   const [variant, setVariant] = useState<CardVariant>("default");
@@ -60,7 +57,6 @@ export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
   const [downloadSuccess, setDownloadSuccess] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Generate share data from result
   const shareData: ShareCardData | null = useMemo(
     () => createShareData(result),
     [result]
@@ -79,13 +75,13 @@ export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
   const handleDownload = useCallback(async () => {
     if (!cardRef.current || !shareData) return;
     setDownloading(true);
-    
+
     try {
       const success = await downloadAsImage(
         cardRef.current,
-        `repogist-${shareData.repoName.toLowerCase().replace(/\s+/g, "-")}-analysis`
+        `repogist-${shareData.repoName.toLowerCase().replace(/\s+/g, "-")}`
       );
-      
+
       if (success) {
         setDownloadSuccess(true);
         setTimeout(() => setDownloadSuccess(false), 2500);
@@ -109,93 +105,88 @@ export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl max-h-[90vh] p-0 gap-0 overflow-hidden">
-        <DialogHeader className="p-5 pb-4 border-b bg-muted/30">
-          <div className="flex items-start justify-between">
+      <DialogContent className="">
+        {/* Header */}
+        <DialogHeader className="px-6 py-4 border-b border-border bg-muted/30">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-primary/10">
+              <Share2 className="w-5 h-5 text-primary" />
+            </div>
             <div>
-              <DialogTitle className="flex items-center gap-2 text-lg">
-                <div className="p-1.5 rounded-lg bg-primary/10">
-                  <Share2 className="w-4 h-4 text-primary" />
-                </div>
-                Share Analysis
+              <DialogTitle className="text-lg font-semibold">
+                Share Your Analysis
               </DialogTitle>
-              <DialogDescription className="mt-1.5 text-sm">
-                Create a beautiful share card for{" "}
-                <span className="font-medium text-foreground">{shareData.repoFullName}</span>
-              </DialogDescription>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Create a beautiful card for{" "}
+                <span className="font-medium text-foreground">
+                  {shareData.repoFullName}
+                </span>
+              </p>
             </div>
           </div>
         </DialogHeader>
 
-        <div className="flex flex-col lg:flex-row max-h-[calc(90vh-100px)]">
-          {/* Preview Section */}
-          <div className="flex-1 p-6 bg-zinc-950/80 overflow-auto">
-            <div className="flex flex-col items-center">
-              {/* Variant Selector */}
-              <Tabs
-                value={variant}
-                onValueChange={(v) => setVariant(v as CardVariant)}
-                className="mb-6"
-              >
-                <TabsList className="grid grid-cols-3 w-70 h-9 bg-zinc-800/50">
-                  <TabsTrigger
-                    value="compact"
-                    className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    Compact
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="default"
-                    className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    Default
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="detailed"
-                    className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    Detailed
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
+        <div className="flex flex-col lg:flex-row min-h-[400px] max-h-[calc(95vh-100px)]">
+          {/* Left: Preview Area */}
+          <div className="flex-1 flex flex-col bg-zinc-950 overflow-hidden">
+            {/* Variant Selector */}
+            <div className="flex items-center justify-center gap-1 p-4 bg-zinc-900/50 border-b border-zinc-800">
+              {variants.map((v) => (
+                <button
+                  key={v.id}
+                  onClick={() => setVariant(v.id)}
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                    variant === v.id
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                      : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800"
+                  )}
+                >
+                  {v.label}
+                </button>
+              ))}
+            </div>
 
-              {/* Card Preview */}
-              <ScrollArea className="w-full">
-                <div className="flex justify-center pb-4 min-h-100">
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={variant}
-                      initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ShareCard
-                        ref={cardRef}
-                        data={shareData}
-                        variant={variant}
-                      />
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </ScrollArea>
+            {/* Card Preview */}
+            <div className="flex-1 flex items-center justify-center p-6 overflow-auto">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={variant}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex-shrink-0"
+                >
+                  <ShareCard ref={cardRef} data={shareData} variant={variant} />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Variant Description - Mobile */}
+            <div className="lg:hidden flex items-center justify-center gap-2 p-3 bg-zinc-900/50 border-t border-zinc-800">
+              <Badge variant="outline" className="bg-zinc-800 border-zinc-700 text-zinc-300">
+                {variants.find((v) => v.id === variant)?.desc}
+              </Badge>
             </div>
           </div>
 
-          {/* Actions Section */}
-          <div className="w-full lg:w-80 p-5 border-t lg:border-t-0 lg:border-l bg-card overflow-auto">
+          {/* Right: Actions Panel */}
+          <div className="w-full lg:w-72 border-t lg:border-t-0 lg:border-l border-border bg-card p-5 overflow-auto">
             <div className="space-y-5">
-              {/* Download Section */}
+              {/* Download */}
               <div>
-                <h3 className="font-medium mb-3 flex items-center gap-2 text-sm">
+                <h3 className="flex items-center gap-2 text-sm font-medium text-foreground mb-3">
                   <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                  Download
+                  Download Image
                 </h3>
                 <Button
                   onClick={handleDownload}
                   disabled={downloading}
-                  className="w-full justify-center gap-2 h-10"
-                  variant={downloadSuccess ? "outline" : "default"}
+                  className={cn(
+                    "w-full h-11 gap-2 transition-all",
+                    downloadSuccess && "bg-emerald-600 hover:bg-emerald-600"
+                  )}
                 >
                   {downloading ? (
                     <>
@@ -204,54 +195,66 @@ export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
                     </>
                   ) : downloadSuccess ? (
                     <>
-                      <Check className="w-4 h-4 text-green-500" />
+                      <Check className="w-4 h-4" />
                       Downloaded!
                     </>
                   ) : (
                     <>
                       <Download className="w-4 h-4" />
-                      Download as PNG
+                      Download PNG
                     </>
                   )}
                 </Button>
+                <p className="text-[11px] text-muted-foreground mt-2 text-center">
+                  High resolution (2x) • PNG format
+                </p>
               </div>
 
-              {/* Share Link Section */}
+              {/* Divider */}
+              <div className="h-px bg-border" />
+
+              {/* Copy Link */}
               <div>
-                <h3 className="font-medium mb-3 flex items-center gap-2 text-sm">
+                <h3 className="flex items-center gap-2 text-sm font-medium text-foreground mb-3">
                   <Link2 className="w-4 h-4 text-muted-foreground" />
                   Share Link
                 </h3>
                 <Button
                   onClick={handleCopyLink}
-                  className="w-full justify-center gap-2 h-10"
                   variant="outline"
+                  className={cn(
+                    "w-full h-11 gap-2",
+                    copied && "border-emerald-500/50 text-emerald-500"
+                  )}
                 >
                   {copied ? (
                     <>
-                      <Check className="w-4 h-4 text-green-500" />
-                      Link Copied!
+                      <Check className="w-4 h-4" />
+                      Copied!
                     </>
                   ) : (
                     <>
                       <Copy className="w-4 h-4" />
-                      Copy Share Link
+                      Copy Link
                     </>
                   )}
                 </Button>
               </div>
 
-              {/* Social Share Section */}
+              {/* Divider */}
+              <div className="h-px bg-border" />
+
+              {/* Social Sharing */}
               <div>
-                <h3 className="font-medium mb-3 flex items-center gap-2 text-sm">
+                <h3 className="flex items-center gap-2 text-sm font-medium text-foreground mb-3">
                   <Share2 className="w-4 h-4 text-muted-foreground" />
-                  Social Media
+                  Share on Social
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
                   <Button
                     onClick={handleTwitterShare}
                     variant="outline"
-                    className="gap-2 h-10"
+                    className="h-11 gap-2 hover:bg-[#1DA1F2]/10 hover:text-[#1DA1F2] hover:border-[#1DA1F2]/30"
                   >
                     <Twitter className="w-4 h-4" />
                     Twitter
@@ -259,7 +262,7 @@ export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
                   <Button
                     onClick={handleLinkedInShare}
                     variant="outline"
-                    className="gap-2 h-10"
+                    className="h-11 gap-2 hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] hover:border-[#0A66C2]/30"
                   >
                     <Linkedin className="w-4 h-4" />
                     LinkedIn
@@ -270,48 +273,30 @@ export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
               {/* Divider */}
               <div className="h-px bg-border" />
 
-              {/* Card Info */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Card Size</span>
-                  <Badge variant="secondary" className="text-xs font-mono">
-                    {variantSizes[variant]}px
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Resolution</span>
-                  <Badge variant="outline" className="text-xs">
-                    2x Retina
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">Format</span>
-                  <Badge variant="outline" className="text-xs">
-                    PNG
-                  </Badge>
-                </div>
-              </div>
-
-              {/* Tips */}
+              {/* Info */}
               <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
-                <h4 className="text-xs font-medium mb-2 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-primary" />
-                  Tips
-                </h4>
-                <ul className="text-[11px] text-muted-foreground space-y-1">
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-primary">•</span>
-                    <span>Compact cards work best for Twitter</span>
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-primary">•</span>
-                    <span>Detailed cards show full score breakdown</span>
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <span className="text-primary">•</span>
-                    <span>PNG downloads include 2x resolution</span>
-                  </li>
-                </ul>
+                <div className="flex items-start gap-2">
+                  <Sparkles className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-medium text-foreground mb-1">
+                      Pro Tips
+                    </p>
+                    <ul className="text-[11px] text-muted-foreground space-y-1">
+                      <li className="flex items-start gap-1.5">
+                        <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-primary" />
+                        <span>Compact works best on Twitter</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-primary" />
+                        <span>Detailed shows full score breakdown</span>
+                      </li>
+                      <li className="flex items-start gap-1.5">
+                        <ChevronRight className="w-3 h-3 mt-0.5 flex-shrink-0 text-primary" />
+                        <span>Images are retina-ready (2x)</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
