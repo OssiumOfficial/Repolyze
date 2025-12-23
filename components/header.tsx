@@ -1,6 +1,6 @@
 "use client";
 
-import { GithubIcon, Menu, X } from "lucide-react";
+import { GithubIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -9,7 +9,6 @@ import RepoGistLogo from "./icons/repogist-logo";
 import Link from "next/link";
 
 export const HeroHeader = () => {
-  const [menuState, setMenuState] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -22,52 +21,48 @@ export const HeroHeader = () => {
 
   return (
     <header>
-      <nav
-        data-state={menuState && "active"}
-        className="fixed z-20 w-full px-2"
-      >
+      <nav className="fixed z-20 w-full px-2">
         <div
           className={cn(
-            "mx-auto mt-2 max-w-6xl px-6 bg-background/50 backdrop-blur-lg rounded-2xl transition-all duration-300 lg:px-12 border",
-            isScrolled && "bg-background/50 max-w-4xl lg:px-5"
+            `
+      mx-auto mt-2
+      w-full max-w-6xl
+      px-3 sm:px-4 lg:px-6
+      bg-background/60
+      backdrop-blur-lg
+      rounded-2xl
+      border
+      transition-all duration-300
+      overflow-hidden
+      `,
+            isScrolled && "max-w-4xl px-3 sm:px-4 lg:px-5"
           )}
         >
-          <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
-            <div className="flex w-full justify-between lg:w-auto">
-              <Link href="/" className="flex items-center gap-2.5 group w-fit">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full group-hover:bg-primary/30 transition-colors" />
-                  <RepoGistLogo className="relative size-8 text-primary" />
-                </div>
-                <h1 className="instrument-serif text-2xl text-foreground">
-                  RepoGist
-                </h1>
-              </Link>
-              <div className="flex items-center gap-2">
-                <div className="md:hidden block">
-                  <ThemeToggle />
-                </div>
-                <Button
-                  variant={"outline"}
-                  size={"icon"}
-                  onClick={() => setMenuState(!menuState)}
-                  aria-label={menuState == true ? "Close Menu" : "Open Menu"}
-                  className="relative z-20 lg:hidden"
+          <div className="flex items-center justify-between gap-2 py-3 lg:py-4">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 min-w-0">
+              <div className="relative shrink-0">
+                <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full" />
+                <RepoGistLogo className="relative size-7 sm:size-8 text-primary" />
+              </div>
+              <h1 className="instrument-serif text-lg sm:text-xl md:text-2xl truncate">
+                RepoGist
+              </h1>
+            </Link>
+
+            {/* Right actions */}
+            <div className="flex items-center gap-2 shrink-0">
+              <ThemeToggle />
+
+              <Button asChild variant="outline">
+                <Link
+                  href="https://github.com/Devsethi3/repo-gist"
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  <Menu className="in-data-[state=active]:rotate-180 in-data-[state=active]:scale-0 in-data-[state=active]:opacity-0 m-auto size-4 duration-200" />
-                  <X className="in-data-[state=active]:rotate-0 in-data-[state=active]:scale-100 in-data-[state=active]:opacity-100 absolute inset-0 m-auto size-4 -rotate-180 scale-0 opacity-0 duration-200" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="bg-background in-data-[state=active]:block lg:in-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-4 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
-              <div className="md:block hidden">
-                <ThemeToggle />
-              </div>
-
-              <Button variant={"outline"}>
-                <GithubIcon />
-                Github
+                  <GithubIcon className="size-4" />
+                  <span className="hidden sm:inline">GitHub</span>
+                </Link>
               </Button>
             </div>
           </div>

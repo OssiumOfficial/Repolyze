@@ -8,8 +8,9 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div className="min-h-screen w-full relative jetbrains-mono">
-      <div className="fixed inset-0 flex items-end w-full h-screen gap-0 justify-between pb-0 pointer-events-none -z-10">
 
+      <div className="fixed inset-0 flex items-end w-full h-screen gap-0 justify-between pb-0 pointer-events-none -z-10">
+        {/* TODO: Background here */}
       </div>
 
       {/* Main Content */}
