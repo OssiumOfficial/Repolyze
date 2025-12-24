@@ -98,7 +98,7 @@ export function UrlInput({ onAnalyze, isLoading }: UrlInputProps) {
             )}
           >
             {isLoading ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 <span className="sm:hidden">Analyzing...</span>
               </div>

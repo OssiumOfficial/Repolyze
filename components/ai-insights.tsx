@@ -9,6 +9,7 @@ import {
   XCircle,
   ChevronDown,
   Sparkles,
+  BarChart3,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -35,9 +36,7 @@ export function AIInsights({ insights }: AIInsightsProps) {
 
   const filteredInsights = useMemo(
     () =>
-      insights.filter(
-        (insight) => filter === "all" || insight.type === filter
-      ),
+      insights.filter((insight) => filter === "all" || insight.type === filter),
     [insights, filter]
   );
 
@@ -62,13 +61,15 @@ export function AIInsights({ insights }: AIInsightsProps) {
   }, []);
 
   return (
-    <Card className="flex flex-col bg-background h-125 sm:h-140 lg:h-155 border-border/60 gap-0">
+    <Card className="flex flex-col bg-background h-125 sm:h-140 lg:h-155 border-border/60 gap-0 py-3">
       {/* Header */}
       <CardHeader className="shrink-0 p-4 space-y-3 border-b border-border/50">
         {/* Title */}
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-sm font-medium text-foreground">
-            <Sparkles className="w-4 h-4 text-primary" />
+            <div className="p-1.5 rounded-md bg-primary/10">
+              <BarChart3 className="w-4 h-4 text-primary" />
+            </div>
             AI Insights
           </CardTitle>
           <span className="text-xs text-muted-foreground tabular-nums">
@@ -148,7 +149,9 @@ function FilterBadge({ label, count, isActive, onClick }: FilterBadgeProps) {
       )}
     >
       {label}
-      <span className={cn("tabular-nums", isActive ? "opacity-60" : "opacity-50")}>
+      <span
+        className={cn("tabular-nums", isActive ? "opacity-60" : "opacity-50")}
+      >
         {count}
       </span>
     </button>
@@ -221,7 +224,7 @@ function InsightItem({ insight, isExpanded, onToggle }: InsightItemProps) {
                 className="overflow-hidden"
               >
                 {/* Full description if needed (optional) could go here if line-clamp above isn't enough context */}
-                
+
                 {/* Affected Files */}
                 {insight.affectedFiles && insight.affectedFiles.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-border/40">
@@ -245,7 +248,10 @@ function InsightItem({ insight, isExpanded, onToggle }: InsightItemProps) {
                 {insight.category && (
                   <div className="mt-3 pt-3 border-t border-border/40">
                     <span className="text-xs text-muted-foreground/60">
-                      Category: <span className="text-muted-foreground">{insight.category}</span>
+                      Category:{" "}
+                      <span className="text-muted-foreground">
+                        {insight.category}
+                      </span>
                     </span>
                   </div>
                 )}
@@ -285,7 +291,12 @@ function EmptyState({ filter }: { filter: FilterType }) {
         <Lightbulb className="w-5 h-5 text-muted-foreground/40" />
       </div>
       <p className="text-sm text-muted-foreground">
-        {filter === "all" ? "No insights available" : `No ${insightConfig[filter as InsightType]?.label.toLowerCase() || filter} found`}
+        {filter === "all"
+          ? "No insights available"
+          : `No ${
+              insightConfig[filter as InsightType]?.label.toLowerCase() ||
+              filter
+            } found`}
       </p>
     </div>
   );

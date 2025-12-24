@@ -174,8 +174,7 @@ function AnalysisHeaderSkeleton() {
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <Skeleton
                 key={i}
-                className="h-6 rounded-full"
-                style={{ width: `${Math.random() * 40 + 60}px` }}
+                className="h-6 rounded-md w-30"
               />
             ))}
           </div>
@@ -191,8 +190,7 @@ function AnalysisHeaderSkeleton() {
             {[1, 2, 3, 4].map((i) => (
               <Skeleton
                 key={i}
-                className="h-6 rounded-md"
-                style={{ width: `${Math.random() * 30 + 50}px` }}
+                className="h-6 rounded-md w-20"
               />
             ))}
           </div>

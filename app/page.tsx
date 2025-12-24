@@ -2,8 +2,6 @@
 import { Footer } from "@/components/footer";
 import { HeroHeader } from "@/components/header";
 import { RepoAnalyzer } from "@/components/repo-analyzer";
-import { motion } from "framer-motion";
-import Image from "next/image";
 
 export default function Home() {
   return (

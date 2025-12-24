@@ -42,7 +42,6 @@ function getScoreLabel(score: number): string {
 }
 
 export function ScoreCard({ scores }: ScoreCardProps) {
-  const overallLevel = getScoreLevel(scores.overall);
   const circumference = 2 * Math.PI * 52;
 
   return (

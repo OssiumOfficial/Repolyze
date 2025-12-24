@@ -66,7 +66,7 @@ const variants: {
 
 export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
   const isMobile = useIsMobile();
-  const [variant, setVariant] = useState<CardVariant>("compact"); // Default to compact for mobile
+  const [variant, setVariant] = useState<CardVariant>("default");
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
