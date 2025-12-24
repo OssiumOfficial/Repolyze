@@ -219,7 +219,7 @@ function FileTreeSkeleton() {
       </CardHeader>
 
       <CardContent className="flex-1 p-2 sm:p-4 space-y-1 overflow-hidden">
-        {Array.from({ length: 12 }).map((_, i) => (
+        {Array.from({ length: 10 }).map((_, i) => (
           <div
             key={i}
             className="flex items-center gap-3 py-2 px-2"
@@ -227,8 +227,7 @@ function FileTreeSkeleton() {
           >
             <Skeleton className="w-4 h-4 rounded shrink-0" />
             <Skeleton
-              className="h-4 rounded-sm"
-              style={{ width: `${Math.random() * 100 + 100}px` }}
+              className="h-4 rounded-sm w-50"
             />
           </div>
         ))}

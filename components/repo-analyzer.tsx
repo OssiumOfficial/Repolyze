@@ -449,4 +449,3 @@ function EmptyState({
     </Card>
   );
 }
-
