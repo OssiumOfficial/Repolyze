@@ -5,6 +5,13 @@
  * comprehensive insights including code quality scores, architecture
  * analysis, refactoring suggestions, and more.
  *
+ * @security
+ * - API keys (OPENROUTER_API_KEY, GITHUB_TOKEN) are server-side only
+ * - Environment variables without NEXT_PUBLIC_ prefix are not exposed to client
+ * - Rate limiting prevents abuse (10 requests/minute per IP)
+ * - Input validation and sanitization on all user inputs
+ * - No sensitive data logged or returned in error responses
+ *
  * @example
  * // Request
  * POST /api/analyze
