@@ -8,6 +8,13 @@ export interface FileNode {
   extension?: string;
 }
 
+// Add this new interface
+export interface FileStats {
+  totalFiles: number;
+  totalDirectories: number;
+  languages: Record<string, number>;
+}
+
 export interface RepoMetadata {
   name: string;
   fullName: string;
@@ -101,29 +108,30 @@ export interface DataFlowEdge {
   dataType?: string;
 }
 
+export interface KeyFolder {
+  name: string;
+  description: string;
+}
+
 export interface AnalysisResult {
   metadata: RepoMetadata;
-  fileTree: FileNode[];
-  scores: ScoreMetrics;
-  insights: AIInsight[];
-  refactors: Refactor[];
-  automations: Automation[];
-  architecture: ArchitectureComponent[];
-  dataFlow: {
-    nodes: DataFlowNode[];
-    edges: DataFlowEdge[];
-  };
-  summary: string;
-  techStack: string[];
-  fileStats: {
-    totalFiles: number;
-    totalDirectories: number;
-    languages: Record<string, number>;
-  };
+  fileTree?: FileNode[];
+  fileStats?: FileStats; 
+  techStack?: string[];
+  summary?: string;
   whatItDoes?: string;
   targetAudience?: string;
   howToRun?: string[];
-  keyFolders?: { name: string; description: string }[];
+  keyFolders?: KeyFolder[];
+  scores?: ScoreMetrics;
+  insights?: AIInsight[];
+  refactors?: Refactor[];
+  automations?: Automation[];
+  architecture?: ArchitectureComponent[];
+  dataFlow?: {
+    nodes: DataFlowNode[];
+    edges: DataFlowEdge[];
+  };
 }
 
 export type AnalysisStage =

@@ -221,7 +221,6 @@ const TreeNode = memo(function TreeNode({
   );
 });
 
-// --- Main Component ---
 
 export function FileTree({ tree, stats }: FileTreeProps) {
   const [searchQuery, setSearchQuery] = useState("");

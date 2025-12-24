@@ -1,4 +1,4 @@
-import { FileNode, RepoMetadata } from "./types";
+import { FileNode, FileStats, RepoMetadata } from "./types";
 import { getLanguageFromExtension, getFileExtension } from "./utils";
 import { MAX_TREE_ITEMS, MAX_FILE_TREE_DEPTH } from "./constants";
 
@@ -237,11 +237,7 @@ export async function fetchImportantFiles(
   return contents;
 }
 
-export function calculateFileStats(tree: FileNode[]): {
-  totalFiles: number;
-  totalDirectories: number;
-  languages: Record<string, number>;
-} {
+export function calculateFileStats(tree: FileNode[]): FileStats {
   let totalFiles = 0;
   let totalDirectories = 0;
   const languages: Record<string, number> = {};

@@ -41,6 +41,7 @@ export async function POST(request: Request) {
       return Response.json({ error: message }, { status: 400 });
     }
 
+    // This now returns { totalFiles, totalDirectories, languages }
     const fileStats = calculateFileStats(tree);
     const compactTree = createCompactTreeString(tree, 50);
 
@@ -61,6 +62,10 @@ export async function POST(request: Request) {
       metadata.openIssues
     }
 - Files: ${fileStats.totalFiles} | Dirs: ${fileStats.totalDirectories}
+- Languages detected: ${Object.entries(fileStats.languages)
+      .slice(0, 5)
+      .map(([lang, count]) => `${lang}(${count})`)
+      .join(", ")}
 
 ## Structure
 \`\`\`
@@ -181,6 +186,7 @@ Be specific to THIS repository based on the actual files and structure shown.`;
     const encoder = new TextEncoder();
     const customStream = new ReadableStream({
       async start(controller) {
+        // Send metadata with complete fileStats (including languages)
         controller.enqueue(
           encoder.encode(
             `data: ${JSON.stringify({

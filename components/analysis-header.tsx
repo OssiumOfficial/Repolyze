@@ -73,6 +73,7 @@ export function AnalysisHeader({
   }, [result, metadata, techStack, summary]);
 
   // Generate extended analysis from available data
+  // Now properly uses result.whatItDoes and result.targetAudience from AI response
   const extendedAnalysis: ExtendedAnalysis = useMemo(() => {
     return generateExtendedAnalysis(metadata, techStack, result);
   }, [metadata, techStack, result]);
@@ -80,9 +81,24 @@ export function AnalysisHeader({
   const stats = useMemo(
     () => [
       { icon: Star, value: metadata.stars, label: "Stars", highlight: true },
-      { icon: GitFork, value: metadata.forks, label: "Forks", highlight: false },
-      { icon: Eye, value: metadata.watchers, label: "Watchers", highlight: false },
-      { icon: CircleDot, value: metadata.openIssues, label: "Issues", highlight: false },
+      {
+        icon: GitFork,
+        value: metadata.forks,
+        label: "Forks",
+        highlight: false,
+      },
+      {
+        icon: Eye,
+        value: metadata.watchers,
+        label: "Watchers",
+        highlight: false,
+      },
+      {
+        icon: CircleDot,
+        value: metadata.openIssues,
+        label: "Issues",
+        highlight: false,
+      },
     ],
     [metadata.stars, metadata.forks, metadata.watchers, metadata.openIssues]
   );
@@ -203,18 +219,27 @@ export function AnalysisHeader({
                   </Badge>
                 )}
                 {metadata.license && (
-                  <Badge variant="secondary" className="text-[10px] sm:text-xs shrink-0 gap-1">
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] sm:text-xs shrink-0 gap-1"
+                  >
                     <Scale className="w-3 h-3" />
                     {metadata.license}
                   </Badge>
                 )}
                 {metadata.defaultBranch && (
-                  <Badge variant="secondary" className="text-[10px] sm:text-xs shrink-0 gap-1">
+                  <Badge
+                    variant="secondary"
+                    className="text-[10px] sm:text-xs shrink-0 gap-1"
+                  >
                     <GitBranch className="w-3 h-3" />
                     {metadata.defaultBranch}
                   </Badge>
                 )}
-                <Badge variant="secondary" className="text-[10px] sm:text-xs shrink-0 gap-1">
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] sm:text-xs shrink-0 gap-1"
+                >
                   <Clock className="w-3 h-3" />
                   {formatDate(metadata.pushedAt)}
                 </Badge>
@@ -238,7 +263,9 @@ export function AnalysisHeader({
                 <div
                   className={cn(
                     "p-1.5 rounded-md transition-colors",
-                    highlight ? "bg-primary/10 group-hover:bg-primary/20" : "bg-muted/60"
+                    highlight
+                      ? "bg-primary/10 group-hover:bg-primary/20"
+                      : "bg-muted/60"
                   )}
                 >
                   <Icon
@@ -288,7 +315,11 @@ export function AnalysisHeader({
                 <Copy className="w-3.5 h-3.5" />
               )}
             </Button>
-            <Button size="sm" className="flex-1 h-9 bg-primary hover:bg-primary/90" asChild>
+            <Button
+              size="sm"
+              className="flex-1 h-9 bg-primary hover:bg-primary/90"
+              asChild
+            >
               <Link
                 href={`https://github.com/${metadata.fullName}`}
                 target="_blank"
@@ -303,7 +334,7 @@ export function AnalysisHeader({
 
         {/* Extended Information Section */}
         <CardContent className="p-4 sm:p-6 pt-0 space-y-4 border-t border-border/50">
-          {/* What This Repo Does */}
+          {/* What This Repo Does - Uses AI-generated whatItDoes */}
           <InfoSection
             icon={Rocket}
             title="What This Repo Does"
@@ -315,7 +346,7 @@ export function AnalysisHeader({
             </p>
           </InfoSection>
 
-          {/* Who It's For */}
+          {/* Who It's For - Uses AI-generated targetAudience */}
           <InfoSection
             icon={Users}
             title="Who It's For"
@@ -344,7 +375,7 @@ export function AnalysisHeader({
             </InfoSection>
           )}
 
-          {/* How to Run Locally */}
+          {/* How to Run Locally - Uses AI-generated howToRun */}
           <InfoSection
             icon={Terminal}
             title="How to Run Locally"
@@ -358,7 +389,7 @@ export function AnalysisHeader({
             </div>
           </InfoSection>
 
-          {/* Key Folders Explained */}
+          {/* Key Folders Explained - Uses AI-generated keyFolders */}
           {extendedAnalysis.keyFolders.length > 0 && (
             <InfoSection
               icon={FolderTree}
@@ -414,7 +445,7 @@ export function AnalysisHeader({
             </InfoSection>
           )}
 
-          {/* AI Summary */}
+          {/* AI Summary - Uses the separate summary field */}
           {summary && (
             <InfoSection
               icon={Search}
@@ -552,7 +583,6 @@ interface TechBadgeProps {
 }
 
 function TechBadge({ name, isPrimary = false }: TechBadgeProps) {
-  // Get icon based on tech name
   const icon = getTechIcon(name);
 
   return (
@@ -621,9 +651,7 @@ function FolderCard({ name, description }: FolderCardProps) {
         <FolderTree className="w-3 h-3 text-orange-500" />
       </div>
       <div className="min-w-0">
-        <code className="text-xs font-medium text-foreground">
-          {name}
-        </code>
+        <code className="text-xs font-medium text-foreground">{name}</code>
         <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">
           {description}
         </p>
@@ -644,46 +672,58 @@ function generateExtendedAnalysis(
   const language = metadata.language?.toLowerCase() || "";
   const topics = metadata.topics || [];
   const description = metadata.description || "";
-  const name = metadata.name.toLowerCase();
 
-  // Generate "What It Does" based on available info
+  // FIXED: Use result.whatItDoes from AI response, NOT result.summary
   let whatItDoes = "";
-  if (result?.summary) {
-    whatItDoes = result.summary;
+  if (result?.whatItDoes) {
+    // Use the AI-generated whatItDoes field
+    whatItDoes = result.whatItDoes;
   } else if (description) {
+    // Fallback to description
     whatItDoes = description;
   } else {
-    whatItDoes = `${metadata.name} is a ${metadata.language || "software"} project maintained by ${metadata.owner.login}. `;
+    // Generate a basic description
+    whatItDoes = `${metadata.name} is a ${
+      metadata.language || "software"
+    } project maintained by ${metadata.owner.login}. `;
     if (topics.length > 0) {
       whatItDoes += `It focuses on ${topics.slice(0, 3).join(", ")}.`;
     }
   }
 
-  // Generate "Target Audience" based on project type
+  // FIXED: Use result.targetAudience from AI response
   let targetAudience = "";
-  if (topics.includes("framework") || topics.includes("library")) {
-    targetAudience = "Developers looking for a reusable solution to integrate into their projects.";
-  } else if (topics.includes("cli") || topics.includes("tool")) {
-    targetAudience = "Developers and DevOps engineers who need command-line automation tools.";
-  } else if (topics.includes("api") || topics.includes("backend")) {
-    targetAudience = "Backend developers building services and APIs.";
-  } else if (topics.includes("frontend") || topics.includes("ui") || topics.includes("react") || topics.includes("vue")) {
-    targetAudience = "Frontend developers building modern web applications and user interfaces.";
-  } else if (topics.includes("mobile") || topics.includes("ios") || topics.includes("android")) {
-    targetAudience = "Mobile developers creating native or cross-platform applications.";
-  } else if (topics.includes("machine-learning") || topics.includes("ai") || topics.includes("deep-learning")) {
-    targetAudience = "Data scientists and ML engineers working on AI/ML projects.";
-  } else if (topics.includes("devops") || topics.includes("docker") || topics.includes("kubernetes")) {
-    targetAudience = "DevOps engineers and system administrators managing infrastructure.";
+  if (result?.targetAudience) {
+    // Use the AI-generated targetAudience field
+    targetAudience = result.targetAudience;
   } else {
-    targetAudience = `Developers and teams working with ${metadata.language || "this technology"} who need a ${topics[0] || "quality"} solution.`;
+    // Fallback to generated audience based on topics
+    targetAudience = generateTargetAudienceFallback(topics, metadata.language);
   }
 
-  // Generate "How to Run" commands based on language/stack
-  const howToRun = generateRunCommands(language, techStack || [], metadata.name);
+  // FIXED: Use result.howToRun from AI response if available
+  let howToRun: string[] = [];
+  if (result?.howToRun && result.howToRun.length > 0) {
+    howToRun = result.howToRun;
+  } else {
+    howToRun = generateRunCommands(
+      language,
+      techStack || [],
+      metadata.fullName
+    );
+  }
 
-  // Generate "Key Folders" based on file tree if available
-  const keyFolders = generateKeyFolders(result?.fileTree, language, techStack || []);
+  // FIXED: Use result.keyFolders from AI response if available
+  let keyFolders: { name: string; description: string }[] = [];
+  if (result?.keyFolders && result.keyFolders.length > 0) {
+    keyFolders = result.keyFolders;
+  } else {
+    keyFolders = generateKeyFolders(
+      result?.fileTree,
+      language,
+      techStack || []
+    );
+  }
 
   return {
     whatItDoes,
@@ -693,17 +733,60 @@ function generateExtendedAnalysis(
   };
 }
 
+function generateTargetAudienceFallback(
+  topics: string[],
+  language?: string | null
+): string {
+  if (topics.includes("framework") || topics.includes("library")) {
+    return "Developers looking for a reusable solution to integrate into their projects.";
+  } else if (topics.includes("cli") || topics.includes("tool")) {
+    return "Developers and DevOps engineers who need command-line automation tools.";
+  } else if (topics.includes("api") || topics.includes("backend")) {
+    return "Backend developers building services and APIs.";
+  } else if (
+    topics.includes("frontend") ||
+    topics.includes("ui") ||
+    topics.includes("react") ||
+    topics.includes("vue")
+  ) {
+    return "Frontend developers building modern web applications and user interfaces.";
+  } else if (
+    topics.includes("mobile") ||
+    topics.includes("ios") ||
+    topics.includes("android")
+  ) {
+    return "Mobile developers creating native or cross-platform applications.";
+  } else if (
+    topics.includes("machine-learning") ||
+    topics.includes("ai") ||
+    topics.includes("deep-learning")
+  ) {
+    return "Data scientists and ML engineers working on AI/ML projects.";
+  } else if (
+    topics.includes("devops") ||
+    topics.includes("docker") ||
+    topics.includes("kubernetes")
+  ) {
+    return "DevOps engineers and system administrators managing infrastructure.";
+  } else {
+    return `Developers and teams working with ${
+      language || "this technology"
+    } who need a ${topics[0] || "quality"} solution.`;
+  }
+}
+
 function generateRunCommands(
   language: string,
   techStack: string[],
-  repoName: string
+  repoFullName: string
 ): string[] {
   const commands: string[] = [];
   const techLower = techStack.map((t) => t.toLowerCase());
+  const repoName = repoFullName.split("/").pop() || repoFullName;
 
   // Clone command
-  commands.push(`git clone https://github.com/${repoName}.git`);
-  commands.push(`cd ${repoName.split("/").pop() || repoName}`);
+  commands.push(`git clone https://github.com/${repoFullName}.git`);
+  commands.push(`cd ${repoName}`);
 
   // Install and run based on stack
   if (techLower.includes("next.js") || techLower.includes("nextjs")) {
@@ -753,7 +836,6 @@ function generateKeyFolders(
   const techLower = (techStack || []).map((t) => t.toLowerCase());
 
   if (fileTree && fileTree.length > 0) {
-    // Extract top-level directories from file tree
     const topDirs = fileTree
       .filter((node) => node.type === "directory")
       .slice(0, 8);
@@ -766,7 +848,6 @@ function generateKeyFolders(
     }
   }
 
-  // If we couldn't get folders from tree, use common patterns
   if (folders.length === 0) {
     if (techLower.includes("next.js") || techLower.includes("nextjs")) {
       folders.push(
@@ -800,7 +881,6 @@ function getFolderDescription(
   techStack?: string[]
 ): string | null {
   const folderDescriptions: Record<string, string> = {
-    // Common folders
     src: "Main source code directory",
     lib: "Utility functions and shared libraries",
     utils: "Helper functions and utilities",
@@ -814,8 +894,6 @@ function getFolderDescription(
     docs: "Documentation and guides",
     examples: "Example code and demos",
     samples: "Sample implementations",
-
-    // Frontend specific
     app: "Application routes and pages (App Router)",
     pages: "Page components and routes",
     components: "Reusable UI components",
@@ -829,8 +907,6 @@ function getFolderDescription(
     assets: "Static assets (images, fonts)",
     public: "Publicly served static files",
     static: "Static files and assets",
-
-    // Backend specific
     api: "API routes and endpoints",
     routes: "Route definitions",
     controllers: "Request handlers",
@@ -840,8 +916,6 @@ function getFolderDescription(
     database: "Database migrations and seeds",
     db: "Database related files",
     migrations: "Database migration files",
-
-    // Other common
     types: "TypeScript type definitions",
     interfaces: "Interface definitions",
     constants: "Constant values and enums",
@@ -852,8 +926,6 @@ function getFolderDescription(
     core: "Core functionality",
     common: "Shared/common code",
     shared: "Shared utilities and types",
-
-    // Build/Config
     build: "Build output directory",
     dist: "Distribution/compiled files",
     out: "Output directory",
@@ -865,8 +937,6 @@ function getFolderDescription(
     terraform: "Terraform configurations",
     k8s: "Kubernetes manifests",
     kubernetes: "Kubernetes configurations",
-
-    // Package specific
     packages: "Monorepo packages",
     apps: "Application packages (monorepo)",
     prisma: "Prisma schema and migrations",
@@ -880,7 +950,6 @@ function getFolderDescription(
 
 function getTechIcon(tech: string): string | null {
   const techIcons: Record<string, string> = {
-    // Languages
     typescript: "📘",
     javascript: "📒",
     python: "🐍",
@@ -893,8 +962,6 @@ function getTechIcon(tech: string): string | null {
     kotlin: "🎯",
     "c#": "🔷",
     "c++": "⚡",
-
-    // Frameworks
     react: "⚛️",
     "next.js": "▲",
     nextjs: "▲",
@@ -906,8 +973,6 @@ function getTechIcon(tech: string): string | null {
     "nuxt.js": "💚",
     remix: "💿",
     astro: "🚀",
-
-    // Backend
     "node.js": "💚",
     nodejs: "💚",
     express: "🚂",
@@ -919,8 +984,6 @@ function getTechIcon(tech: string): string | null {
     rails: "💎",
     laravel: "🔴",
     spring: "🌱",
-
-    // Databases
     postgresql: "🐘",
     postgres: "🐘",
     mysql: "🐬",
@@ -930,8 +993,6 @@ function getTechIcon(tech: string): string | null {
     prisma: "🔷",
     drizzle: "💧",
     supabase: "⚡",
-
-    // Tools
     docker: "🐳",
     kubernetes: "☸️",
     aws: "☁️",
@@ -941,28 +1002,20 @@ function getTechIcon(tech: string): string | null {
     graphql: "💜",
     rest: "🔗",
     trpc: "🔷",
-
-    // Styling
     tailwindcss: "🎨",
     "tailwind css": "🎨",
     css: "🎨",
     sass: "💅",
     scss: "💅",
     "styled-components": "💅",
-
-    // Testing
     jest: "🃏",
     vitest: "⚡",
     playwright: "🎭",
     cypress: "🌲",
-
-    // State
     redux: "💜",
     zustand: "🐻",
     jotai: "👻",
     recoil: "⚛️",
-
-    // AI/ML
     tensorflow: "🧠",
     pytorch: "🔥",
     openai: "🤖",
