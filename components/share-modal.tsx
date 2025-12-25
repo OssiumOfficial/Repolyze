@@ -458,23 +458,6 @@ export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
 
                 <div className="h-px bg-border" />
 
-                {/* Tips Section */}
-                <div className="p-3 rounded-lg bg-muted/50 border border-border/50">
-                  <div className="flex items-start gap-2">
-                    <Sparkles className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-xs font-medium text-foreground mb-1.5">
-                        Pro Tips
-                      </p>
-                      <ul className="text-[11px] text-muted-foreground space-y-1">
-                        <TipItem text="Compact works best on Twitter" />
-                        <TipItem text="Detailed shows full score breakdown" />
-                        <TipItem text="Images are retina-ready (2x)" />
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
                 {/* Card Size Info */}
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                   <span>Card size:</span>

@@ -1,4 +1,5 @@
 "use client";
+
 import { Footer } from "@/components/footer";
 import { HeroHeader } from "@/components/header";
 import { RepoAnalyzer } from "@/components/repo-analyzer";
@@ -6,7 +7,6 @@ import { RepoAnalyzer } from "@/components/repo-analyzer";
 export default function Home() {
   return (
     <div className="min-h-screen w-full relative jetbrains-mono">
-
       <div className="fixed inset-0 flex items-end w-full h-screen gap-0 justify-between pb-0 pointer-events-none -z-10">
         {/* TODO: Background here */}
       </div>
@@ -23,19 +23,19 @@ export default function Home() {
           <div className="mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col items-center py-12 sm:py-16 lg:py-20">
               {/* Heading */}
-              <div className="instrument-serif flex flex-col gap-2 px-6 lg:text-6xl md:text-5xl sm:text-4xl text-3xl">
+              <div className="instrument-serif flex flex-col gap-2 px-6 lg:text-7xl md:text-5xl text-4xl">
                 <h1 className="dark:text-white/30 text-secondary-foreground/50">
-                  Don't Just{" "}
+                  Understand{" "}
                   <span className="dark:text-white text-secondary-foreground">
-                    Read
+                    Any
                   </span>{" "}
-                  The Code
+                  Code
                 </h1>
                 <h2 className="dark:text-white/30 -mt-1 text-secondary-foreground/50">
                   Instantly{" "}
                   <span className="relative inline-block">
                     <span className="dark:text-white text-secondary-foreground relative z-10">
-                      Understand It
+                      In Seconds
                     </span>
                     {/* Unsymmetrical Underline SVG */}
                     <svg

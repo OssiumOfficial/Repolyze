@@ -55,9 +55,7 @@ export function UrlInput({ onAnalyze, isLoading }: UrlInputProps) {
         <div
           className={cn(
             "relative flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 p-2 rounded-xl border bg-background/50 backdrop-blur-sm transition-all duration-200",
-            isFocused
-              ? "ring-2 ring-primary/60"
-              : "border-border",
+            isFocused ? "ring-2 ring-primary/60" : "border-border",
             error && "border-destructive/50"
           )}
         >
@@ -104,10 +102,7 @@ export function UrlInput({ onAnalyze, isLoading }: UrlInputProps) {
               </div>
             ) : (
               <div className="flex items-center gap-2 px-2">
-                <AnalyzeIcon
-                  fill="currentColor"
-                  className="w-4 h-4"
-                />
+                <AnalyzeIcon fill="currentColor" className="w-4 h-4" />
                 <span className="sm:inline">Analyze</span>
                 <ArrowRight className="w-3.5 h-3.5 hidden sm:block" />
               </div>

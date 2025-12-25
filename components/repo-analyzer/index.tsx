@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList } from "@/components/ui/tabs";
 import { UrlInput } from "@/components/url-input";
 import { FileTree } from "@/components/file-tree";
 import { ScoreCard } from "@/components/score-card";
@@ -25,18 +25,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import About from "./about";
+import About from "../about";
 
-// Animation variants
-const fadeIn = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-};
-
-const slideUp = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0 },
-};
+import { fadeIn, slideUp } from "./animations";
+import { SectionHeader } from "./section-header";
+import { TabTriggerItem } from "./tab-trigger-item";
+import { EmptyState } from "./empty-state";
 
 export function RepoAnalyzer() {
   const {
@@ -253,7 +247,7 @@ export function RepoAnalyzer() {
                     {/* Tab Content */}
                     <TabsContent
                       value="refactors"
-                      className="mt-4 sm:mt-6 focus-visible:outline-none "
+                      className="mt-4 sm:mt-6 focus-visible:outline-none"
                     >
                       <motion.div
                         initial={{ opacity: 0 }}
@@ -347,105 +341,5 @@ export function RepoAnalyzer() {
         </AnimatePresence>
       </div>
     </div>
-  );
-}
-
-// Section Header Component
-function SectionHeader({
-  title,
-  icon: Icon,
-}: {
-  title: string;
-  icon?: React.ComponentType<{ className?: string }>;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      {Icon && (
-        <div className="p-1.5 rounded-md bg-primary/10">
-          <Icon className="w-4 h-4 text-primary" />
-        </div>
-      )}
-      <h2 className="text-xl tracking-wider font-medium instrument-serif text-foreground">
-        {title}
-      </h2>
-      <div className="flex-1 h-px bg-border" />
-    </div>
-  );
-}
-
-// Tab Trigger Item Component
-function TabTriggerItem({
-  value,
-  icon: Icon,
-  label,
-  count,
-}: {
-  value: string;
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  count?: number;
-}) {
-  return (
-    <TabsTrigger
-      value={value}
-      className={cn(
-        "flex items-center gap-2 px-3 sm:px-4 py-2 rounded-md",
-        "text-sm font-medium",
-        "data-[state=active]:bg-background",
-        "data-[state=active]:text-foreground",
-        "data-[state=active]:shadow-sm",
-        "text-muted-foreground",
-        "transition-all duration-200"
-      )}
-    >
-      <Icon className="w-4 h-4" />
-      <span className="hidden sm:inline">{label}</span>
-      <span className="sm:hidden">{label.slice(0, 3)}</span>
-      {count !== undefined && count > 0 && (
-        <span
-          className={cn(
-            "ml-1 px-1.5 py-0.5 text-xs rounded-full",
-            "bg-primary/10 text-primary"
-          )}
-        >
-          {count}
-        </span>
-      )}
-    </TabsTrigger>
-  );
-}
-
-// Empty State Component
-function EmptyState({
-  icon: Icon,
-  title,
-  description,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-}) {
-  return (
-    <Card className="border-border/50 bg-muted/20">
-      <CardContent className="py-12 sm:py-16 lg:py-20">
-        <div className="flex flex-col items-center text-center max-w-sm mx-auto">
-          <div
-            className={cn(
-              "w-14 h-14 rounded-xl mb-5",
-              "bg-muted border border-border/50",
-              "flex items-center justify-center"
-            )}
-          >
-            <Icon className="w-6 h-6 text-muted-foreground/50" />
-          </div>
-          <h3 className="text-sm font-medium text-foreground mb-1.5">
-            {title}
-          </h3>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            {description}
-          </p>
-        </div>
-      </CardContent>
-    </Card>
   );
 }

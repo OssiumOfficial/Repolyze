@@ -4,7 +4,6 @@ import  { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Pause, Volume2, VolumeX, Maximize2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 const VideoDemo = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
