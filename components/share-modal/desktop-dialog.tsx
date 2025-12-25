@@ -158,8 +158,8 @@ export function DesktopDialog({
                     onClick={handleCopyLink}
                     variant="outline"
                     className={cn(
-                      "w-full h-11 gap-2",
-                      copied && "border-emerald-500/50 text-emerald-500"
+                      "w-full gap-2",
+                      copied && "border-primary text-primary"
                     )}
                   >
                     {copied ? (
@@ -184,7 +184,6 @@ export function DesktopDialog({
                     <Button
                       onClick={handleTwitterShare}
                       variant="outline"
-                      className="h-11 gap-2 hover:bg-[#1DA1F2]/10 hover:text-[#1DA1F2] hover:border-[#1DA1F2]/30"
                     >
                       <Twitter className="w-4 h-4" />
                       Twitter
@@ -192,7 +191,6 @@ export function DesktopDialog({
                     <Button
                       onClick={handleLinkedInShare}
                       variant="outline"
-                      className="h-11 gap-2 hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] hover:border-[#0A66C2]/30"
                     >
                       <Linkedin className="w-4 h-4" />
                       LinkedIn

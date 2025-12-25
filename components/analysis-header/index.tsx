@@ -101,10 +101,10 @@ export function AnalysisHeader({
           <div className="flex gap-3 sm:gap-4">
             {/* Avatar with primary accent ring */}
             <div className="relative shrink-0 flex items-start justify-center">
-              <div
+              {/* <div
                 aria-hidden
                 className="absolute inset-0 rounded-xl bg-primary/30 blur-md scale-110 md:hidden block"
-              />
+              /> */}
               <Image
                 src={metadata.owner.avatarUrl}
                 alt={metadata.owner.login}

@@ -102,11 +102,7 @@ export function MobileDrawer({
                     transformOrigin: "center center",
                   }}
                 >
-                  <ShareCard
-                    ref={cardRef}
-                    data={shareData}
-                    variant={variant}
-                  />
+                  <ShareCard ref={cardRef} data={shareData} variant={variant} />
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -147,8 +143,8 @@ export function MobileDrawer({
                 onClick={handleCopyLink}
                 variant="outline"
                 className={cn(
-                  "h-11 gap-1.5 text-xs",
-                  copied && "border-emerald-500/50 text-emerald-500"
+                  "gap-1.5",
+                  copied && "border-primary text-primary"
                 )}
               >
                 {copied ? (
@@ -158,19 +154,11 @@ export function MobileDrawer({
                 )}
                 {copied ? "Copied" : "Link"}
               </Button>
-              <Button
-                onClick={handleTwitterShare}
-                variant="outline"
-                className="h-11 gap-1.5 text-xs hover:bg-[#1DA1F2]/10 hover:text-[#1DA1F2] hover:border-[#1DA1F2]/30"
-              >
+              <Button onClick={handleTwitterShare} variant="outline">
                 <Twitter className="w-4 h-4" />
                 Twitter
               </Button>
-              <Button
-                onClick={handleLinkedInShare}
-                variant="outline"
-                className="h-11 gap-1.5 text-xs hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] hover:border-[#0A66C2]/30"
-              >
+              <Button onClick={handleLinkedInShare} variant="outline">
                 <Linkedin className="w-4 h-4" />
                 LinkedIn
               </Button>

@@ -20,7 +20,7 @@ export default function Home() {
 
         {/* Hero Section */}
         <section className="relative flex-1">
-          <div className="mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto px-2 sm:px-4 lg:px-5">
             <div className="flex flex-col items-center py-12 sm:py-16 lg:py-20">
               {/* Heading */}
               <div className="instrument-serif flex flex-col gap-2 px-6 lg:text-7xl md:text-5xl text-4xl">
