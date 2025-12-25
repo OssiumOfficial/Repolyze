@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { MoonIcon, SunIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+import { Button } from "./button";
 
 interface ThemeToggleProps {
   onMouseEnter?: () => void;
@@ -21,9 +22,10 @@ const ThemeToggle = ({ onMouseEnter }: ThemeToggleProps) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <button
+        <Button
+          variant={"outline"}
+          size={"icon"}
           onMouseEnter={onMouseEnter}
-          className=" rounded-md p-2 flex items-center justify-center cursor-pointer transition-colors"
           onClick={() => {
             setTheme(resolvedTheme === "dark" ? "light" : "dark");
           }}
@@ -41,7 +43,7 @@ const ThemeToggle = ({ onMouseEnter }: ThemeToggleProps) => {
                 >
                   <MoonIcon
                     size={16}
-                    className="text-neutral-400 dark:text-text-secondary"
+                    className="text-muted-foreground"
                   />
                 </motion.div>
               ) : (
@@ -54,12 +56,12 @@ const ThemeToggle = ({ onMouseEnter }: ThemeToggleProps) => {
                 >
                   <SunIcon
                     size={16}
-                    className="text-neutral-400 dark:text-text-secondary"
+                    className="text-muted-foreground"
                   />
                 </motion.div>
               ))}
           </AnimatePresence>
-        </button>
+        </Button>
       </TooltipTrigger>
       <TooltipContent side="bottom" sideOffset={5}>
         Toggle Mode
