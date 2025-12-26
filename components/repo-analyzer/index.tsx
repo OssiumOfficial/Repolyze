@@ -47,7 +47,7 @@ export function RepoAnalyzer() {
   return (
     <div className="w-full">
       <div className="space-y-6 sm:space-y-8 lg:space-y-10">
-        {/* Row 1: URL Input */}
+        
         <section className="w-full">
           <UrlInput onAnalyze={analyze} isLoading={isLoading} />
         </section>
