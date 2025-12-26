@@ -91,7 +91,7 @@ export function RepoAnalyzer() {
             </motion.section>
           )}
 
-          {/* Loading State */}
+          
           {isLoading && (
             <motion.section
               key="loading"
