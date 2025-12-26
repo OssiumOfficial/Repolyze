@@ -116,7 +116,7 @@ export function RepoAnalyzer() {
               transition={{ duration: 0.3 }}
               className="space-y-6 sm:space-y-8 lg:space-y-10"
             >
-              {/* Row 2: Analysis Header */}
+              
               <motion.section
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
