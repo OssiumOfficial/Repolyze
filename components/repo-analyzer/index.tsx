@@ -106,7 +106,7 @@ export function RepoAnalyzer() {
             </motion.section>
           )}
 
-          {/* Results - Each section in its own row */}
+          
           {isComplete && result?.metadata && (
             <motion.div
               key="results"
