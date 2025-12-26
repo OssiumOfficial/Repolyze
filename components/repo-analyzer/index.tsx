@@ -53,7 +53,7 @@ export function RepoAnalyzer() {
         </section>
 
         <AnimatePresence mode="wait">
-          {/* Error State */}
+          
           {hasError && (
             <motion.section
               key="error"
