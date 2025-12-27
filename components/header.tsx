@@ -1,12 +1,14 @@
 "use client";
 
-import { GithubIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ui/theme-toggle";
 import RepoGistLogo from "./icons/repogist-logo";
 import Link from "next/link";
+
+import { HugeiconsIcon } from "@hugeicons/react";
+import { GithubIcon } from "@hugeicons/core-free-icons";
 
 export const HeroHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -60,7 +62,11 @@ export const HeroHeader = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <GithubIcon className="size-4" />
+                  <HugeiconsIcon
+                    icon={GithubIcon}
+                    className="w-4 h-4 text-foreground/70"
+                    strokeWidth={1.5}
+                  />{" "}
                   <span className="hidden sm:inline">GitHub</span>
                 </Link>
               </Button>

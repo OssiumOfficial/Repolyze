@@ -3,9 +3,11 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
-import { MoonIcon, SunIcon } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 import { Button } from "./button";
+
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Moon02Icon, Sun01Icon } from "@hugeicons/core-free-icons";
 
 interface ThemeToggleProps {
   onMouseEnter?: () => void;
@@ -41,10 +43,11 @@ const ThemeToggle = ({ onMouseEnter }: ThemeToggleProps) => {
                   exit={{ rotate: 90, scale: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <MoonIcon
+                  <HugeiconsIcon
+                    icon={Moon02Icon}
                     size={16}
-                    className="text-muted-foreground"
-                  />
+                    className="w-4 h-4 text-foreground/70"
+                  />{" "}
                 </motion.div>
               ) : (
                 <motion.div
@@ -54,10 +57,11 @@ const ThemeToggle = ({ onMouseEnter }: ThemeToggleProps) => {
                   exit={{ rotate: 90, scale: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <SunIcon
+                  <HugeiconsIcon
+                    icon={Sun01Icon}
                     size={16}
-                    className="text-muted-foreground"
-                  />
+                    className="w-4 h-4 text-foreground/70"
+                  />{" "}
                 </motion.div>
               ))}
           </AnimatePresence>

@@ -2,12 +2,19 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, ArrowRight, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { validateGitHubUrl } from "@/lib/validators";
 import { cn } from "@/lib/utils";
-import AnalyzeIcon from "@/assets/icons/analyze-icon";
+
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  GithubIcon,
+  ArrowRight01Icon,
+  AlertCircleIcon,
+  Loading02Icon,
+  Search01Icon,
+} from "@hugeicons/core-free-icons";
 
 interface UrlInputProps {
   onAnalyze: (url: string) => void;
@@ -61,15 +68,15 @@ export function UrlInput({ onAnalyze, isLoading }: UrlInputProps) {
         >
           {/* GitHub Icon - Desktop */}
           <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-lg bg-foreground/5 shrink-0">
-            <Github className="w-5 h-5 text-foreground/70" />
+            <HugeiconsIcon
+              icon={GithubIcon}
+              className="w-5 h-5 text-foreground/70"
+              strokeWidth={1.5}
+            />
           </div>
 
           {/* Input Field */}
           <div className="flex-1 flex items-center gap-2">
-            {/* GitHub Icon - Mobile */}
-            {/* <div className="sm:hidden pl-2">
-              <Github className="w-5 h-5 text-foreground/50" />
-            </div> */}
             <Input
               type="url"
               placeholder="github.com/owner/repository"
@@ -79,8 +86,10 @@ export function UrlInput({ onAnalyze, isLoading }: UrlInputProps) {
               onBlur={() => setIsFocused(false)}
               disabled={isLoading}
               className={cn(
-                "flex-1 border-0 bg-transparent border-none shadow-none text-base focus-visible:ring-0 focus-visible:ring-offset-0 h-11 outline-none",
-                "placeholder:text-muted-foreground/40 text-sm sm:text-base"
+                "flex-1 border-0 bg-transparent shadow-none h-11 outline-none",
+                "text-sm sm:text-base",
+                "placeholder:text-muted-foreground/40",
+                "focus-visible:ring-0 focus-visible:ring-offset-0"
               )}
             />
           </div>
@@ -96,15 +105,27 @@ export function UrlInput({ onAnalyze, isLoading }: UrlInputProps) {
             )}
           >
             {isLoading ? (
-              <div className="flex items-center">
-                <Loader2 className="w-4 h-4 animate-spin" />
+              <div className="flex items-center gap-2">
+                <HugeiconsIcon
+                  icon={Loading02Icon}
+                  className="w-4 h-4 animate-spin"
+                  strokeWidth={1.5}
+                />
                 <span className="sm:hidden">Analyzing...</span>
               </div>
             ) : (
               <div className="flex items-center gap-2 px-2">
-                <AnalyzeIcon fill="currentColor" className="w-4 h-4" />
+                <HugeiconsIcon
+                  icon={Search01Icon}
+                  color="currentColor"
+                  strokeWidth={1.5}
+                />{" "}
                 <span className="sm:inline">Analyze</span>
-                <ArrowRight className="w-3.5 h-3.5 hidden sm:block" />
+                <HugeiconsIcon
+                  icon={ArrowRight01Icon}
+                  className="w-3.5 h-3.5 hidden sm:block"
+                  strokeWidth={1.5}
+                />
               </div>
             )}
           </Button>
@@ -120,13 +141,17 @@ export function UrlInput({ onAnalyze, isLoading }: UrlInputProps) {
               transition={{ duration: 0.15 }}
               className="flex items-center gap-2 text-destructive text-sm px-3"
             >
-              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <HugeiconsIcon
+                icon={AlertCircleIcon}
+                className="w-3.5 h-3.5 shrink-0"
+                strokeWidth={1.5}
+              />
               <span className="font-medium">{error}</span>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Subtle Helper Text */}
+        {/* Helper Text */}
         <p className="text-xs text-muted-foreground/50 text-center px-4">
           Paste a GitHub repository URL to analyze its structure and code
         </p>

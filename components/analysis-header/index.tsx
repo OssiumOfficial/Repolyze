@@ -38,6 +38,8 @@ import { InfoSection } from "./info-section";
 import { TechBadge } from "./tech-badge";
 import { CommandStep } from "./command-step";
 import { FolderCard } from "./folder-card";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { GithubIcon } from "@hugeicons/core-free-icons";
 
 export function AnalysisHeader({
   metadata,
@@ -460,3 +462,4 @@ export function AnalysisHeader({
     </>
   );
 }
+

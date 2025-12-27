@@ -31,7 +31,6 @@ export async function POST(request: Request) {
 
   const clientIP = getClientIP(request);
 
-  // Check rate limit
   const rateLimit = checkRateLimit(clientIP);
   if (!rateLimit.allowed) {
     return Response.json(
@@ -135,6 +134,7 @@ export async function POST(request: Request) {
       maxOutputTokens: AI_CONFIG.maxOutputTokens,
     });
 
+    // Create and return the stream
     const stream = createAnalysisStream(
       metadata,
       tree,
