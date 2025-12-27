@@ -31,3 +31,5 @@ function RepoGistLogo({ fill = "currentColor", secondaryfill, ...props }: IconPr
 }
 
 export default RepoGistLogo;
+
+// i want to create this icon as my favicon
