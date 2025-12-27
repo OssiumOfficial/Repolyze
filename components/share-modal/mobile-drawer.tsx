@@ -1,16 +1,18 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Share2,
-  Download,
-  Check,
-  Twitter,
-  Linkedin,
-  Link2,
-  Loader2,
-  X,
-} from "lucide-react";
+  Share01Icon,
+  Download01Icon,
+  Tick01Icon,
+  NewTwitterIcon,
+  Linkedin01Icon,
+  Link01Icon,
+  Loading01Icon,
+  Cancel01Icon,
+  Linkedin02Icon,
+} from "@hugeicons/core-free-icons";
 import {
   Drawer,
   DrawerClose,
@@ -44,12 +46,15 @@ export function MobileDrawer({
 }: MobileDrawerProps) {
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[90vh]">
+      <DrawerContent className="max-h-[90vh] jetbrains-mono">
         <DrawerHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-start gap-2">
               <div className="p-1.5 rounded-lg bg-primary/10">
-                <Share2 className="w-4 h-4 text-primary" />
+                <HugeiconsIcon
+                  icon={Share01Icon}
+                  className="w-4 h-4 text-primary"
+                />
               </div>
               <div>
                 <DrawerTitle className="text-base text-left instrument-serif font-normal tracking-wide">
@@ -62,7 +67,7 @@ export function MobileDrawer({
             </div>
             <DrawerClose asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
-                <X className="h-4 w-4" />
+                <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4" />
               </Button>
             </DrawerClose>
           </div>
@@ -121,17 +126,20 @@ export function MobileDrawer({
             >
               {downloading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <HugeiconsIcon
+                    icon={Loading01Icon}
+                    className="w-4 h-4 animate-spin"
+                  />
                   Generating...
                 </>
               ) : downloadSuccess ? (
                 <>
-                  <Check className="w-4 h-4" />
+                  <HugeiconsIcon icon={Tick01Icon} className="w-4 h-4" />
                   Downloaded!
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4" />
+                  <HugeiconsIcon icon={Download01Icon} className="w-4 h-4" />
                   Download PNG
                 </>
               )}
@@ -148,19 +156,17 @@ export function MobileDrawer({
                 )}
               >
                 {copied ? (
-                  <Check className="w-4 h-4" />
+                  <HugeiconsIcon icon={Tick01Icon} className="w-4 h-4" />
                 ) : (
-                  <Link2 className="w-4 h-4" />
+                  <HugeiconsIcon icon={Link01Icon} className="w-4 h-4" />
                 )}
                 {copied ? "Copied" : "Link"}
               </Button>
               <Button onClick={handleTwitterShare} variant="outline">
-                <Twitter className="w-4 h-4" />
-                Twitter
+                <HugeiconsIcon icon={NewTwitterIcon} className="w-4 h-4" />
               </Button>
               <Button onClick={handleLinkedInShare} variant="outline">
-                <Linkedin className="w-4 h-4" />
-                LinkedIn
+                <HugeiconsIcon icon={Linkedin02Icon} className="w-4 h-4" />
               </Button>
             </div>
 

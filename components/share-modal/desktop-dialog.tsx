@@ -22,7 +22,7 @@ import {
   Copy01Icon,
   Tick01Icon,
   NewTwitterIcon,
-  Linkedin01Icon,
+  Linkedin02Icon,
   Link01Icon,
   Loading01Icon,
   Image01Icon,
@@ -136,7 +136,7 @@ export function DesktopDialog({
                       <>
                         <HugeiconsIcon
                           icon={Loading01Icon}
-                          className="w-4 h-4 animate-spin"
+                          className="w-4 h-4 animate-spin"	
                         />
                         Generating...
                       </>
@@ -206,7 +206,7 @@ export function DesktopDialog({
                     </Button>
                     <Button onClick={handleLinkedInShare} variant="outline">
                       <HugeiconsIcon
-                        icon={Linkedin01Icon}
+                        icon={Linkedin02Icon}
                         className="w-4 h-4"
                       />
                       LinkedIn
