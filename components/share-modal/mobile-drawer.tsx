@@ -8,7 +8,7 @@ import {
   Tick01Icon,
   NewTwitterIcon,
   Linkedin01Icon,
-  Link01Icon,
+  Link02Icon,
   Loading01Icon,
   Cancel01Icon,
   Linkedin02Icon,
@@ -158,7 +158,7 @@ export function MobileDrawer({
                 {copied ? (
                   <HugeiconsIcon icon={Tick01Icon} className="w-4 h-4" />
                 ) : (
-                  <HugeiconsIcon icon={Link01Icon} className="w-4 h-4" />
+                  <HugeiconsIcon icon={Link02Icon} className="w-4 h-4" />
                 )}
                 {copied ? "Copied" : "Link"}
               </Button>

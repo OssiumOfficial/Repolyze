@@ -23,7 +23,7 @@ import {
   Tick01Icon,
   NewTwitterIcon,
   Linkedin02Icon,
-  Link01Icon,
+  Link02Icon,
   Loading01Icon,
   Image01Icon,
 } from "@hugeicons/core-free-icons";
@@ -166,7 +166,7 @@ export function DesktopDialog({
                 <div className="h-px bg-border" />
 
                 {/* Copy Link Section */}
-                <ActionSection icon={Link01Icon} title="Share Link">
+                <ActionSection icon={Link02Icon} title="Share Link">
                   <Button
                     onClick={handleCopyLink}
                     variant="outline"
