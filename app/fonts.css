@@ -2,7 +2,7 @@
 
 html,
 body {
-  font-family: var(--font-geist-sans);
+  font-family: var(--font-jetbrains-mono);
 }
 
 /* JetBrains Mono */
@@ -23,19 +23,4 @@ body {
 /* Instrument Serif */
 .instrument-serif {
   font-family: var(--font-instrument-serif);
-}
-
-/* Instrument Sans */
-.instrument-sans {
-  font-family: var(--font-instrument-sans);
-}
-
-/* Urbanist */
-.urbanist {
-  font-family: var(--font-urbanist);
-}
-
-/* Bricolage Grotesque */
-.bricolage-grotesque {
-  font-family: var(--font-bricolage-grotesque);
 }

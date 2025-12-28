@@ -7,7 +7,6 @@ import {
   Download01Icon,
   Tick01Icon,
   NewTwitterIcon,
-  Linkedin01Icon,
   Link02Icon,
   Loading01Icon,
   Cancel01Icon,

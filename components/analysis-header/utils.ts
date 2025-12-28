@@ -11,7 +11,6 @@ export function generateExtendedAnalysis(
   const topics = metadata.topics || [];
   const description = metadata.description || "";
 
-  // Use result.whatItDoes from AI response
   let whatItDoes = "";
   if (result?.whatItDoes) {
     whatItDoes = result.whatItDoes;
@@ -26,7 +25,6 @@ export function generateExtendedAnalysis(
     }
   }
 
-  // Use result.targetAudience from AI response
   let targetAudience = "";
   if (result?.targetAudience) {
     targetAudience = result.targetAudience;
@@ -34,7 +32,6 @@ export function generateExtendedAnalysis(
     targetAudience = generateTargetAudienceFallback(topics, metadata.language);
   }
 
-  // Use result.howToRun from AI response if available
   let howToRun: string[] = [];
   if (result?.howToRun && result.howToRun.length > 0) {
     howToRun = result.howToRun;
@@ -46,7 +43,6 @@ export function generateExtendedAnalysis(
     );
   }
 
-  // Use result.keyFolders from AI response if available
   let keyFolders: { name: string; description: string }[] = [];
   if (result?.keyFolders && result.keyFolders.length > 0) {
     keyFolders = result.keyFolders;
@@ -117,11 +113,9 @@ export function generateRunCommands(
   const techLower = techStack.map((t) => t.toLowerCase());
   const repoName = repoFullName.split("/").pop() || repoFullName;
 
-  // Clone command
   commands.push(`git clone https://github.com/${repoFullName}.git`);
   commands.push(`cd ${repoName}`);
 
-  // Install and run based on stack
   if (techLower.includes("next.js") || techLower.includes("nextjs")) {
     commands.push("pnpm install  # or npm install");
     commands.push("pnpm dev      # starts development server");
@@ -152,7 +146,6 @@ export function generateRunCommands(
   } else if (techLower.includes("docker")) {
     commands.push("docker-compose up -d");
   } else {
-    // Generic JavaScript/TypeScript
     commands.push("npm install");
     commands.push("npm start");
   }
@@ -214,7 +207,36 @@ export function getFolderDescription(
   techStack?: string[]
 ): string | null {
   const lowerName = name.toLowerCase().replace(/\/$/, "");
-  return FOLDER_DESCRIPTIONS[lowerName] || null;
+
+  if (FOLDER_DESCRIPTIONS[lowerName]) {
+    return FOLDER_DESCRIPTIONS[lowerName];
+  }
+
+  const techLower = (techStack || []).map((t) => t.toLowerCase());
+
+  if (techLower.includes("next.js") || techLower.includes("nextjs")) {
+    if (lowerName === "app") return "App Router pages, layouts, and API routes";
+    if (lowerName === "pages") return "Pages Router (legacy) page components";
+  }
+
+  if (techLower.includes("react")) {
+    if (lowerName === "components") return "Reusable React UI components";
+    if (lowerName === "hooks") return "Custom React hooks";
+    if (lowerName === "context") return "React context providers";
+  }
+
+  if (language === "python") {
+    if (lowerName === "src") return "Main Python source modules";
+    if (lowerName === "tests") return "Pytest unit and integration tests";
+  }
+
+  if (language === "go") {
+    if (lowerName === "cmd") return "Main application entry points";
+    if (lowerName === "pkg") return "Public library packages";
+    if (lowerName === "internal") return "Private application code";
+  }
+
+  return null;
 }
 
 export function getTechIcon(tech: string): string | null {

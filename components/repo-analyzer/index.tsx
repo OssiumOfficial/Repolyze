@@ -1,3 +1,4 @@
+// components/repo-analyzer/index.tsx
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,19 +14,23 @@ import { AutomationsPanel } from "@/components/automations-panel";
 import { AnalysisHeader } from "@/components/analysis-header";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { useAnalysis } from "@/hooks/use-analysis";
-import {
-  AlertCircle,
-  RotateCcw,
-  GitBranch,
-  Workflow,
-  Wrench,
-  Zap,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import About from "../about";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  AlertCircleIcon,
+  RotateLeft01Icon,
+  GitBranchIcon,
+  WorkflowSquare10Icon,
+  Wrench01Icon,
+  ZapIcon,
+  Refresh01Icon,
+  Database01Icon,
+} from "@hugeicons/core-free-icons";
 
 import { fadeIn, slideUp } from "./animations";
 import { SectionHeader } from "./section-header";
@@ -38,22 +43,22 @@ export function RepoAnalyzer() {
     status,
     result,
     reset,
+    refresh,
     isLoading,
     isComplete,
     hasError,
     isIdle,
+    isCached,
   } = useAnalysis();
 
   return (
     <div className="w-full">
       <div className="space-y-6 sm:space-y-8 lg:space-y-10">
-        
         <section className="w-full">
           <UrlInput onAnalyze={analyze} isLoading={isLoading} />
         </section>
 
         <AnimatePresence mode="wait">
-          
           {hasError && (
             <motion.section
               key="error"
@@ -68,7 +73,10 @@ export function RepoAnalyzer() {
                 <CardContent className="p-8 sm:p-10 lg:p-12">
                   <div className="flex flex-col items-center text-center max-w-md mx-auto">
                     <div className="w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center mb-5">
-                      <AlertCircle className="w-7 h-7 text-destructive" />
+                      <HugeiconsIcon
+                        icon={AlertCircleIcon}
+                        className="w-7 h-7 text-destructive"
+                      />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">
                       Analysis Failed
@@ -82,7 +90,10 @@ export function RepoAnalyzer() {
                       variant="outline"
                       className="border-border hover:bg-muted"
                     >
-                      <RotateCcw className="w-4 h-4 mr-2" />
+                      <HugeiconsIcon
+                        icon={RotateLeft01Icon}
+                        className="w-4 h-4 mr-2"
+                      />
                       Try Again
                     </Button>
                   </div>
@@ -91,7 +102,6 @@ export function RepoAnalyzer() {
             </motion.section>
           )}
 
-          
           {isLoading && (
             <motion.section
               key="loading"
@@ -106,7 +116,6 @@ export function RepoAnalyzer() {
             </motion.section>
           )}
 
-          
           {isComplete && result?.metadata && (
             <motion.div
               key="results"
@@ -116,7 +125,39 @@ export function RepoAnalyzer() {
               transition={{ duration: 0.3 }}
               className="space-y-6 sm:space-y-8 lg:space-y-10"
             >
-              
+              {/* Cache indicator */}
+              {isCached && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-center justify-center gap-3"
+                >
+                  <Badge
+                    variant="secondary"
+                    className="gap-1.5 px-3 py-1 bg-primary/10 text-primary border-primary/20"
+                  >
+                    <HugeiconsIcon
+                      icon={Database01Icon}
+                      className="w-3.5 h-3.5"
+                    />
+                    Loaded from cache
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={refresh}
+                    disabled={isLoading}
+                    className="h-7 gap-1.5 text-xs hover:bg-primary/10 hover:text-primary"
+                  >
+                    <HugeiconsIcon
+                      icon={Refresh01Icon}
+                      className="w-3.5 h-3.5"
+                    />
+                    Refresh Analysis
+                  </Button>
+                </motion.div>
+              )}
+
               <motion.section
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -131,7 +172,7 @@ export function RepoAnalyzer() {
                 />
               </motion.section>
 
-              {/* Row 3: File Tree (Full Width Row) */}
+              {/* File Tree */}
               {result.fileTree && result.fileStats && (
                 <motion.section
                   initial={{ opacity: 0, y: 12 }}
@@ -146,7 +187,7 @@ export function RepoAnalyzer() {
                 </motion.section>
               )}
 
-              {/* Row 4: Score Card + AI Insights (Side by Side) */}
+              {/* Score Card + AI Insights */}
               <motion.section
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -162,20 +203,20 @@ export function RepoAnalyzer() {
                 </div>
               </motion.section>
 
-              {/* Row 5: Architecture Diagram (Full Width Row) */}
+              {/* Architecture Diagram */}
               <motion.section
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
                 className="w-full"
               >
-                <SectionHeader title="Architecture" icon={GitBranch} />
+                <SectionHeader title="Architecture" icon={GitBranchIcon} />
                 <div className="mt-4">
                   {result.architecture && result.architecture.length > 0 ? (
                     <ArchitectureDiagram components={result.architecture} />
                   ) : (
                     <EmptyState
-                      icon={GitBranch}
+                      icon={GitBranchIcon}
                       title="No Architecture Data"
                       description="Architecture visualization is not available for this repository."
                     />
@@ -183,14 +224,14 @@ export function RepoAnalyzer() {
                 </div>
               </motion.section>
 
-              {/* Row 6: Data Flow Diagram (Full Width Row) */}
+              {/* Data Flow Diagram */}
               <motion.section
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.25 }}
                 className="w-full"
               >
-                <SectionHeader title="Data Flow" icon={Workflow} />
+                <SectionHeader title="Data Flow" icon={WorkflowSquare10Icon} />
                 <div className="mt-4">
                   {result.dataFlow?.nodes &&
                   result.dataFlow.nodes.length > 0 ? (
@@ -200,7 +241,7 @@ export function RepoAnalyzer() {
                     />
                   ) : (
                     <EmptyState
-                      icon={Workflow}
+                      icon={WorkflowSquare10Icon}
                       title="No Data Flow Information"
                       description="Data flow visualization is not available for this repository."
                     />
@@ -208,7 +249,7 @@ export function RepoAnalyzer() {
                 </div>
               </motion.section>
 
-              {/* Row 7: Refactors & Automations (Tabbed) */}
+              {/* Refactors & Automations Tabs */}
               <motion.section
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -219,20 +260,19 @@ export function RepoAnalyzer() {
 
                 <div className="mt-4">
                   <Tabs defaultValue="refactors" className="w-full">
-                    {/* Tab Navigation */}
                     <ScrollArea className="w-full pb-1">
                       <TabsList
                         className={cn("inline-flex h-10 sm:h-11 p-1 gap-1")}
                       >
                         <TabTriggerItem
                           value="refactors"
-                          icon={Wrench}
+                          icon={Wrench01Icon}
                           label="Refactors"
                           count={result.refactors?.length}
                         />
                         <TabTriggerItem
                           value="automations"
-                          icon={Zap}
+                          icon={ZapIcon}
                           label="Automations"
                           count={result.automations?.length}
                         />
@@ -243,7 +283,6 @@ export function RepoAnalyzer() {
                       />
                     </ScrollArea>
 
-                    {/* Tab Content */}
                     <TabsContent
                       value="refactors"
                       className="mt-4 sm:mt-6 focus-visible:outline-none"
@@ -257,7 +296,7 @@ export function RepoAnalyzer() {
                           <RefactorsPanel refactors={result.refactors} />
                         ) : (
                           <EmptyState
-                            icon={Wrench}
+                            icon={Wrench01Icon}
                             title="No Refactoring Suggestions"
                             description="No refactoring opportunities were identified."
                           />
@@ -281,7 +320,7 @@ export function RepoAnalyzer() {
                           />
                         ) : (
                           <EmptyState
-                            icon={Zap}
+                            icon={ZapIcon}
                             title="No Automation Suggestions"
                             description="No automation opportunities were identified."
                           />
@@ -292,7 +331,7 @@ export function RepoAnalyzer() {
                 </div>
               </motion.section>
 
-              {/* Row 8: Reset Button */}
+              {/* Reset Button */}
               <motion.section
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -310,11 +349,11 @@ export function RepoAnalyzer() {
                     "transition-all duration-300"
                   )}
                 >
-                  <RotateCcw
+                  <HugeiconsIcon
+                    icon={RotateLeft01Icon}
                     className={cn(
                       "w-4 h-4 mr-2 text-muted-foreground",
                       "group-hover:text-foreground",
-                      "group-hover:-rotate-180",
                       "transition-all duration-500"
                     )}
                   />
@@ -326,7 +365,7 @@ export function RepoAnalyzer() {
             </motion.div>
           )}
 
-          {/* Idle State - Feature Cards */}
+          {/* Idle State */}
           {isIdle && (
             <motion.div
               key="idle"

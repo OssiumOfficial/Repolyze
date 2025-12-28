@@ -12,7 +12,6 @@ import {
   GithubIcon,
   ArrowRight01Icon,
   AlertCircleIcon,
-  Loading02Icon,
   Search01Icon,
   Loading03Icon,
 } from "@hugeicons/core-free-icons";

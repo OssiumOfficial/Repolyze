@@ -18,6 +18,7 @@ export const FigmaCursor = () => {
         "ontouchstart" in window ||
         navigator.maxTouchPoints > 0 ||
         // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         navigator.msMaxTouchPoints > 0;
 
       const isSmallScreen = window.matchMedia("(max-width: 768px)").matches;

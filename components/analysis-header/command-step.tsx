@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Copy01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { CommandStepProps } from "./types";
 
@@ -29,9 +30,15 @@ export function CommandStep({ step, command }: CommandStepProps) {
         onClick={handleCopy}
       >
         {copied ? (
-          <Check className="w-3 h-3 text-green-500" />
+          <HugeiconsIcon
+            icon={Tick01Icon}
+            className="w-3 h-3 text-primary"
+          />
         ) : (
-          <Copy className="w-3 h-3 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={Copy01Icon}
+            className="w-3 h-3 text-muted-foreground"
+          />
         )}
       </Button>
     </div>

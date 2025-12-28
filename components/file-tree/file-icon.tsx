@@ -10,8 +10,6 @@ import {
 import { cn } from "@/lib/utils";
 import { getFileExtension } from "./utils";
 import {
-  CODE_EXTENSIONS,
-  CONFIG_EXTENSIONS,
   DOC_EXTENSIONS,
   IMAGE_EXTENSIONS,
   LOCK_EXTENSIONS,

@@ -12,25 +12,21 @@ import "./fonts.css";
 import { ThemeProvider } from "@/context/theme-provider";
 import { FigmaCursor } from "@/components/ui/figma-cursor";
 
-// Geist Sans
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-// Geist Mono
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-// JetBrains Mono
 const jetBrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
 
-// Instrument Serif
 const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
   subsets: ["latin"],

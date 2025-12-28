@@ -1,19 +1,19 @@
-import { LucideIcon } from "lucide-react";
+import { IconSvgElement } from "@hugeicons/react";
 
 export interface SectionHeaderProps {
   title: string;
-  icon?: LucideIcon;
+  icon?: IconSvgElement;
 }
 
 export interface TabTriggerItemProps {
   value: string;
-  icon: LucideIcon;
+  icon: IconSvgElement;
   label: string;
   count?: number;
 }
 
 export interface EmptyStateProps {
-  icon: LucideIcon;
+  icon: IconSvgElement;
   title: string;
   description: string;
 }

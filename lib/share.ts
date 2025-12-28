@@ -1,4 +1,4 @@
-import { AnalysisResult, ScoreMetrics } from "./types";
+import { AnalysisResult } from "./types";
 
 export interface ShareCardData {
   repoName: string;
@@ -109,8 +109,8 @@ export function generateTwitterShareUrl(data: ShareCardData): string {
 
 export function generateLinkedInShareUrl(data: ShareCardData): string {
   const url = generateShareUrl(data);
-  const title = `${data.repoName} - Repository Analysis`;
-  const summary = `AI analysis score: ${data.overallScore}/100. Tech stack: ${data.techStack.slice(0, 5).join(", ")}`;
+  // const title = `${data.repoName} - Repository Analysis`;
+  // const summary = `AI analysis score: ${data.overallScore}/100. Tech stack: ${data.techStack.slice(0, 5).join(", ")}`;
   
   return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
 }

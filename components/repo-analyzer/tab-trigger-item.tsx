@@ -1,10 +1,11 @@
 import { TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { TabTriggerItemProps } from "./types";
+import { HugeiconsIcon } from "@hugeicons/react";
 
 export function TabTriggerItem({
   value,
-  icon: Icon,
+  icon,
   label,
   count,
 }: TabTriggerItemProps) {
@@ -21,7 +22,7 @@ export function TabTriggerItem({
         "transition-all duration-200"
       )}
     >
-      <Icon className="w-4 h-4" />
+      <HugeiconsIcon icon={icon} className="w-4 h-4" />
       <span className="hidden sm:inline">{label}</span>
       <span className="sm:hidden">{label.slice(0, 3)}</span>
       {count !== undefined && count > 0 && (

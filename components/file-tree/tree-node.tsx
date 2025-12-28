@@ -4,7 +4,6 @@ import { useState, useMemo, useCallback, memo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Folder, FolderOpen, ChevronRight } from "lucide-react";
 import { cn, formatBytes } from "@/lib/utils";
-import { FileNode } from "@/lib/types";
 import { TreeNodeProps } from "./types";
 import { DEFAULT_EXPAND_LEVEL } from "./constants";
 import { nodeMatchesSearch, nameMatchesSearch } from "./utils";

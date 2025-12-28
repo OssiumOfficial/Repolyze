@@ -233,7 +233,6 @@ export function ScoreCard({ scores }: ScoreCardProps) {
 function FooterStat({
   label,
   count,
-  total,
 }: {
   label: string;
   count: number;

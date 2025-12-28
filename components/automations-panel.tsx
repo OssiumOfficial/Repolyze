@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Automation } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface AutomationsPanelProps {
   automations: Automation[];
@@ -100,20 +101,33 @@ function AutomationItem({
           className="w-full p-3 sm:p-4 text-left hover:bg-accent/30 transition-colors"
         >
           <div className="flex items-start gap-3">
-            <div className={cn("p-2 rounded-lg shrink-0 border hidden sm:flex", config.color)}>
+            <div
+              className={cn(
+                "p-2 rounded-lg shrink-0 border hidden sm:flex",
+                config.color
+              )}
+            >
               <Icon className="w-4 h-4" />
             </div>
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap mb-1">
-                 {/* Mobile Icon (visible only on small screens) */}
-                <div className={cn("p-1.5 rounded-md shrink-0 border sm:hidden", config.color)}>
-                   <Icon className="w-3 h-3" />
+                {/* Mobile Icon (visible only on small screens) */}
+                <div
+                  className={cn(
+                    "p-1.5 rounded-md shrink-0 border sm:hidden",
+                    config.color
+                  )}
+                >
+                  <Icon className="w-3 h-3" />
                 </div>
 
                 <Badge
                   variant="outline"
-                  className={cn("text-[10px] h-5 px-1.5 font-normal", config.color)}
+                  className={cn(
+                    "text-[10px] h-5 px-1.5 font-normal",
+                    config.color
+                  )}
                 >
                   {config.label}
                 </Badge>
@@ -138,12 +152,18 @@ function AutomationItem({
               {automation.labels && automation.labels.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-2.5">
                   {automation.labels.slice(0, 3).map((label) => (
-                    <Badge key={label} variant="secondary" className="text-[10px] h-5 px-1.5 font-normal bg-muted">
+                    <Badge
+                      key={label}
+                      variant="secondary"
+                      className="text-[10px] h-5 px-1.5 font-normal bg-muted"
+                    >
                       {label}
                     </Badge>
                   ))}
                   {automation.labels.length > 3 && (
-                     <span className="text-[10px] text-muted-foreground self-center">+{automation.labels.length - 3}</span>
+                    <span className="text-[10px] text-muted-foreground self-center">
+                      +{automation.labels.length - 3}
+                    </span>
                   )}
                 </div>
               )}
@@ -181,13 +201,13 @@ function AutomationItem({
                       title="Copy to clipboard"
                     >
                       {copied ? (
-                        <Check className="w-3.5 h-3.5 text-green-500" />
+                        <Check className="w-3.5 h-3.5 text-primary" />
                       ) : (
                         <Copy className="w-3.5 h-3.5 text-muted-foreground" />
                       )}
                     </Button>
                   </div>
-                  <ScrollArea className="max-h-60 w-full">
+                  <ScrollArea className="max-h-100 w-full">
                     <div className="p-3 rounded-lg bg-muted/50 border">
                       <pre className="text-xs font-mono whitespace-pre-wrap break-all">
                         {automation.body || "No content available"}
@@ -203,19 +223,32 @@ function AutomationItem({
                     className="text-xs h-8 w-full sm:w-auto"
                     onClick={handleCopy}
                   >
-                    <Copy className="w-3.5 h-3.5 mr-1.5" />
-                    Copy Content
+                    {copied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 mr-1.5 text-primary" />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 mr-1.5" />
+                        Copy Content
+                      </>
+                    )}
                   </Button>
                   {githubUrl && (
-                    <Button size="sm" className="text-xs h-8 w-full sm:w-auto" asChild>
-                      <a
+                    <Button
+                      size="sm"
+                      className="text-xs h-8 w-full sm:w-auto"
+                      asChild
+                    >
+                      <Link
                         href={githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
                         Open in GitHub
-                      </a>
+                      </Link>
                     </Button>
                   )}
                 </div>
@@ -277,7 +310,7 @@ export function AutomationsPanel({
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent className="flex-1 min-h-0 p-0 sm:p-0">
         <ScrollArea className="px-4 sm:px-6 pb-4">
           <div className="space-y-3 pt-1">

@@ -26,12 +26,9 @@ import {
   FolderLinksIcon,
   SourceCodeIcon,
   LicenseIcon,
-  RecordIcon,
   Copy01Icon,
-  CheckmarkCircle01Icon,
   GitBranchIcon,
   Clock01Icon,
-  Share01Icon,
   UserMultiple02Icon,
   ComputerTerminal01Icon,
   Folder01Icon,
@@ -42,7 +39,6 @@ import {
   LaptopIssueIcon,
   Tick01Icon,
   SentIcon,
-  Github01Icon,
 } from "@hugeicons/core-free-icons";
 
 export function AnalysisHeader({
@@ -62,13 +58,11 @@ export function AnalysisHeader({
     setTimeout(() => setCopied(false), 2000);
   }, [metadata.fullName]);
 
-  // Create share result
   const shareResult: Partial<AnalysisResult> = useMemo(() => {
     if (result) return result;
     return { metadata, techStack, summary };
   }, [result, metadata, techStack, summary]);
 
-  // Generate extended analysis from available data
   const extendedAnalysis = useMemo(() => {
     return generateExtendedAnalysis(metadata, techStack, result);
   }, [metadata, techStack, result]);
@@ -277,7 +271,7 @@ export function AnalysisHeader({
                 <div className="min-w-0">
                   <div
                     className={cn(
-                      "text-sm sm:text-base font-semibold tabular-nums",
+                      "text-sm sm:text-base tabular-nums",
                       highlight ? "text-primary" : "text-foreground"
                     )}
                   >

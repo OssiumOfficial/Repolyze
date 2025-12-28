@@ -23,7 +23,7 @@ export const TIER_STYLES: Record<ScoreTier, TierStyle> = {
     gradient: "from-amber-500 to-orange-400",
   },
   poor: {
-    text: "text-rose-400",
+    text: "text-rose-300",
     bg: "bg-rose-500/10",
     bgSolid: "bg-rose-500",
     border: "border-rose-500/20",

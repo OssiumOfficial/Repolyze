@@ -1,8 +1,29 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useAnalysisContext } from "@/context/analysis-context";
-import { RepoMetadata, FileNode } from "@/lib/types";
+import { RepoMetadata, FileNode, AnalysisResult } from "@/lib/types";
+import { analysisStorage } from "@/lib/storage";
+
+// Helper to extract repo full name from URL
+function extractRepoFullName(url: string): string | null {
+  try {
+    // Handle full GitHub URLs
+    const githubRegex =
+      /(?:https?:\/\/)?(?:www\.)?github\.com\/([^\/]+\/[^\/\s?#]+)/;
+    const match = url.match(githubRegex);
+    if (match) return match[1].replace(/\.git$/, "");
+
+    // Handle owner/repo format
+    const simpleRegex = /^([^\/\s]+\/[^\/\s]+)$/;
+    const simpleMatch = url.trim().match(simpleRegex);
+    if (simpleMatch) return simpleMatch[1];
+
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 export function useAnalysis() {
   const {
@@ -11,15 +32,50 @@ export function useAnalysis() {
     setStatus,
     setResult,
     updateResult,
-    reset,
+    reset: contextReset,
     isLoading,
     isComplete,
     hasError,
     isIdle,
   } = useAnalysisContext();
 
+  const [isCached, setIsCached] = useState(false);
+  const [currentRepoUrl, setCurrentRepoUrl] = useState<string | null>(null);
+
   const analyze = useCallback(
-    async (url: string) => {
+    async (url: string, skipCache = false) => {
+      const repoFullName = extractRepoFullName(url);
+
+      if (!repoFullName) {
+        setStatus({
+          stage: "error",
+          progress: 0,
+          currentStep: "",
+          error:
+            "Invalid GitHub repository URL. Please use format: owner/repo or https://github.com/owner/repo",
+        });
+        return;
+      }
+
+      setCurrentRepoUrl(url);
+
+      // Check cache first (unless skipCache is true)
+      if (!skipCache) {
+        const cached = analysisStorage.get(repoFullName);
+        if (cached) {
+          setResult(cached);
+          setIsCached(true);
+          setStatus({
+            stage: "complete",
+            progress: 100,
+            currentStep: "Loaded from cache",
+          });
+          return;
+        }
+      }
+
+      // Fresh analysis
+      setIsCached(false);
       setStatus({
         stage: "fetching",
         progress: 5,
@@ -45,6 +101,7 @@ export function useAnalysis() {
         const decoder = new TextDecoder();
         let buffer = "";
         let aiContent = "";
+        let currentResult: Partial<AnalysisResult> = {};
 
         setStatus({
           stage: "fetching",
@@ -77,7 +134,8 @@ export function useAnalysis() {
                   };
                 };
 
-                updateResult({ metadata, fileTree, fileStats });
+                currentResult = { metadata, fileTree, fileStats };
+                updateResult(currentResult);
                 setStatus({
                   stage: "analyzing",
                   progress: 40,
@@ -101,9 +159,12 @@ export function useAnalysis() {
                   const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
                   if (jsonMatch) {
                     const analysisData = JSON.parse(jsonMatch[0]);
-                    updateResult({
+                    const finalResult: Partial<AnalysisResult> = {
+                      ...currentResult,
                       ...analysisData,
+                      summary: analysisData.summary || "",
                       insights: analysisData.insights || [],
+                      scores: analysisData.scores,
                       refactors: analysisData.refactors || [],
                       automations: analysisData.automations || [],
                       architecture: analysisData.architecture || [],
@@ -116,18 +177,38 @@ export function useAnalysis() {
                       targetAudience: analysisData.targetAudience || "",
                       howToRun: analysisData.howToRun || [],
                       keyFolders: analysisData.keyFolders || [],
-                    });
+                    };
+
+                    updateResult(finalResult);
+
+                    // Save to cache
+                    if (currentResult.metadata?.fullName) {
+                      analysisStorage.set(
+                        currentResult.metadata.fullName,
+                        finalResult as AnalysisResult
+                      );
+                    }
                   }
                 } catch (parseError) {
                   console.error("Parse error:", parseError);
-                  updateResult({
+                  const fallbackResult: Partial<AnalysisResult> = {
+                    ...currentResult,
                     summary: "Analysis completed with parsing issues.",
                     insights: [],
                     refactors: [],
                     automations: [],
                     architecture: [],
                     dataFlow: { nodes: [], edges: [] },
-                  });
+                  };
+                  updateResult(fallbackResult);
+
+                  // Still save to cache even with parsing issues
+                  if (currentResult.metadata?.fullName) {
+                    analysisStorage.set(
+                      currentResult.metadata.fullName,
+                      fallbackResult as AnalysisResult
+                    );
+                  }
                 }
 
                 setStatus({
@@ -153,14 +234,49 @@ export function useAnalysis() {
     [setStatus, setResult, updateResult]
   );
 
+  // Refresh: clear cache and re-analyze
+  const refresh = useCallback(async () => {
+    if (!currentRepoUrl) return;
+
+    const repoFullName = extractRepoFullName(currentRepoUrl);
+    if (repoFullName) {
+      analysisStorage.remove(repoFullName);
+    }
+
+    setIsCached(false);
+    await analyze(currentRepoUrl, true); // skipCache = true
+  }, [currentRepoUrl, analyze]);
+
+  // Reset everything
+  const reset = useCallback(() => {
+    contextReset();
+    setIsCached(false);
+    setCurrentRepoUrl(null);
+  }, [contextReset]);
+
+  // Clear cache for current repo
+  const clearCache = useCallback(() => {
+    if (!currentRepoUrl) return;
+
+    const repoFullName = extractRepoFullName(currentRepoUrl);
+    if (repoFullName) {
+      analysisStorage.remove(repoFullName);
+      setIsCached(false);
+    }
+  }, [currentRepoUrl]);
+
   return {
     analyze,
+    refresh,
+    reset,
+    clearCache,
     status,
     result,
-    reset,
     isLoading,
     isComplete,
     hasError,
     isIdle,
+    isCached,
+    currentRepoUrl,
   };
 }

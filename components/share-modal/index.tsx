@@ -18,7 +18,7 @@ import { DesktopDialog } from "./desktop-dialog";
 
 export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
   const isMobile = useIsMobile();
-  const [variant, setVariant] = useState<CardVariant>("default");
+  const [variant, setVariant] = useState<CardVariant>("detailed");
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);

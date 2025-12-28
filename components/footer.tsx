@@ -5,11 +5,6 @@ import { buttonVariants } from "./ui/button";
 import RepoGistLogo from "./icons/repogist-logo";
 
 export function Footer() {
-  const links = [
-    { label: "Documentation", href: "/docs" },
-    { label: "About", href: "/about" },
-    { label: "Changelog", href: "/changelog" },
-  ];
 
   return (
     <footer className="relative z-10 bg-background w-full overflow-hidden">
