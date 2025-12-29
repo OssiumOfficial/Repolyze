@@ -34,7 +34,6 @@ const instrumentSerif = Instrument_Serif({
   weight: ["400"],
 });
 
-// Base URL for the site
 const siteUrl = "https://repo-gist.vercel.app";
 
 export const viewport: Viewport = {
