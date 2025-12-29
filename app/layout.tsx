@@ -127,7 +127,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "RepoGist",
-    title: "RepoGist - AI-Powered GitHub Repository Analysis",
+    title: "RepoGist - Analyze any public GitHub repository with AI",
     description:
       "Analyze any GitHub repository with AI. Get instant insights on code quality, architecture, dependencies, and security vulnerabilities.",
     images: [
@@ -135,7 +135,7 @@ export const metadata: Metadata = {
         url: `${siteUrl}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "RepoGist - AI-Powered GitHub Repository Analysis",
+        alt: "RepoGist - Analyze any public GitHub repository with AI",
         type: "image/png",
       },
     ],
@@ -146,12 +146,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@imsethidev",
     creator: "@imsethidev",
-    title: "RepoGist - AI-Powered GitHub Repository Analysis",
+    title: "RepoGist - Analyze any public GitHub repository with AI",
     description:
       "Analyze any GitHub repository with AI. Get instant insights on code quality, architecture, and security.",
     images: {
       url: `${siteUrl}/og-image.png`,
-      alt: "RepoGist - AI-Powered GitHub Repository Analysis",
+      alt: "RepoGist - Analyze any public GitHub repository with AI",
     },
   },
 
