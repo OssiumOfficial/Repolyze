@@ -223,7 +223,6 @@ CACHE_TTL=3600
     <td><b>AI</b></td>
     <td>
       <img src="https://img.shields.io/badge/OpenRouter-000000?style=flat-square" />
-      <img src="https://img.shields.io/badge/Google_Gemini-4285F4?style=flat-square&logo=google&logoColor=white" />
     </td>
   </tr>
   <tr>
