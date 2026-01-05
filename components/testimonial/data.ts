@@ -29,7 +29,7 @@ export const tweets: Tweet[] = [
       "Looks great, man. A little feedback: instead of requiring the user to enter the full URL, you could also allow the <owner>/<repo> format.",
     user: {
       name: "Mohak Bajaj",
-      username: "davidpark_dev",
+      username: "MohakBajaj5",
       avatar:
         "https://pbs.twimg.com/profile_images/1966549931814252544/4NJs8EI6_400x400.jpg",
       isVerified: true,
