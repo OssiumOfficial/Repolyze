@@ -261,7 +261,7 @@ export async function generatePDFReport(result: AnalysisResult): Promise<Blob> {
     yPosition += 4;
 
     setColor(colors.caramel, "fill");
-    doc.rect(margin, yPosition - 1.5, 1, 5, "F");
+    doc.rect(margin, yPosition - 1.5, 0.4, 5, "F");
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
@@ -419,15 +419,8 @@ export async function generatePDFReport(result: AnalysisResult): Promise<Blob> {
 
     // Header
     setColor(headerBg, "fill");
-    doc.roundedRect(
-      margin,
-      yPosition,
-      contentWidth,
-      headerHeight,
-      1.5,
-      1.5,
-      "F"
-    );
+    setColor(headerBg, "fill");
+    doc.rect(margin, yPosition, contentWidth, headerHeight, "F");
 
     doc.setFontSize(6);
     doc.setFont("helvetica", "bold");
@@ -464,15 +457,8 @@ export async function generatePDFReport(result: AnalysisResult): Promise<Blob> {
       if (addNewPageIfNeeded(actualRowHeight + 2)) {
         // Redraw header on new page
         setColor(headerBg, "fill");
-        doc.roundedRect(
-          margin,
-          yPosition,
-          contentWidth,
-          headerHeight,
-          1.5,
-          1.5,
-          "F"
-        );
+        doc.rect(margin, yPosition, contentWidth, headerHeight, "F");
+
         doc.setFontSize(6);
         doc.setFont("helvetica", "bold");
         setColor(colors.white);
@@ -582,43 +568,125 @@ export async function generatePDFReport(result: AnalysisResult): Promise<Blob> {
     });
   };
 
-  const drawInsightsTable = () => {
+  const drawInsightsCards = () => {
     if (!result.insights || result.insights.length === 0) return;
 
-    addNewPageIfNeeded(25);
+    addNewPageIfNeeded(30);
     drawSectionTitle("Key Insights");
 
-    const headers = [
-      { label: "Type", width: 18 },
-      { label: "Finding", width: contentWidth - 40 },
-      { label: "Priority", width: 22, align: "center" as const },
-    ];
+    const insights = result.insights.slice(0, 6);
+    const cardPadding = 4;
+    const cardGap = 3;
+    const iconSize = 6;
 
-    const rows = result.insights.slice(0, 6).map((insight) => {
-      const typeLabel =
-        insight.type === "strength"
-          ? "✓ Good"
-          : insight.type === "warning"
-          ? "⚠ Warning"
-          : "✗ Issue";
-      const priorityColor =
-        insight.priority === "high"
-          ? colors.danger
-          : insight.priority === "medium"
-          ? colors.warning
-          : colors.sage;
+    insights.forEach((insight, index) => {
+      // Determine colors and icon based on type
+      let accentColor: RGB;
+      let bgColor: RGB;
+      let iconText: string;
 
-      return {
-        cells: [typeLabel, insight.title, insight.priority.toUpperCase()],
-        color: priorityColor,
-      };
+      if (insight.type === "strength") {
+        accentColor = colors.success;
+        bgColor = { r: 240, g: 247, b: 240 };
+        iconText = "✓";
+      } else if (insight.type === "warning") {
+        accentColor = colors.warning;
+        bgColor = { r: 252, g: 248, b: 238 };
+        iconText = "!";
+      } else {
+        accentColor = colors.danger;
+        bgColor = { r: 252, g: 242, b: 240 };
+        iconText = "✗";
+      }
+
+      // Priority badge colors
+      let priorityColor: RGB;
+      let priorityBgColor: RGB;
+      if (insight.priority === "high") {
+        priorityColor = colors.white;
+        priorityBgColor = colors.danger;
+      } else if (insight.priority === "medium") {
+        priorityColor = colors.darkRoast;
+        priorityBgColor = colors.gold;
+      } else {
+        priorityColor = colors.white;
+        priorityBgColor = colors.sage;
+      }
+
+      // Calculate card height based on content
+      doc.setFontSize(7);
+      const titleLines = wrapText(insight.title, contentWidth - 45, 7);
+      const descLines = insight.description
+        ? wrapText(insight.description, contentWidth - 12, 6.5).slice(0, 2)
+        : [];
+
+      const titleHeight = titleLines.length * 3.5;
+      const descHeight = descLines.length > 0 ? descLines.length * 3 + 2 : 0;
+      const cardHeight = Math.max(
+        cardPadding * 2 + titleHeight + descHeight,
+        16
+      );
+
+      // Check for new page
+      if (addNewPageIfNeeded(cardHeight + 5)) {
+        if (index > 0) {
+          drawSectionTitle("Key Insights (continued)");
+        }
+      }
+
+      // Card background with rounded corners
+      setColor(bgColor, "fill");
+      doc.roundedRect(margin, yPosition, contentWidth, cardHeight, 2, 2, "F");
+
+      // Left accent bar
+      setColor(accentColor, "fill");
+      doc.rect(margin, yPosition, 1.5, cardHeight, "F");
+
+      // Title
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "bold");
+      setColor(colors.darkRoast);
+
+      const titleX = margin + 6;
+      const titleY = yPosition + cardPadding + 3;
+
+      titleLines.forEach((line: string, lineIndex: number) => {
+        doc.text(line, titleX, titleY + lineIndex * 3.5);
+      });
+
+      // Priority badge (top right)
+      const badgeText = insight.priority.toUpperCase();
+      doc.setFontSize(5);
+      const badgeWidth = doc.getTextWidth(badgeText) + 4;
+      const badgeHeight = 4;
+      const badgeX = margin + contentWidth - badgeWidth - cardPadding;
+      const badgeY = yPosition + cardPadding;
+
+      setColor(priorityBgColor, "fill");
+      doc.roundedRect(badgeX, badgeY, badgeWidth, badgeHeight, 1, 1, "F");
+
+      doc.setFont("helvetica", "normal");
+      setColor(colors.white);
+      doc.text(badgeText, badgeX + badgeWidth / 2, badgeY + 2.8, {
+        align: "center",
+      });
+
+      // Description (if exists)
+      if (descLines.length > 0) {
+        doc.setFontSize(6.5);
+        doc.setFont("helvetica", "normal");
+        setColor(colors.slate);
+
+        const descY = titleY + titleHeight + 1;
+        descLines.forEach((line: string, lineIndex: number) => {
+          doc.text(line, titleX, descY + lineIndex * 3);
+        });
+      }
+
+      yPosition += cardHeight + cardGap;
     });
 
-    drawTable(headers, rows, {
-      headerBg: colors.arabica,
-      rowHeight: 7,
-      fontSize: 7,
-    });
+    yPosition += 2;
   };
 
   const drawRefactorsTable = () => {
@@ -733,7 +801,7 @@ export async function generatePDFReport(result: AnalysisResult): Promise<Blob> {
 
   // Tables for structured data
   drawStructureTable();
-  drawInsightsTable();
+  drawInsightsCards();
   drawRefactorsTable();
   drawAutomationsTable();
 
