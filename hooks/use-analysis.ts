@@ -1,3 +1,4 @@
+// hooks/use-analysis.ts
 "use client";
 
 import { useCallback, useState } from "react";
@@ -27,6 +28,23 @@ function extractRepoFullName(url: string): string | null {
   }
 }
 
+function getLoadingMessage(contentLength: number): string {
+  const messages = [
+    "Scanning repository structure...",
+    "Analyzing code patterns...",
+    "Evaluating architecture decisions...",
+    "Checking best practices...",
+    "Identifying improvement opportunities...",
+    "Generating insights...",
+    "Mapping data flow...",
+    "Building architecture diagram...",
+    "Preparing recommendations...",
+    "Almost there...",
+  ];
+  const index = Math.min(Math.floor(contentLength / 600), messages.length - 1);
+  return messages[index];
+}
+
 export function useAnalysis() {
   const {
     status,
@@ -44,7 +62,7 @@ export function useAnalysis() {
   const [isCached, setIsCached] = useState(false);
   const [currentRepoUrl, setCurrentRepoUrl] = useState<string | null>(null);
   const [currentBranch, setCurrentBranch] = useState<string | undefined>(
-    undefined
+    undefined,
   );
 
   const analyze = useCallback(
@@ -158,19 +176,66 @@ export function useAnalysis() {
                 updateResult(currentResult);
                 setStatus({
                   stage: "analyzing",
-                  progress: 40,
+                  progress: 20,
                   currentStep: `Analyzing ${analyzedBranch} branch...`,
+                });
+              } else if (data.type === "scores") {
+                // Immediately apply pre-computed scores
+                currentResult = {
+                  ...currentResult,
+                  scores: data.data,
+                };
+                updateResult(currentResult);
+                setStatus({
+                  stage: "analyzing",
+                  progress: 25,
+                  currentStep: "Quality scores calculated...",
+                });
+              } else if (data.type === "automations") {
+                // Immediately apply pre-computed automations
+                currentResult = {
+                  ...currentResult,
+                  automations: data.data,
+                };
+                updateResult(currentResult);
+                setStatus({
+                  stage: "analyzing",
+                  progress: 30,
+                  currentStep: "Automation suggestions ready...",
+                });
+              } else if (data.type === "refactors") {
+                // Immediately apply pre-computed refactors
+                currentResult = {
+                  ...currentResult,
+                  refactors: data.data,
+                };
+                updateResult(currentResult);
+                setStatus({
+                  stage: "analyzing",
+                  progress: 35,
+                  currentStep: "Refactoring opportunities identified...",
+                });
+              } else if (data.type === "pullRequests") {
+                currentResult = {
+                  ...currentResult,
+                  pullRequests: data.data,
+                };
+                updateResult(currentResult);
+                setStatus({
+                  stage: "analyzing",
+                  progress: 38,
+                  currentStep: "PR suggestions generated...",
                 });
               } else if (data.type === "content") {
                 aiContent += data.data;
                 const progress = Math.min(
-                  40 + (aiContent.length / 6000) * 50,
-                  90
+                  35 + (aiContent.length / 5000) * 55,
+                  90,
                 );
                 setStatus({
                   stage: "analyzing",
                   progress,
-                  currentStep: "AI is analyzing the codebase...",
+                  currentStep: getLoadingMessage(aiContent.length),
                 });
               } else if (data.type === "error") {
                 throw new Error(data.data);
@@ -179,25 +244,27 @@ export function useAnalysis() {
                   const jsonMatch = aiContent.match(/\{[\s\S]*\}/);
                   if (jsonMatch) {
                     const analysisData = JSON.parse(jsonMatch[0]);
+                    // Merge AI insights with pre-computed scores/automations/refactors
                     const finalResult: Partial<AnalysisResult> = {
                       ...currentResult,
-                      ...analysisData,
                       summary: analysisData.summary || "",
+                      whatItDoes: analysisData.whatItDoes || "",
+                      targetAudience: analysisData.targetAudience || "",
+                      techStack: analysisData.techStack || [],
+                      howToRun: analysisData.howToRun || [],
+                      keyFolders: analysisData.keyFolders || [],
                       insights: analysisData.insights || [],
-                      scores: analysisData.scores,
-                      refactors: analysisData.refactors || [],
-                      automations: analysisData.automations || [],
                       architecture: analysisData.architecture || [],
                       dataFlow: analysisData.dataFlow || {
                         nodes: [],
                         edges: [],
                       },
-                      techStack: analysisData.techStack || [],
-                      whatItDoes: analysisData.whatItDoes || "",
-                      targetAudience: analysisData.targetAudience || "",
-                      howToRun: analysisData.howToRun || [],
-                      keyFolders: analysisData.keyFolders || [],
                       diagrams: analysisData.diagrams || undefined,
+                      // Keep pre-computed values (don't override from AI)
+                      scores: currentResult.scores,
+                      automations: currentResult.automations,
+                      refactors: currentResult.refactors,
+                      pullRequests: currentResult.pullRequests,
                     };
 
                     updateResult(finalResult);
@@ -207,7 +274,7 @@ export function useAnalysis() {
                       analysisStorage.set(
                         currentResult.metadata.fullName,
                         finalResult as AnalysisResult,
-                        currentResult.branch
+                        currentResult.branch,
                       );
                     }
                   }
@@ -217,10 +284,12 @@ export function useAnalysis() {
                     ...currentResult,
                     summary: "Analysis completed with parsing issues.",
                     insights: [],
-                    refactors: [],
-                    automations: [],
                     architecture: [],
                     dataFlow: { nodes: [], edges: [] },
+                    // Keep pre-computed values
+                    scores: currentResult.scores,
+                    automations: currentResult.automations,
+                    refactors: currentResult.refactors,
                   };
                   updateResult(fallbackResult);
 
@@ -229,7 +298,7 @@ export function useAnalysis() {
                     analysisStorage.set(
                       currentResult.metadata.fullName,
                       fallbackResult as AnalysisResult,
-                      currentResult.branch
+                      currentResult.branch,
                     );
                   }
                 }
@@ -254,18 +323,16 @@ export function useAnalysis() {
         });
       }
     },
-    [setStatus, setResult, updateResult]
+    [setStatus, setResult, updateResult],
   );
 
   // Analyze a different branch of the current repo
   const analyzeBranch = useCallback(
     async (branch: string) => {
       if (!currentRepoUrl) return;
-
-      // Always skip cache when explicitly changing branches
       await analyze(currentRepoUrl, branch, true);
     },
-    [currentRepoUrl, analyze]
+    [currentRepoUrl, analyze],
   );
 
   // Refresh: clear cache and re-analyze current branch
@@ -306,7 +373,6 @@ export function useAnalysis() {
 
     const repoFullName = extractRepoFullName(currentRepoUrl);
     if (repoFullName) {
-      // Get all cached analyses for this repo and remove them
       const allCached = analysisStorage.getForRepo(repoFullName);
       for (const cached of allCached) {
         analysisStorage.remove(repoFullName, cached.branch);

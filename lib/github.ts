@@ -1,3 +1,4 @@
+// lib/github.ts
 import { FileNode, FileStats, RepoMetadata, BranchInfo } from "./types";
 import { getLanguageFromExtension, getFileExtension } from "./utils";
 import { MAX_TREE_ITEMS, MAX_FILE_TREE_DEPTH } from "./constants";
@@ -41,7 +42,7 @@ function getHeaders(): HeadersInit {
 export async function fetchRepoBranches(
   owner: string,
   repo: string,
-  defaultBranch?: string
+  defaultBranch?: string,
 ): Promise<BranchInfo[]> {
   const branches: BranchInfo[] = [];
   let page = 1;
@@ -52,7 +53,7 @@ export async function fetchRepoBranches(
     while (branches.length < maxBranches) {
       const response = await fetch(
         `${GITHUB_API_BASE}/repos/${owner}/${repo}/branches?per_page=${perPage}&page=${page}`,
-        { headers: getHeaders(), cache: "no-store" }
+        { headers: getHeaders(), cache: "no-store" },
       );
 
       if (!response.ok) {
@@ -75,7 +76,7 @@ export async function fetchRepoBranches(
           },
           protected: branch.protected,
           isDefault: branch.name === defaultBranch,
-        }))
+        })),
       );
 
       if (data.length < perPage) break;
@@ -99,7 +100,7 @@ export async function fetchRepoBranches(
 
 export async function fetchRepoMetadata(
   owner: string,
-  repo: string
+  repo: string,
 ): Promise<RepoMetadata> {
   const response = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
     headers: getHeaders(),
@@ -114,7 +115,7 @@ export async function fetchRepoMetadata(
       const remaining = response.headers.get("x-ratelimit-remaining");
       if (remaining === "0") {
         throw new Error(
-          "GitHub API rate limit exceeded. Please add a GITHUB_TOKEN or try later."
+          "GitHub API rate limit exceeded. Please add a GITHUB_TOKEN or try later.",
         );
       }
       throw new Error("Access forbidden. The repository may be private.");
@@ -182,7 +183,7 @@ function shouldExclude(path: string): boolean {
 export async function fetchRepoTree(
   owner: string,
   repo: string,
-  branch?: string
+  branch?: string,
 ): Promise<FileNode[]> {
   // Try the specified branch, then default to main, then master
   const branchesToTry = branch ? [branch] : ["main", "master"];
@@ -193,7 +194,7 @@ export async function fetchRepoTree(
     try {
       const response = await fetch(
         `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${targetBranch}?recursive=1`,
-        { headers: getHeaders(), cache: "no-store" }
+        { headers: getHeaders(), cache: "no-store" },
       );
 
       if (response.ok) {
@@ -214,7 +215,7 @@ export async function fetchRepoTree(
       }
 
       throw new Error(
-        `Failed to fetch repository tree: ${response.statusText}`
+        `Failed to fetch repository tree: ${response.statusText}`,
       );
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
@@ -278,49 +279,90 @@ function sortFileTree(nodes: FileNode[]): FileNode[] {
 export async function fetchImportantFiles(
   owner: string,
   repo: string,
-  branch?: string
+  branch?: string,
 ): Promise<Record<string, string>> {
   const targetBranch = branch || "main";
 
-  const importantFiles = [
+  // Expanded list for better analysis
+  const configFiles = [
     "package.json",
     "README.md",
+    "readme.md",
     "tsconfig.json",
     "next.config.js",
     "next.config.ts",
     "next.config.mjs",
     "vite.config.ts",
+    "vite.config.js",
     "tailwind.config.js",
     "tailwind.config.ts",
+    "eslint.config.js",
+    ".eslintrc.js",
+    ".eslintrc.json",
+    "biome.json",
+    ".prettierrc",
+    ".prettierrc.json",
     "prisma/schema.prisma",
     "docker-compose.yml",
+    "docker-compose.yaml",
     "Dockerfile",
     "requirements.txt",
     "pyproject.toml",
+    "setup.py",
     "Cargo.toml",
     "go.mod",
     "pom.xml",
+    "build.gradle",
+    ".env.example",
+    ".github/workflows/ci.yml",
+    ".github/workflows/main.yml",
+    ".github/dependabot.yml",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "LICENSE",
   ];
 
+  // Also try to fetch some source files for better analysis
+  const sourcePatterns = [
+    "src/index.ts",
+    "src/index.js",
+    "src/main.ts",
+    "src/main.js",
+    "src/app.ts",
+    "src/app.js",
+    "app/page.tsx",
+    "app/layout.tsx",
+    "pages/index.tsx",
+    "pages/_app.tsx",
+    "lib/utils.ts",
+    "utils/index.ts",
+    "src/lib/utils.ts",
+    "main.py",
+    "app.py",
+    "main.go",
+    "src/main.rs",
+  ];
+
+  const allFiles = [...configFiles, ...sourcePatterns];
   const contents: Record<string, string> = {};
   let totalSize = 0;
-  const maxSize = 80000;
+  const maxSize = 100000; // 100KB total
+  const maxFileSize = 8000; // 8KB per file
 
-  // Fetch files in parallel with concurrency limit
   const fetchFile = async (
-    file: string
+    file: string,
   ): Promise<{ file: string; content: string } | null> => {
     try {
       const response = await fetch(
         `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${file}?ref=${targetBranch}`,
-        { headers: getHeaders(), cache: "no-store" }
+        { headers: getHeaders(), cache: "no-store" },
       );
 
       if (response.ok) {
         const data = await response.json();
         if (data.size <= 50000 && data.encoding === "base64") {
           const content = Buffer.from(data.content, "base64").toString("utf-8");
-          return { file, content: content.slice(0, 6000) };
+          return { file, content: content.slice(0, maxFileSize) };
         }
       }
     } catch {
@@ -329,18 +371,14 @@ export async function fetchImportantFiles(
     return null;
   };
 
-  // Fetch in batches of 5 to avoid rate limiting
-  const batchSize = 5;
-  for (
-    let i = 0;
-    i < importantFiles.length && totalSize < maxSize;
-    i += batchSize
-  ) {
-    const batch = importantFiles.slice(i, i + batchSize);
+  // Fetch in parallel batches
+  const batchSize = 8;
+  for (let i = 0; i < allFiles.length && totalSize < maxSize; i += batchSize) {
+    const batch = allFiles.slice(i, i + batchSize);
     const results = await Promise.all(batch.map(fetchFile));
 
     for (const result of results) {
-      if (result && totalSize < maxSize) {
+      if (result && totalSize + result.content.length < maxSize) {
         contents[result.file] = result.content;
         totalSize += result.content.length;
       }
@@ -375,7 +413,7 @@ export function calculateFileStats(tree: FileNode[]): FileStats {
 
 export function createCompactTreeString(
   tree: FileNode[],
-  maxLines: number = 60
+  maxLines: number = 60,
 ): string {
   const lines: string[] = [];
 

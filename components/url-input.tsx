@@ -97,7 +97,7 @@ export function UrlInput({ onAnalyze, isLoading }: UrlInputProps) {
             className={cn(
               "rounded-lg h-10 text-sm font-medium shrink-0 w-full sm:w-auto",
               "disabled:opacity-40 disabled:cursor-not-allowed",
-              "transition-all duration-200"
+              "transition-all duration-200 cursor-pointer"
             )}
           >
             {isLoading ? (

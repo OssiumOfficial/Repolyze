@@ -114,7 +114,7 @@ const optimizeSvg = (svgString: string): string => {
 // Convert SVG to high-quality PNG
 const downloadAsPng = async (
   svgString: string,
-  isDark: boolean
+  isDark: boolean,
 ): Promise<void> => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(svgString, "image/svg+xml");
@@ -178,7 +178,7 @@ const downloadAsPng = async (
           resolve();
         },
         "image/png",
-        1.0
+        1.0,
       );
     };
     img.onerror = () => reject(new Error("Image load failed"));
@@ -217,7 +217,7 @@ export function DataFlowDiagram({
   }, [nodes]);
 
   const activeTypes = nodeOrder.filter(
-    (type) => groupedNodes[type]?.length > 0
+    (type) => groupedNodes[type]?.length > 0,
   );
 
   const diagram = useMemo(() => {
@@ -364,14 +364,14 @@ export function DataFlowDiagram({
     <div
       className={cn(
         "rounded-lg border border-border/50 overflow-hidden",
-        isDark ? "bg-zinc-950" : "bg-white"
+        isDark ? "bg-zinc-950" : "bg-white",
       )}
     >
       {mermaidSvg ? (
         <div
           className={cn(
             "w-full flex items-center justify-center p-4",
-            isFullscreen ? "min-h-[40vh]" : "min-h-75 max-h-125"
+            isFullscreen ? "min-h-[40vh]" : "min-h-75 max-h-125",
           )}
           dangerouslySetInnerHTML={{ __html: mermaidSvg }}
         />
@@ -388,7 +388,7 @@ export function DataFlowDiagram({
 
   return (
     <>
-      <Card className="border-border/60">
+      <Card className="border-border/60 bg-background">
         <CardHeader className="p-4 border-b border-border/50">
           <div className="flex lg:items-center lg:flex-row flex-col items-start gap-2 justify-between">
             <CardTitle className="flex items-center gap-2 text-sm font-medium">
@@ -454,7 +454,7 @@ export function DataFlowDiagram({
                             <h4 className="text-sm font-medium truncate">
                               {node.name}
                             </h4>
-                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                            <p className="text-xs text-muted-foreground mt-0.5">
                               {node.description}
                             </p>
                           </div>
@@ -543,7 +543,7 @@ export function DataFlowDiagram({
           <div
             className={cn(
               "p-6 overflow-auto",
-              isDark ? "bg-zinc-950" : "bg-white"
+              isDark ? "bg-zinc-950" : "bg-white",
             )}
           >
             <MermaidView isFullscreen />

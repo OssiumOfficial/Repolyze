@@ -157,6 +157,24 @@ export interface AnalysisResult {
     edges: DataFlowEdge[];
   };
   diagrams?: DiagramsData;
+  pullRequests?: Array<{
+    id: string;
+    title: string;
+    description: string;
+    body: string;
+    branch: string;
+    baseBranch: string;
+    labels: string[];
+    priority: "low" | "medium" | "high";
+    category: string;
+    estimatedEffort: string;
+    files: Array<{
+      path: string;
+      action: "create" | "modify" | "delete";
+      content?: string;
+      description: string;
+    }>;
+  }>;
 }
 
 export type AnalysisStage =

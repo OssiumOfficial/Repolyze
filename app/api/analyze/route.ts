@@ -1,3 +1,4 @@
+// api/analyze/route.ts
 import { streamText } from "ai";
 import {
   fetchRepoMetadata,
@@ -18,147 +19,114 @@ import { checkRateLimit, getClientIP } from "./rate-limit";
 import { parseRequestBody, validateAndParseUrl } from "./validators";
 import { buildPrompt, prepareFilesContent } from "./prompt-builder";
 import { createAnalysisStream, getStreamHeaders } from "./stream-handler";
+import { analyzeCodeMetrics, calculateScores } from "./code-analyzer";
+import { generateAutomations } from "./automation-generator";
+import { generateRefactors } from "./refactor-generator";
+import { generatePRSuggestions } from "./pr-generator";
 import { HealthCheckResponse, ErrorResponse } from "./types";
 
 export async function POST(request: Request) {
   if (!isConfigured()) {
     return Response.json(
-      {
-        error: "Server is not properly configured. Please contact support.",
-      } satisfies ErrorResponse,
-      { status: 503 }
+      { error: "Server is not properly configured." } satisfies ErrorResponse,
+      { status: 503 },
     );
   }
 
   const clientIP = getClientIP(request);
-
   const rateLimit = checkRateLimit(clientIP);
+
   if (!rateLimit.allowed) {
     return Response.json(
       {
         error: "Too many requests. Please try again later.",
       } satisfies ErrorResponse,
-      {
-        status: 429,
-        headers: {
-          "Retry-After": "60",
-          "X-RateLimit-Remaining": "0",
-        },
-      }
+      { status: 429, headers: { "Retry-After": "60" } },
     );
   }
 
   try {
-    let body: unknown;
-    try {
-      body = await request.json();
-    } catch {
+    const body = await request.json().catch(() => null);
+    if (!body) {
       return Response.json(
         { error: "Invalid JSON in request body" } satisfies ErrorResponse,
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    let parsedBody;
-    try {
-      parsedBody = parseRequestBody(body);
-    } catch (error) {
-      return Response.json(
-        {
-          error:
-            error instanceof Error ? error.message : "Invalid request body",
-        } satisfies ErrorResponse,
-        { status: 400 }
-      );
-    }
-
-    let owner: string, repo: string;
-    try {
-      const parsed = validateAndParseUrl(parsedBody.url);
-      owner = parsed.owner;
-      repo = parsed.repo;
-    } catch (error) {
-      return Response.json(
-        {
-          error: error instanceof Error ? error.message : "Invalid URL",
-        } satisfies ErrorResponse,
-        { status: 400 }
-      );
-    }
-
-    let openrouter;
-    try {
-      openrouter = getOpenRouterClient();
-    } catch (error) {
-      console.error("OpenRouter configuration error:", error);
-      return Response.json(
-        {
-          error: "AI service is not properly configured",
-        } satisfies ErrorResponse,
-        { status: 503 }
-      );
-    }
-
+    const parsedBody = parseRequestBody(body);
+    const { owner, repo } = validateAndParseUrl(parsedBody.url);
+    const openrouter = getOpenRouterClient();
     const model = openrouter.chat(MODEL_ID);
 
-    let metadata;
-    try {
-      metadata = await fetchRepoMetadata(owner, repo);
-    } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Failed to fetch repository";
-      console.error("GitHub metadata fetch error:", error);
-      return Response.json({ error: message } satisfies ErrorResponse, {
-        status: 400,
-      });
-    }
-
+    // Fetch all data in parallel
+    const metadata = await fetchRepoMetadata(owner, repo);
     const targetBranch = parsedBody.branch || metadata.defaultBranch;
 
-    let tree, importantFiles, branches;
-    try {
-      [tree, importantFiles, branches] = await Promise.all([
-        fetchRepoTree(owner, repo, targetBranch),
-        fetchImportantFiles(owner, repo, targetBranch),
-        fetchRepoBranches(owner, repo, metadata.defaultBranch),
-      ]);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch repository data";
-      console.error("GitHub fetch error:", error);
-      return Response.json({ error: message } satisfies ErrorResponse, {
-        status: 400,
-      });
-    }
+    const [tree, importantFiles, branches] = await Promise.all([
+      fetchRepoTree(owner, repo, targetBranch),
+      fetchImportantFiles(owner, repo, targetBranch),
+      fetchRepoBranches(owner, repo, metadata.defaultBranch),
+    ]);
+
+    // Compute metrics and scores BEFORE calling AI
+    const codeMetrics = analyzeCodeMetrics(tree, importantFiles);
+    const calculatedScores = calculateScores(codeMetrics);
+
+    // Generate automations based on actual metrics (not AI)
+    const generatedAutomations = generateAutomations(
+      codeMetrics,
+      metadata.name,
+      metadata.language,
+    );
+
+    // Generate refactors based on actual metrics (not AI)
+    const generatedRefactors = generateRefactors(
+      codeMetrics,
+      metadata.name,
+      metadata.language,
+    );
+
+    const generatedPRs = generatePRSuggestions(
+      codeMetrics,
+      metadata.name,
+      metadata.language,
+      metadata.defaultBranch,
+    );
 
     const fileStats = calculateFileStats(tree);
     const compactTree = createCompactTreeString(tree, 50);
     const filesContent = prepareFilesContent(importantFiles);
 
-    const prompt = buildPrompt({
-      metadata,
-      fileStats,
-      compactTree,
-      filesContent,
-      branch: targetBranch,
-    });
+    // Build prompt with metrics context
+    const prompt = buildPrompt(
+      { metadata, fileStats, compactTree, filesContent, branch: targetBranch },
+      codeMetrics,
+      calculatedScores,
+    );
 
     const result = await streamText({
       model,
       prompt,
-      temperature: AI_CONFIG.temperature,
+      temperature: 0.5,
       maxOutputTokens: AI_CONFIG.maxOutputTokens,
     });
 
+    // Pass pre-computed data to stream handler
     const stream = createAnalysisStream(
       metadata,
       tree,
       fileStats,
       targetBranch,
       branches,
-      result.textStream
+      result.textStream,
+      {
+        scores: calculatedScores,
+        automations: generatedAutomations,
+        refactors: generatedRefactors,
+        pullRequests: generatedPRs,
+        metrics: codeMetrics,
+      },
     );
 
     return new Response(stream, {
@@ -166,25 +134,20 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error("Analysis error:", error);
-    return Response.json(
-      {
-        error: "An unexpected error occurred. Please try again.",
-      } satisfies ErrorResponse,
-      { status: 500 }
-    );
+    const message = error instanceof Error ? error.message : "Analysis failed";
+    return Response.json({ error: message } satisfies ErrorResponse, {
+      status: 500,
+    });
   }
 }
 
 export async function GET() {
-  const configured = isConfigured();
-  const githubConfigured = hasGitHubToken();
-
   const response: HealthCheckResponse = {
-    status: configured ? "ok" : "misconfigured",
+    status: isConfigured() ? "ok" : "misconfigured",
     timestamp: new Date().toISOString(),
     services: {
-      openrouter: configured ? "configured" : "missing",
-      github: githubConfigured ? "configured" : "optional (rate-limited)",
+      openrouter: isConfigured() ? "configured" : "missing",
+      github: hasGitHubToken() ? "configured" : "optional",
     },
   };
 

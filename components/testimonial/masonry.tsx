@@ -10,19 +10,31 @@ import { gsap } from "gsap";
 const useMedia = (
   queries: string[],
   values: number[],
-  defaultValue: number
+  defaultValue: number,
 ): number => {
-  const get = () =>
-    values[queries.findIndex((q) => matchMedia(q).matches)] ?? defaultValue;
+  const get = () => {
+    // SSR guard
+    if (typeof window === "undefined") return defaultValue;
+
+    const index = queries.findIndex((q) => window.matchMedia(q).matches);
+
+    return values[index] ?? defaultValue;
+  };
 
   const [value, setValue] = useState<number>(get);
 
   useEffect(() => {
-    const handler = () => setValue(get);
-    queries.forEach((q) => matchMedia(q).addEventListener("change", handler));
+    if (typeof window === "undefined") return;
+
+    const handler = () => setValue(get());
+
+    const mediaQueryLists = queries.map((q) => window.matchMedia(q));
+
+    mediaQueryLists.forEach((mql) => mql.addEventListener("change", handler));
+
     return () =>
-      queries.forEach((q) =>
-        matchMedia(q).removeEventListener("change", handler)
+      mediaQueryLists.forEach((mql) =>
+        mql.removeEventListener("change", handler),
       );
   }, [queries]);
 
@@ -84,12 +96,12 @@ function Masonry<T extends MasonryItem>({
   const columns = useMedia(
     ["(min-width:1000px)", "(min-width:600px)", "(min-width:400px)"],
     [3, 2, 2],
-    1
+    1,
   );
 
   const [containerRef, { width }] = useMeasure<HTMLDivElement>();
   const [itemHeights, setItemHeights] = useState<Map<string, number>>(
-    new Map()
+    new Map(),
   );
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
@@ -187,7 +199,7 @@ function Masonry<T extends MasonryItem>({
             duration: 0.8,
             ease: "power3.out",
             delay: index * stagger,
-          }
+          },
         );
       } else {
         gsap.to(selector, {
@@ -253,4 +265,3 @@ function Masonry<T extends MasonryItem>({
 }
 
 export default Masonry;
-  

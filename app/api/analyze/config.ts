@@ -1,3 +1,4 @@
+// api/analyze/config.ts
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { EnvConfig } from "./types";
 

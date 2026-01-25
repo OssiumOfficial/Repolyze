@@ -23,8 +23,7 @@ export function TabTriggerItem({
       )}
     >
       <HugeiconsIcon icon={icon} className="w-4 h-4" />
-      <span className="hidden sm:inline">{label}</span>
-      <span className="sm:hidden">{label.slice(0, 3)}</span>
+      <span>{label}</span>
       {count !== undefined && count > 0 && (
         <span
           className={cn(
