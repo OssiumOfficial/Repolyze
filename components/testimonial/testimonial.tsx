@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Masonry from "./masonry";
 import TweetCard from "./tweet-card";
 import { tweets } from "./data";
@@ -59,11 +59,6 @@ const Testimonials = () => {
               <Masonry
                 items={tweets}
                 renderItem={(tweet) => <TweetCard tweet={tweet} />}
-                ease="power3.out"
-                duration={0.5}
-                stagger={0.04}
-                animateFrom="bottom"
-                blurToFocus={true}
                 gap={16}
               />
             </div>
