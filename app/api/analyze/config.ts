@@ -1,7 +1,7 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { EnvConfig } from "./types";
 
-export const MODEL_ID = "nvidia/nemotron-3-nano-30b-a3b:free";
+export const MODEL_ID = "arcee-ai/trinity-large-preview:free";
 
 export const AI_CONFIG = {
   temperature: 0.7,
