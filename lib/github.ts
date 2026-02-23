@@ -40,14 +40,11 @@ function getHeaders(): HeadersInit {
   return BASE_HEADERS;
 }
 
-async function fetchGitHub(
-  url: string,
-  init?: RequestInit,
-): Promise<Response> {
+async function fetchGitHub(url: string, init?: RequestInit): Promise<Response> {
   const response = await fetch(url, { ...init, headers: getHeaders() });
 
   if (response.status === 403 && process.env.GITHUB_TOKEN) {
-    return fetch(url, { ...init, headers: BASE_HEADERS });
+    return fetch(url, { headers: BASE_HEADERS, ...init });
   }
 
   return response;
@@ -66,26 +63,25 @@ export async function fetchRepoBranches(
 
   try {
     // Single request for most repos (< 100 branches)
-    const response = await fetch(
+    const safeResponse = await fetchGitHub(
       `${GITHUB_API_BASE}/repos/${owner}/${repo}/branches?per_page=${perPage}`,
-      { headers: getHeaders(), cache: "no-store" },
+      { cache: "no-store" },
     );
-
-    const safeResponse =
-      response.status === 403 && process.env.GITHUB_TOKEN
-        ? await fetch(
-            `${GITHUB_API_BASE}/repos/${owner}/${repo}/branches?per_page=${perPage}`,
-            { headers: BASE_HEADERS, cache: "no-store" },
-          )
-        : response;
 
     if (!safeResponse.ok) {
       if (safeResponse.status === 404) {
         throw new Error("Repository not found");
       }
-      throw new Error(
-        `Failed to fetch branches: ${safeResponse.statusText}`,
-      );
+      if (safeResponse.status === 403) {
+        const remaining = safeResponse.headers.get("x-ratelimit-remaining");
+        if (remaining === "0") {
+          throw new Error(
+            "GitHub API rate limit exceeded. Please add a GITHUB_TOKEN or try later.",
+          );
+        }
+        throw new Error("Access forbidden. The repository may be private.");
+      }
+      throw new Error(`Failed to fetch branches: ${safeResponse.statusText}`);
     }
 
     const data: GitHubBranchResponse[] = await safeResponse.json();
@@ -118,18 +114,10 @@ export async function fetchRepoMetadata(
   owner: string,
   repo: string,
 ): Promise<RepoMetadata> {
-  const response = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
-    headers: getHeaders(),
-    cache: "no-store",
-  });
-
-  const safeResponse =
-    response.status === 403 && process.env.GITHUB_TOKEN
-      ? await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
-          headers: BASE_HEADERS,
-          cache: "no-store",
-        })
-      : response;
+  const safeResponse = await fetchGitHub(
+    `${GITHUB_API_BASE}/repos/${owner}/${repo}`,
+    { cache: "no-store" },
+  );
 
   if (!safeResponse.ok) {
     if (safeResponse.status === 404) {
@@ -144,9 +132,7 @@ export async function fetchRepoMetadata(
       }
       throw new Error("Access forbidden. The repository may be private.");
     }
-    throw new Error(
-      `Failed to fetch repository: ${safeResponse.statusText}`,
-    );
+    throw new Error(`Failed to fetch repository: ${safeResponse.statusText}`);
   }
 
   const data = await safeResponse.json();
@@ -219,18 +205,10 @@ export async function fetchRepoTree(
   for (const targetBranch of branchesToTry) {
     try {
       const encodedBranch = encodeURIComponent(targetBranch);
-      const response = await fetch(
+      const safeResponse = await fetchGitHub(
         `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${encodedBranch}?recursive=1`,
-        { headers: getHeaders(), cache: "no-store" },
+        { cache: "no-store" },
       );
-
-      const safeResponse =
-        response.status === 403 && process.env.GITHUB_TOKEN
-          ? await fetch(
-              `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${encodedBranch}?recursive=1`,
-              { headers: BASE_HEADERS, cache: "no-store" },
-            )
-          : response;
 
       if (safeResponse.ok) {
         const data: GitHubTreeResponse = await safeResponse.json();
@@ -250,6 +228,19 @@ export async function fetchRepoTree(
 
       if (safeResponse.status === 404) {
         lastError = new Error(`Branch '${targetBranch}' not found`);
+        continue;
+      }
+
+      if (safeResponse.status === 403) {
+        const remaining = safeResponse.headers.get("x-ratelimit-remaining");
+        if (remaining === "0") {
+          throw new Error(
+            "GitHub API rate limit exceeded. Please add a GITHUB_TOKEN or try later.",
+          );
+        }
+        lastError = new Error(
+          "Access forbidden. The repository may be private.",
+        );
         continue;
       }
 
@@ -398,18 +389,10 @@ export async function fetchImportantFiles(
     file: string,
   ): Promise<{ file: string; content: string } | null> => {
     try {
-      const response = await fetch(
+      const safeResponse = await fetchGitHub(
         `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${file}?ref=${encodedBranch}`,
-        { headers: getHeaders(), cache: "no-store" },
+        { cache: "no-store" },
       );
-
-      const safeResponse =
-        response.status === 403 && process.env.GITHUB_TOKEN
-          ? await fetch(
-              `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${file}?ref=${encodedBranch}`,
-              { headers: BASE_HEADERS, cache: "no-store" },
-            )
-          : response;
 
       if (safeResponse.ok) {
         const data = await safeResponse.json();
