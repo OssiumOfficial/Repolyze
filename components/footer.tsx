@@ -38,12 +38,12 @@ export function Footer() {
                 </h3> */}
                 <div className="flex items-center gap-2">
                   <SocialLink
-                    href="https://github.com/Devsethi3"
+                    href="https://github.com/OssiumOfficial"
                     label="GitHub"
                   >
                     <GithubIcon className="size-5" />
                   </SocialLink>
-                  <SocialLink href="https://x.com/imsethidev" label="Twitter">
+                  <SocialLink href="https://x.com/ossium_live" label="Twitter">
                     <TwitterIcon className="size-5" />
                   </SocialLink>
                 </div>
@@ -55,7 +55,7 @@ export function Footer() {
           <div className="border-t border-primary/10 py-6">
             <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
               <p className="text-xs text-muted-foreground jetbrains-mono text-center sm:text-left">
-                © {new Date().getFullYear()} RepoGist. All rights reserved.
+                © {new Date().getFullYear()} <Link href="https://ossium.live" className="hover:underline">Ossium Inc.</Link> All rights reserved.
               </p>
             </div>
           </div>

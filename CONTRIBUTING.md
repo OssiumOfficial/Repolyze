@@ -24,7 +24,7 @@ pnpm dev
 
 ### Reporting Bugs
 
-[Open an issue](https://github.com/Devsethi3/Repo-Gist/issues/new) with:
+[Open an issue](https://github.com/OssiumOfficial/Repo-Gist/issues/new) with:
 
 - Clear description of the bug
 - Steps to reproduce
@@ -33,7 +33,7 @@ pnpm dev
 
 ### Suggesting Features
 
-[Start a discussion](https://github.com/Devsethi3/Repo-Gist/discussions/new?category=ideas) with:
+[Start a discussion](https://github.com/OssiumOfficial/Repo-Gist/discussions/new?category=ideas) with:
 
 - Problem you're trying to solve
 - Proposed solution
@@ -104,13 +104,13 @@ Before submitting:
 
 Look for issues labeled:
 
-- [`good first issue`](https://github.com/Devsethi3/Repo-Gist/labels/good%20first%20issue) - Great for beginners
-- [`help wanted`](https://github.com/Devsethi3/Repo-Gist/labels/help%20wanted) - We need help
+- [`good first issue`](https://github.com/OssiumOfficial/Repo-Gist/labels/good%20first%20issue) - Great for beginners
+- [`help wanted`](https://github.com/OssiumOfficial/Repo-Gist/labels/help%20wanted) - We need help
 
 ## 💬 Need Help?
 
-- [GitHub Discussions](https://github.com/Devsethi3/Repo-Gist/discussions) - Questions & ideas
-- [Twitter](https://x.com/imsethidev) - Quick questions
+- [GitHub Discussions](https://github.com/OssiumOfficial/Repo-Gist/discussions) - Questions & ideas
+- [Twitter](https://x.com/ossium_live) - Quick questions
 
 ---
 

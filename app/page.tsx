@@ -6,6 +6,7 @@ import { Footer } from "@/components/footer";
 import { HeroHeader } from "@/components/header";
 import { RepoAnalyzer } from "@/components/repo-analyzer";
 import { useAnalysis } from "@/hooks/use-analysis";
+import { Sparkles } from "lucide-react";
 
 function HomeContent() {
   const searchParams = useSearchParams();
@@ -50,9 +51,9 @@ function HomeContent() {
           <HeroHeader />
         </div>
         <div className="flex justify-center">
-          <div className="relative rounded-xl border bg-background/60 px-4 py-3 backdrop-blur-sm transition-colors flex flex-col items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-md border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-medium text-primary">
-              New: PDF Report Feature
+          <div className="relative rounded-full py-3 transition-colors flex flex-col items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-[10px] font-medium text-primary">
+              <Sparkles size={13} />Good News: Acquired by <a href="https://ossium.live" className="underline">Ossium Inc.</a>!
             </span>
           </div>
         </div>

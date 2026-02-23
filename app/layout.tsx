@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   description:
     "Analyze GitHub repositories with AI to uncover code quality issues, architecture insights, dependencies, and security vulnerabilities in seconds.",
   applicationName: "RepoGist",
-  authors: [{ name: "Dev Prasad Sethi", url: "https://x.com/imsethidev" }],
+  authors: [{ name: "ossium_live", url: "https://x.com/ossium_live" }],
   generator: "Next.js",
   keywords: [
     "GitHub",
@@ -77,8 +77,8 @@ export const metadata: Metadata = {
     "github repo analyzer",
   ],
   referrer: "origin-when-cross-origin",
-  creator: "Dev Prasad Sethi",
-  publisher: "Dev Prasad Sethi",
+  creator: "ossium_live",
+  publisher: "ossium_live",
   category: "Developer Tools",
 
   // Robots
@@ -142,8 +142,8 @@ export const metadata: Metadata = {
   // Twitter Card
   twitter: {
     card: "summary_large_image",
-    site: "@imsethidev",
-    creator: "@imsethidev",
+    site: "@ossium_live",
+    creator: "@ossium_live",
     title: "RepoGist - Analyze any public GitHub repository with AI",
     description:
       "Analyze any GitHub repository with AI. Get instant insights on code quality, architecture, and security.",
@@ -196,14 +196,14 @@ const jsonLd = {
   },
   author: {
     "@type": "Person",
-    name: "Dev Prasad Sethi",
-    url: "https://x.com/imsethidev",
-    sameAs: ["https://x.com/imsethidev", "https://twitter.com/imsethidev"],
+    name: "ossium_live",
+    url: "https://x.com/ossium_live",
+    sameAs: ["https://x.com/ossium_live", "https://twitter.com/ossium_live"],
   },
   creator: {
     "@type": "Person",
-    name: "Dev Prasad Sethi",
-    url: "https://x.com/imsethidev",
+    name: "ossium_live",
+    url: "https://x.com/ossium_live",
   },
   screenshot: `${siteUrl}/screenshot.png`,
   featureList: [

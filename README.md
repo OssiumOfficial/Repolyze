@@ -7,8 +7,10 @@
   
   AI insights on your GitHub repo - understand quality, design, security, and improvement opportunities in seconds.
 
+  **Now owned and maintained by Ossium**
+
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-black?style=for-the-badge)](https://repo-gist.vercel.app)
-[![GitHub Stars](https://img.shields.io/github/stars/Devsethi3/Repo-Gist?style=for-the-badge&logo=github&color=yellow)](https://github.com/Devsethi3/Repo-Gist)
+[![GitHub Stars](https://img.shields.io/github/stars/OssiumOfficial/Repo-Gist?style=for-the-badge&logo=github&color=yellow)](https://github.com/OssiumOfficial/Repo-Gist)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge)](CONTRIBUTING.md)
 
@@ -124,7 +126,7 @@ npm install -g pnpm
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Devsethi3/Repo-Gist.git
+git clone https://github.com/OssiumOfficial/Repo-Gist.git
 cd Repo-Gist
 
 # 2. Install dependencies
@@ -527,8 +529,8 @@ We welcome contributions from everyone! Here's how you can help:
 
 | Type                    | Description                                                                                               |
 | ----------------------- | --------------------------------------------------------------------------------------------------------- |
-| 🐛 **Bug Reports**      | Found a bug? [Open an issue](https://github.com/Devsethi3/Repo-Gist/issues/new?template=bug_report.md)    |
-| 💡 **Feature Requests** | Have an idea? [Start a discussion](https://github.com/Devsethi3/Repo-Gist/discussions/new?category=ideas) |
+| 🐛 **Bug Reports**      | Found a bug? [Open an issue](https://github.com/OssiumOfficial/Repo-Gist/issues/new?template=bug_report.md)    |
+| 💡 **Feature Requests** | Have an idea? [Start a discussion](https://github.com/OssiumOfficial/Repo-Gist/discussions/new?category=ideas) |
 | 📝 **Documentation**    | Help improve our docs                                                                                     |
 | 🔧 **Code**             | Submit bug fixes or new features                                                                          |
 | 🎨 **Design**           | Improve UI/UX                                                                                             |
@@ -543,7 +545,7 @@ git clone https://github.com/YOUR_USERNAME/Repo-Gist.git
 cd Repo-Gist
 
 # 3. Add upstream remote
-git remote add upstream https://github.com/Devsethi3/Repo-Gist.git
+git remote add upstream https://github.com/OssiumOfficial/Repo-Gist.git
 
 # 4. Create a feature branch
 git checkout -b feature/amazing-feature
@@ -679,7 +681,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ```
 MIT License
 
-Copyright (c) 2024 Dev Prasad Sethi
+Copyright (c) 2024 Ossium
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -707,23 +709,11 @@ Special thanks to these amazing projects:
 
 <div align="center">
 
-## 👤 Author
-
-<img src="https://github.com/Devsethi3.png" width="80" height="80" style="border-radius: 50%;" alt="Dev Prasad Sethi" />
-
-### Dev Prasad Sethi
-
-[![Twitter](https://img.shields.io/badge/@imsethidev-1DA1F2?style=flat-square&logo=twitter&logoColor=white)](https://x.com/imsethidev)
-[![GitHub](https://img.shields.io/badge/Devsethi3-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Devsethi3)
-[![Portfolio](https://img.shields.io/badge/Portfolio-000000?style=flat-square&logo=vercel&logoColor=white)](https://devsethi.vercel.app)
-
----
-
 ### ⭐ Show Your Support
 
 If you find RepoGist useful, please consider giving it a star!
 
-[![Star on GitHub](https://img.shields.io/github/stars/Devsethi3/Repo-Gist?style=for-the-badge&logo=github&label=Star&color=yellow)](https://github.com/Devsethi3/Repo-Gist)
+[![Star on GitHub](https://img.shields.io/github/stars/OssiumOfficial/Repo-Gist?style=for-the-badge&logo=github&label=Star&color=yellow)](https://github.com/OssiumOfficial/Repo-Gist)
 
 **Share with others:**
 

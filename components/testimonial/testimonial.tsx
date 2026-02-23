@@ -37,7 +37,8 @@ const Testimonials = () => {
       <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="text-center mb-8 sm:mb-10 md:mb-12">
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
-            Built in public. Used by developers. Improved by feedback.{" "}
+            Free & Open-source Tool. Truth about your code, instantly
+            {/* Built in public. Used by developers. Improved by feedback. */}
           </p>
         </div>
 
