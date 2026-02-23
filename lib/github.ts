@@ -73,9 +73,9 @@ export async function fetchRepoBranches(
 
     const safeResponse =
       response.status === 403 && process.env.GITHUB_TOKEN
-        ? await fetchGitHub(
+        ? await fetch(
             `${GITHUB_API_BASE}/repos/${owner}/${repo}/branches?per_page=${perPage}`,
-            { cache: "no-store" },
+            { headers: BASE_HEADERS, cache: "no-store" },
           )
         : response;
 
@@ -125,7 +125,8 @@ export async function fetchRepoMetadata(
 
   const safeResponse =
     response.status === 403 && process.env.GITHUB_TOKEN
-      ? await fetchGitHub(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
+      ? await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
+          headers: BASE_HEADERS,
           cache: "no-store",
         })
       : response;
@@ -225,9 +226,9 @@ export async function fetchRepoTree(
 
       const safeResponse =
         response.status === 403 && process.env.GITHUB_TOKEN
-          ? await fetchGitHub(
+          ? await fetch(
               `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${encodedBranch}?recursive=1`,
-              { cache: "no-store" },
+              { headers: BASE_HEADERS, cache: "no-store" },
             )
           : response;
 
@@ -404,9 +405,9 @@ export async function fetchImportantFiles(
 
       const safeResponse =
         response.status === 403 && process.env.GITHUB_TOKEN
-          ? await fetchGitHub(
+          ? await fetch(
               `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${file}?ref=${encodedBranch}`,
-              { cache: "no-store" },
+              { headers: BASE_HEADERS, cache: "no-store" },
             )
           : response;
 
