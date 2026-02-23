@@ -510,13 +510,13 @@ console.log(data.scores.overall); // 92
 # Test analyze endpoint
 curl -X POST http://localhost:3000/api/analyze \
   -H "Content-Type: application/json" \
-  -d '{"repoUrl": "https://github.com/facebook/react"}'
+  -d '{"repoUrl": "https://github.com/ig-imanish/mx-icons"}'
 
 # Test branches endpoint
-curl "http://localhost:3000/api/branches?repo=facebook/react"
+curl "http://localhost:3000/api/branches?repo=ig-imanish/mx-icons"
 
 # Test share page
-open http://localhost:3000/share/facebook/react
+open http://localhost:3000/share/ig-imanish/mx-icons
 ```
 
 ---

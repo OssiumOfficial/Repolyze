@@ -44,6 +44,13 @@ async function fetchGitHub(url: string, init?: RequestInit): Promise<Response> {
   const response = await fetch(url, { ...init, headers: getHeaders() });
 
   if (response.status === 403 && process.env.GITHUB_TOKEN) {
+    // Only fall back to unauthenticated if it's a permission issue, not a rate limit.
+    // Unauthenticated requests have a much lower rate limit (60/hr vs 5,000/hr),
+    // so retrying without the token on a rate-limit 403 would always fail too.
+    const remaining = response.headers.get("x-ratelimit-remaining");
+    if (remaining === "0") {
+      return response;
+    }
     return fetch(url, { ...init, headers: BASE_HEADERS });
   }
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
@@ -10,11 +11,59 @@ import { cn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Loading03Icon } from "@hugeicons/core-free-icons";
 
+const LOADING_QUOTES = [
+  { text: "First, solve the problem. Then, write the code.", author: "John Johnson" },
+  { text: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" },
+  { text: "Simplicity is the soul of efficiency.", author: "Austin Freeman" },
+  { text: "Make it work, make it right, make it fast.", author: "Kent Beck" },
+  { text: "Clean code always looks like it was written by someone who cares.", author: "Robert C. Martin" },
+  { text: "Programming isn't about what you know; it's about what you can figure out.", author: "Chris Pine" },
+  { text: "The best error message is the one that never shows up.", author: "Thomas Fuchs" },
+  { text: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", author: "Martin Fowler" },
+  { text: "Perfection is achieved not when there is nothing more to add, but when there is nothing left to take away.", author: "Antoine de Saint-Exupery" },
+  { text: "Talk is cheap. Show me the code.", author: "Linus Torvalds" },
+  { text: "Before software can be reusable it first has to be usable.", author: "Ralph Johnson" },
+  { text: "The only way to go fast, is to go well.", author: "Robert C. Martin" },
+  { text: "Measuring programming progress by lines of code is like measuring aircraft building progress by weight.", author: "Bill Gates" },
+  { text: "It's not a bug; it's an undocumented feature.", author: "Anonymous" },
+  { text: "Good software, like wine, takes time.", author: "Joel Spolsky" },
+  { text: "Deleted code is debugged code.", author: "Jeff Sickel" },
+  { text: "Computers are fast; developers keep it slow.", author: "Anonymous" },
+  { text: "A primary cause of complexity is that software vendors uncritically adopt almost any feature that users want.", author: "Niklaus Wirth" },
+  { text: "Don't comment bad code — rewrite it.", author: "Brian Kernighan" },
+  { text: "Debugging is twice as hard as writing the code in the first place.", author: "Brian Kernighan" },
+];
+
+function useRotatingQuote(intervalMs: number = 9000) {
+  const [index, setIndex] = useState(() =>
+    Math.floor(Math.random() * LOADING_QUOTES.length),
+  );
+
+  const next = useCallback(() => {
+    setIndex((prev) => {
+      let nextIdx: number;
+      do {
+        nextIdx = Math.floor(Math.random() * LOADING_QUOTES.length);
+      } while (nextIdx === prev && LOADING_QUOTES.length > 1);
+      return nextIdx;
+    });
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(next, intervalMs);
+    return () => clearInterval(timer);
+  }, [next, intervalMs]);
+
+  return LOADING_QUOTES[index];
+}
+
 interface LoadingSkeletonProps {
   status: StreamingAnalysis;
 }
 
 export function LoadingSkeleton({ status }: LoadingSkeletonProps) {
+  const quote = useRotatingQuote(9000);
+
   return (
     <div className="space-y-6 sm:space-y-8 lg:space-y-10 w-full max-w-full overflow-hidden">
       {/* Progress Indicator */}
@@ -40,6 +89,25 @@ export function LoadingSkeleton({ status }: LoadingSkeletonProps) {
             {Math.round(status.progress)}% complete
           </p>
         </div>
+
+        {/* Rotating Quote */}
+        <AnimatePresence mode="wait">
+          <motion.blockquote
+            key={quote.text}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="max-w-sm text-center mt-1"
+          >
+            <p className="text-[13px] leading-relaxed italic text-muted-foreground/80">
+              &ldquo;{quote.text}&rdquo;
+            </p>
+            <footer className="mt-1.5 text-[11px] font-medium text-muted-foreground/60">
+              &mdash; {quote.author}
+            </footer>
+          </motion.blockquote>
+        </AnimatePresence>
       </motion.div>
 
       {/* Analysis Header Skeleton */}
