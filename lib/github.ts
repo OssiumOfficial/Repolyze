@@ -40,6 +40,19 @@ function getHeaders(): HeadersInit {
   return BASE_HEADERS;
 }
 
+async function fetchGitHub(
+  url: string,
+  init?: RequestInit,
+): Promise<Response> {
+  const response = await fetch(url, { ...init, headers: getHeaders() });
+
+  if (response.status === 403 && process.env.GITHUB_TOKEN) {
+    return fetch(url, { ...init, headers: BASE_HEADERS });
+  }
+
+  return response;
+}
+
 /**
  * Fetch all branches for a repository
  */
@@ -58,14 +71,24 @@ export async function fetchRepoBranches(
       { headers: getHeaders(), cache: "no-store" },
     );
 
-    if (!response.ok) {
-      if (response.status === 404) {
+    const safeResponse =
+      response.status === 403 && process.env.GITHUB_TOKEN
+        ? await fetchGitHub(
+            `${GITHUB_API_BASE}/repos/${owner}/${repo}/branches?per_page=${perPage}`,
+            { cache: "no-store" },
+          )
+        : response;
+
+    if (!safeResponse.ok) {
+      if (safeResponse.status === 404) {
         throw new Error("Repository not found");
       }
-      throw new Error(`Failed to fetch branches: ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch branches: ${safeResponse.statusText}`,
+      );
     }
 
-    const data: GitHubBranchResponse[] = await response.json();
+    const data: GitHubBranchResponse[] = await safeResponse.json();
 
     const branches: BranchInfo[] = data.slice(0, maxBranches).map((branch) => ({
       name: branch.name,
@@ -100,12 +123,19 @@ export async function fetchRepoMetadata(
     cache: "no-store",
   });
 
-  if (!response.ok) {
-    if (response.status === 404) {
+  const safeResponse =
+    response.status === 403 && process.env.GITHUB_TOKEN
+      ? await fetchGitHub(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
+          cache: "no-store",
+        })
+      : response;
+
+  if (!safeResponse.ok) {
+    if (safeResponse.status === 404) {
       throw new Error("Repository not found. Please check the URL.");
     }
-    if (response.status === 403) {
-      const remaining = response.headers.get("x-ratelimit-remaining");
+    if (safeResponse.status === 403) {
+      const remaining = safeResponse.headers.get("x-ratelimit-remaining");
       if (remaining === "0") {
         throw new Error(
           "GitHub API rate limit exceeded. Please add a GITHUB_TOKEN or try later.",
@@ -113,10 +143,12 @@ export async function fetchRepoMetadata(
       }
       throw new Error("Access forbidden. The repository may be private.");
     }
-    throw new Error(`Failed to fetch repository: ${response.statusText}`);
+    throw new Error(
+      `Failed to fetch repository: ${safeResponse.statusText}`,
+    );
   }
 
-  const data = await response.json();
+  const data = await safeResponse.json();
 
   return {
     name: data.name,
@@ -185,13 +217,22 @@ export async function fetchRepoTree(
 
   for (const targetBranch of branchesToTry) {
     try {
+      const encodedBranch = encodeURIComponent(targetBranch);
       const response = await fetch(
-        `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${targetBranch}?recursive=1`,
+        `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${encodedBranch}?recursive=1`,
         { headers: getHeaders(), cache: "no-store" },
       );
 
-      if (response.ok) {
-        const data: GitHubTreeResponse = await response.json();
+      const safeResponse =
+        response.status === 403 && process.env.GITHUB_TOKEN
+          ? await fetchGitHub(
+              `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${encodedBranch}?recursive=1`,
+              { cache: "no-store" },
+            )
+          : response;
+
+      if (safeResponse.ok) {
+        const data: GitHubTreeResponse = await safeResponse.json();
 
         // Filter and limit in single pass
         const filteredItems: GitHubTreeItem[] = [];
@@ -206,13 +247,13 @@ export async function fetchRepoTree(
         return buildFileTree(filteredItems);
       }
 
-      if (response.status === 404) {
+      if (safeResponse.status === 404) {
         lastError = new Error(`Branch '${targetBranch}' not found`);
         continue;
       }
 
       throw new Error(
-        `Failed to fetch repository tree: ${response.statusText}`,
+        `Failed to fetch repository tree: ${safeResponse.statusText}`,
       );
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
@@ -346,6 +387,7 @@ export async function fetchImportantFiles(
   branch?: string,
 ): Promise<Record<string, string>> {
   const targetBranch = branch || "main";
+  const encodedBranch = encodeURIComponent(targetBranch);
   const contents: Record<string, string> = {};
   let totalSize = 0;
   const maxTotalSize = 100000; // 100KB total
@@ -356,12 +398,20 @@ export async function fetchImportantFiles(
   ): Promise<{ file: string; content: string } | null> => {
     try {
       const response = await fetch(
-        `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${file}?ref=${targetBranch}`,
+        `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${file}?ref=${encodedBranch}`,
         { headers: getHeaders(), cache: "no-store" },
       );
 
-      if (response.ok) {
-        const data = await response.json();
+      const safeResponse =
+        response.status === 403 && process.env.GITHUB_TOKEN
+          ? await fetchGitHub(
+              `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${file}?ref=${encodedBranch}`,
+              { cache: "no-store" },
+            )
+          : response;
+
+      if (safeResponse.ok) {
+        const data = await safeResponse.json();
         if (data.size <= 50000 && data.encoding === "base64") {
           const content = Buffer.from(data.content, "base64").toString("utf-8");
           return { file, content: content.slice(0, maxFileSize) };
