@@ -44,7 +44,7 @@ async function fetchGitHub(url: string, init?: RequestInit): Promise<Response> {
   const response = await fetch(url, { ...init, headers: getHeaders() });
 
   if (response.status === 403 && process.env.GITHUB_TOKEN) {
-    return fetch(url, { headers: BASE_HEADERS, ...init });
+    return fetch(url, { ...init, headers: BASE_HEADERS });
   }
 
   return response;
@@ -79,7 +79,9 @@ export async function fetchRepoBranches(
             "GitHub API rate limit exceeded. Please add a GITHUB_TOKEN or try later.",
           );
         }
-        throw new Error("Access forbidden. The repository may be private.");
+        throw new Error(
+          "Access forbidden. The repository may be private or your token may lack sufficient permissions.",
+        );
       }
       throw new Error(`Failed to fetch branches: ${safeResponse.statusText}`);
     }
@@ -130,7 +132,9 @@ export async function fetchRepoMetadata(
           "GitHub API rate limit exceeded. Please add a GITHUB_TOKEN or try later.",
         );
       }
-      throw new Error("Access forbidden. The repository may be private.");
+      throw new Error(
+        "Access forbidden. The repository may be private or your token may lack sufficient permissions.",
+      );
     }
     throw new Error(`Failed to fetch repository: ${safeResponse.statusText}`);
   }
@@ -239,7 +243,7 @@ export async function fetchRepoTree(
           );
         }
         lastError = new Error(
-          "Access forbidden. The repository may be private.",
+          "Access forbidden. The repository may be private or your token may lack sufficient permissions.",
         );
         continue;
       }
