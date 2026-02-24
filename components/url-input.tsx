@@ -147,7 +147,7 @@ export function UrlInput({ onAnalyze, isLoading }: UrlInputProps) {
         </AnimatePresence>
 
         <p className="text-xs text-muted-foreground/50 text-center px-4">
-          Enter a GitHub repository (e.g., facebook/react or full URL)
+          Enter a GitHub repository (e.g., ig-imanish/mx-icons or full URL)
         </p>
       </form>
     </motion.div>

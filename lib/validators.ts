@@ -35,7 +35,7 @@ export const githubUrlSchema = z
   .min(1, "GitHub URL or owner/repo is required")
   .refine(isValidGitHubInput, {
     message:
-      "Please enter a valid GitHub URL or owner/repo (e.g., facebook/react)",
+      "Please enter a valid GitHub URL or owner/repo (e.g., ig-imanish/mx-icons)",
   })
   .transform(normalizeToGitHubUrl);
 
