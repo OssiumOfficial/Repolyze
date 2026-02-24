@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   description:
     "Analyze GitHub repositories with AI to uncover code quality issues, architecture insights, dependencies, and security vulnerabilities in seconds.",
   applicationName: "Repolyze",
-  authors: [{ name: "Ossium Inc.", url: "https://x.com/ossium_live" }],
+  authors: [{ name: "Ossium Inc.", url: "https://x.com/ossium_inc" }],
   generator: "Next.js",
   keywords: [
     "GitHub",
@@ -196,13 +196,13 @@ const jsonLd = {
   author: {
     "@type": "Person",
     name: "ossium_live",
-    url: "https://x.com/ossium_live",
-    sameAs: ["https://x.com/ossium_live", "https://twitter.com/ossium_live"],
+    url: "https://x.com/ossium_inc",
+    sameAs: ["https://x.com/ossium_inc", "https://twitter.com/ossium_live"],
   },
   creator: {
     "@type": "Person",
     name: "ossium_live",
-    url: "https://x.com/ossium_live",
+    url: "https://x.com/ossium_inc",
   },
   screenshot: `${siteUrl}/screenshot.png`,
   featureList: [

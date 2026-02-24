@@ -110,7 +110,7 @@ Look for issues labeled:
 ## 💬 Need Help?
 
 - [GitHub Discussions](https://github.com/OssiumOfficial/Repolyze/discussions) - Questions & ideas
-- [Twitter](https://x.com/ossium_live) - Quick questions
+- [Twitter](https://x.com/ossium_inc) - Quick questions
 
 ---
 

@@ -43,7 +43,7 @@ export function Footer() {
                   >
                     <GithubIcon className="size-5" />
                   </SocialLink>
-                  <SocialLink href="https://x.com/ossium_live" label="Twitter">
+                  <SocialLink href="https://x.com/ossium_inc" label="Twitter">
                     <TwitterIcon className="size-5" />
                   </SocialLink>
                 </div>
