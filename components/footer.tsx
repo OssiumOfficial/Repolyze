@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { GithubIcon, TwitterIcon } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
-import RepoGistLogo from "./icons/repogist-logo";
+import RepolyzeLogo from "./icons/Repolyze-logo";
 
 export function Footer() {
   return (
@@ -16,10 +16,10 @@ export function Footer() {
               <Link href="/" className="flex items-center gap-2.5 group w-fit">
                 <div className="relative">
                   <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full group-hover:bg-primary/30 transition-colors" />
-                  <RepoGistLogo className="relative size-8 text-primary" />
+                  <RepolyzeLogo className="relative size-8 text-primary" />
                 </div>
                 <h2 className="instrument-serif text-2xl text-foreground">
-                  RepoGist
+                  Repolyze
                 </h2>
               </Link>
               <p className="text-sm text-muted-foreground jetbrains-mono leading-relaxed">

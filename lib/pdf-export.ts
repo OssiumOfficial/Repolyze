@@ -755,7 +755,7 @@ export async function generatePDFReport(result: AnalysisResult): Promise<Blob> {
       doc.setFontSize(7);
       doc.setFont("helvetica", "bold");
       setColor(colors.mocha);
-      doc.text("RepoGist", margin, pageHeight - 6);
+      doc.text("Repolyze", margin, pageHeight - 6);
 
       doc.setFont("helvetica", "normal");
       setColor(colors.slate);

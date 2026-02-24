@@ -70,14 +70,15 @@ function HomeContent() {
                   <span className="dark:text-white text-secondary-foreground">
                     Any
                   </span>{" "}
-                  Code
+                  Codebase
                 </h1>
                 <h2 className="dark:text-white/30 -mt-1 text-secondary-foreground/50">
-                  Instantly{" "}
+                  
                   <span className="relative inline-block">
                     <span className="dark:text-white text-secondary-foreground relative z-10">
                       In Seconds
                     </span>
+                    
                     {/* Unsymmetrical Underline SVG */}
                     <svg
                       className="absolute -bottom-2 w-full lg:h-3 h-1 left-0 text-primary z-0"
@@ -93,6 +94,7 @@ function HomeContent() {
                       />
                     </svg>
                   </span>
+                  {" "},{" "}Not in Hours.
                 </h2>
               </div>
             </div>

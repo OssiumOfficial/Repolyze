@@ -1,6 +1,6 @@
 {
-  "name": "RepoGist",
-  "short_name": "RepoGist",
+  "name": "Repolyze",
+  "short_name": "Repolyze",
   "description": "Analyze public GitHub repositories with AI to get instant insights on code quality, architecture, dependencies, and security.",
   "start_url": "/",
   "display": "standalone",

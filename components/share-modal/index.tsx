@@ -59,7 +59,7 @@ export function ShareModal({ open, onOpenChange, result }: ShareModalProps) {
     try {
       const success = await downloadAsImage(
         cardRef.current,
-        `repogist-${shareData.repoName.toLowerCase().replace(/\s+/g, "-")}${shareData.branch ? `-${shareData.branch}` : ""}`
+        `repolyze-${shareData.repoName.toLowerCase().replace(/\s+/g, "-")}${shareData.branch ? `-${shareData.branch}` : ""}`
       );
       if (success) {
         setDownloadSuccess(true);

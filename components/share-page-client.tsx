@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ArrowRight, Github, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import RepoGistLogo from "@/components/icons/repogist-logo";
+import RepolyzeLogo from "@/components/icons/Repolyze-logo";
 
 interface SharePageClientProps {
   repoFullName: string;
@@ -104,13 +104,13 @@ export function SharePageClient({ repoFullName }: SharePageClientProps) {
               <div className="flex items-center gap-2.5 group w-fit">
                 <div className="relative">
                   <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full group-hover:bg-primary/30 transition-colors" />
-                  <RepoGistLogo className="relative size-8 text-primary" />
+                  <RepolyzeLogo className="relative size-8 text-primary" />
                 </div>
               </div>
             </motion.div>
           </div>
           <h1 className="text-2xl sm:text-3xl font-medium instrument-serif tracking-wider text-foreground">
-            RepoGist
+            Repolyze
           </h1>
           <p className="text-sm text-muted-foreground">
             AI-Powered Repository Analysis

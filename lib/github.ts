@@ -27,7 +27,7 @@ interface GitHubBranchResponse {
 // Cache headers object to avoid recreation
 const BASE_HEADERS: HeadersInit = {
   Accept: "application/vnd.github.v3+json",
-  "User-Agent": "RepoGist-Analyzer",
+  "User-Agent": "Repolyze-Analyzer",
 };
 
 function getHeaders(): HeadersInit {

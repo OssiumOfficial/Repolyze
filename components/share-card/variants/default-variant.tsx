@@ -168,7 +168,7 @@ export const DefaultVariant = forwardRef<HTMLDivElement, DefaultVariantProps>(
                     <div className="flex items-center sm:justify-end gap-1 sm:gap-1.5 mb-0.5 opacity-60">
                       <Terminal className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-zinc-600" />
                       <span className="text-[8px] jetbrains-mono sm:text-[9px] tracking-widest text-zinc-300">
-                        REPOGIST
+                        REPOLYZE
                       </span>
                     </div>
                     <span className="text-[8px] sm:text-[9px] text-zinc-600 jetbrains-mono">
