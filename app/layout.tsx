@@ -227,7 +227,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <script defer src="https://cloud.umami.is/script.js" data-website-id="6e029032-21a0-4877-852d-b2bd209fd575"></script>
+      <Script defer src="https://cloud.umami.is/script.js" data-website-id="6e029032-21a0-4877-852d-b2bd209fd575"></Script>
       <body
         className={cn(
           geistSans.variable,
