@@ -76,8 +76,8 @@ export const metadata: Metadata = {
     "github repo analyzer",
   ],
   referrer: "origin-when-cross-origin",
-  creator: "ossium_live",
-  publisher: "ossium_live",
+  creator: "Ossium Inc.",
+  publisher: "Ossium Inc.",
   category: "Developer Tools",
 
   // Robots
@@ -141,8 +141,8 @@ export const metadata: Metadata = {
   // Twitter Card
   twitter: {
     card: "summary_large_image",
-    site: "@ossium_live",
-    creator: "@ossium_live",
+    site: "@Ossium Inc.",
+    creator: "@Ossium Inc.",
     title: "Repolyze - Analyze any public GitHub repository with AI",
     description:
       "Analyze any GitHub repository with AI. Get instant insights on code quality, architecture, and security.",
@@ -195,13 +195,13 @@ const jsonLd = {
   },
   author: {
     "@type": "Person",
-    name: "ossium_live",
+    name: "Ossium Inc.",
     url: "https://x.com/ossium_inc",
-    sameAs: ["https://x.com/ossium_inc", "https://twitter.com/ossium_live"],
+    sameAs: ["https://x.com/ossium_inc", "https://twitter.com/ossium_inc"],
   },
   creator: {
     "@type": "Person",
-    name: "ossium_live",
+    name: "Ossium Inc.",
     url: "https://x.com/ossium_inc",
   },
   screenshot: `${siteUrl}/screenshot.png`,
@@ -227,7 +227,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Script defer src="https://cloud.umami.is/script.js" data-website-id="6e029032-21a0-4877-852d-b2bd209fd575"></Script>
+      <Script defer src="https://cloud.umami.is/script.js" data-website-id={`${process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}`}></Script>
       <body
         className={cn(
           geistSans.variable,
