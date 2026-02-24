@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ui/theme-toggle";
 import RepolyzeLogo from "./icons/Repolyze-logo";
@@ -12,6 +12,9 @@ import { GithubIcon } from "@hugeicons/core-free-icons";
 
 export const HeroHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [stars, setStars] = useState<number | null>(null);
+  const [displayStars, setDisplayStars] = useState(0);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +23,49 @@ export const HeroHeader = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    const fetchStars = async () => {
+      try {
+        const response = await fetch("/api/github-stars");
+        if (response.ok) {
+          const data = await response.json();
+          setStars(data.stars);
+        }
+      } catch (error) {
+        console.error("Failed to fetch GitHub stars:", error);
+      }
+    };
+
+    fetchStars();
+  }, []);
+
+  // Animate the star count
+  useEffect(() => {
+    if (stars === null) return;
+
+    const duration = 2000; // 2 seconds
+    const steps = 60;
+    const increment = stars / steps;
+    const stepDuration = duration / steps;
+    let current = 0;
+    let step = 0;
+
+    const timer = setInterval(() => {
+      step++;
+      current = Math.min(Math.floor(increment * step), stars);
+      setDisplayStars(current);
+
+      if (current >= stars) {
+        clearInterval(timer);
+      }
+    }, stepDuration);
+
+    return () => clearInterval(timer);
+  }, [stars]);
 
   return (
     <header>
@@ -61,6 +107,7 @@ export const HeroHeader = () => {
                   href="https://github.com/OssiumOfficial/repolyze"
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="flex items-center gap-1.5"
                 >
                   <HugeiconsIcon
                     icon={GithubIcon}
@@ -68,6 +115,11 @@ export const HeroHeader = () => {
                     strokeWidth={1.5}
                   />{" "}
                   <span className="hidden sm:inline">GitHub</span>
+                  {stars !== null && (
+                    <span className="text-xs text-muted-foreground font-normal">
+                      ⭐ {stars.toLocaleString()}
+                    </span>
+                  )}
                 </Link>
               </Button>
             </div>
