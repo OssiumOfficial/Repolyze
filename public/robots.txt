@@ -1,8 +1,8 @@
 # public/robots.txt
 
 # *************************************
-# Robots.txt for RepoGist
-# https://repo-gist.vercel.app
+# Robots.txt for Repolyze
+# https://repolyze.vercel.app
 # *************************************
 
 # Allow all search engine crawlers
@@ -43,7 +43,7 @@ User-agent: anthropic-ai
 Disallow: /
 
 # Sitemap
-Sitemap: https://repo-gist.vercel.app/sitemap.xml
+Sitemap: https://repolyze.vercel.app/sitemap.xml
 
 # Crawl delay
 Crawl-delay: 1

@@ -6,7 +6,7 @@ type IconProps = SVGProps<SVGSVGElement> & {
   title?: string;
 };
 
-function RepoGistLogo({
+function RepolyzeLogo({
   fill = "currentColor",
   secondaryfill,
   ...props
@@ -40,4 +40,4 @@ function RepoGistLogo({
   );
 }
 
-export default RepoGistLogo;
+export default RepolyzeLogo;

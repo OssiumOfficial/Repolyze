@@ -65,8 +65,8 @@ export function TechnicalFrame({
 
         {/* Bottom Metadata */}
         <div className="absolute -bottom-2.5 sm:-bottom-3 right-3 sm:right-6 px-1.5 sm:px-2 bg-[#050505] text-[7px] sm:text-[9px] jetbrains-mono text-zinc-600 uppercase tracking-widest border-x border-zinc-900 flex items-center gap-1 sm:gap-2">
-          <span className="hidden sm:inline">REPOGIST_IO</span>
-          <span className="sm:hidden">REPOGIST</span>
+          <span className="hidden sm:inline">OSSIUM INC.</span>
+          <span className="sm:hidden">REPOLYZE</span>
           <span className="text-zinc-700">|</span>
           <span>V.2.0</span>
         </div>

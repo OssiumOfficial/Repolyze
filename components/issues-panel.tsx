@@ -385,7 +385,7 @@ function CreateIssueDialog({
 ${description}
 
 ---
-*Created via RepoGist*`;
+*Created via Repolyze*`;
 
     const issue: SuggestedIssue = {
       id: `custom-${Date.now()}`,

@@ -1,4 +1,4 @@
-# Contributing to RepoGist
+# Contributing to Repolyze
 
 Thanks for your interest in contributing! This guide will help you get started.
 
@@ -6,8 +6,8 @@ Thanks for your interest in contributing! This guide will help you get started.
 
 ```bash
 # 1. Fork and clone
-git clone https://github.com/YOUR_USERNAME/Repo-Gist.git
-cd Repo-Gist
+git clone https://github.com/YOUR_USERNAME/Repolyze.git
+cd Repolyze
 
 # 2. Install dependencies
 pnpm install
@@ -24,7 +24,7 @@ pnpm dev
 
 ### Reporting Bugs
 
-[Open an issue](https://github.com/OssiumOfficial/Repo-Gist/issues/new) with:
+[Open an issue](https://github.com/OssiumOfficial/Repolyze/issues/new) with:
 
 - Clear description of the bug
 - Steps to reproduce
@@ -33,7 +33,7 @@ pnpm dev
 
 ### Suggesting Features
 
-[Start a discussion](https://github.com/OssiumOfficial/Repo-Gist/discussions/new?category=ideas) with:
+[Start a discussion](https://github.com/OssiumOfficial/Repolyze/discussions/new?category=ideas) with:
 
 - Problem you're trying to solve
 - Proposed solution
@@ -104,12 +104,12 @@ Before submitting:
 
 Look for issues labeled:
 
-- [`good first issue`](https://github.com/OssiumOfficial/Repo-Gist/labels/good%20first%20issue) - Great for beginners
-- [`help wanted`](https://github.com/OssiumOfficial/Repo-Gist/labels/help%20wanted) - We need help
+- [`good first issue`](https://github.com/OssiumOfficial/Repolyze/labels/good%20first%20issue) - Great for beginners
+- [`help wanted`](https://github.com/OssiumOfficial/Repolyze/labels/help%20wanted) - We need help
 
 ## 💬 Need Help?
 
-- [GitHub Discussions](https://github.com/OssiumOfficial/Repo-Gist/discussions) - Questions & ideas
+- [GitHub Discussions](https://github.com/OssiumOfficial/Repolyze/discussions) - Questions & ideas
 - [Twitter](https://x.com/ossium_live) - Quick questions
 
 ---

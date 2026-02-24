@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="/public/icon.svg" alt="RepoGist Logo" width="90" height="90" />
+  <img src="/public/icon.svg" alt="Repolyze Logo" width="90" height="90" />
   
-  # RepoGist
+  # Repolyze
   
   ### Understand Any Codebase in Seconds
   
@@ -9,8 +9,8 @@
 
   **Now owned and maintained by Ossium**
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-black?style=for-the-badge)](https://repo-gist.vercel.app)
-[![GitHub Stars](https://img.shields.io/github/stars/OssiumOfficial/Repo-Gist?style=for-the-badge&logo=github&color=yellow)](https://github.com/OssiumOfficial/Repo-Gist)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-black?style=for-the-badge)](https://repolyze.vercel.app)
+[![GitHub Stars](https://img.shields.io/github/stars/OssiumOfficial/Repolyze?style=for-the-badge&logo=github&color=yellow)](https://github.com/OssiumOfficial/Repolyze)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge)](CONTRIBUTING.md)
 
@@ -44,7 +44,7 @@
 
 ### 🔹 Repository Score Image
 
-<img src="public/repogist-the-algorithm-main.png" alt="Repository Score" width="750" />
+<img src="public/Repolyze-the-algorithm-main.png" alt="Repository Score" width="750" />
 
 </div>
 
@@ -52,9 +52,9 @@
 
 ## About
 
-**RepoGist** is an open-source tool that leverages AI to analyze GitHub repositories instantly. Whether you're evaluating a new library, onboarding to a codebase, or auditing your own project, RepoGist provides comprehensive insights in seconds.
+**Repolyze** is an open-source tool that leverages AI to analyze GitHub repositories instantly. Whether you're evaluating a new library, onboarding to a codebase, or auditing your own project, Repolyze provides comprehensive insights in seconds.
 
-### Why RepoGist?
+### Why Repolyze?
 
 | Benefit                | Description                                         |
 | ---------------------- | --------------------------------------------------- |
@@ -126,8 +126,8 @@ npm install -g pnpm
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/OssiumOfficial/Repo-Gist.git
-cd Repo-Gist
+git clone https://github.com/OssiumOfficial/Repolyze.git
+cd Repolyze
 
 # 2. Install dependencies
 pnpm install
@@ -209,7 +209,7 @@ CACHE_TTL=3600
 ## 📁 Project Structure
 
 ```
-repo-gist/
+Repolyze/
 ├── app/
 │   ├── api/
 │   │   ├── analyze/
@@ -282,7 +282,7 @@ repo-gist/
 ├── public/
 │   ├── icon.svg                      # App icon
 │   ├── og-image.png                  # Open Graph image for social sharing
-│   └── repo-gist-showcase.png        # README showcase image
+│   └── Repolyze-showcase.png        # README showcase image
 │
 ├── .env.example                      # Environment variables template
 ├── .env.local                        # Local environment variables (git-ignored)
@@ -467,7 +467,7 @@ GET /api/branches?repo=owner/repo
 **cURL:**
 
 ```bash
-curl -X POST https://repo-gist.vercel.app/api/analyze \
+curl -X POST https://repolyze.vercel.app/api/analyze \
   -H "Content-Type: application/json" \
   -d '{"repoUrl": "https://github.com/vercel/next.js", "branch": "canary"}'
 ```
@@ -529,8 +529,8 @@ We welcome contributions from everyone! Here's how you can help:
 
 | Type                    | Description                                                                                               |
 | ----------------------- | --------------------------------------------------------------------------------------------------------- |
-| 🐛 **Bug Reports**      | Found a bug? [Open an issue](https://github.com/OssiumOfficial/Repo-Gist/issues/new?template=bug_report.md)    |
-| 💡 **Feature Requests** | Have an idea? [Start a discussion](https://github.com/OssiumOfficial/Repo-Gist/discussions/new?category=ideas) |
+| 🐛 **Bug Reports**      | Found a bug? [Open an issue](https://github.com/OssiumOfficial/Repolyze/issues/new?template=bug_report.md)    |
+| 💡 **Feature Requests** | Have an idea? [Start a discussion](https://github.com/OssiumOfficial/Repolyze/discussions/new?category=ideas) |
 | 📝 **Documentation**    | Help improve our docs                                                                                     |
 | 🔧 **Code**             | Submit bug fixes or new features                                                                          |
 | 🎨 **Design**           | Improve UI/UX                                                                                             |
@@ -541,11 +541,11 @@ We welcome contributions from everyone! Here's how you can help:
 # 1. Fork the repository on GitHub
 
 # 2. Clone your fork
-git clone https://github.com/YOUR_USERNAME/Repo-Gist.git
-cd Repo-Gist
+git clone https://github.com/YOUR_USERNAME/Repolyze.git
+cd Repolyze
 
 # 3. Add upstream remote
-git remote add upstream https://github.com/OssiumOfficial/Repo-Gist.git
+git remote add upstream https://github.com/OssiumOfficial/Repolyze.git
 
 # 4. Create a feature branch
 git checkout -b feature/amazing-feature
@@ -638,16 +638,16 @@ When opening an issue, please include:
 ## ❓ FAQ
 
 <details>
-<summary><b>Is RepoGist free to use?</b></summary>
+<summary><b>Is Repolyze free to use?</b></summary>
 
-Yes! RepoGist is completely free and open source under the MIT license.
+Yes! Repolyze is completely free and open source under the MIT license.
 
 </details>
 
 <details>
 <summary><b>Is my code stored anywhere?</b></summary>
 
-No. RepoGist analyzes repositories in real-time and does not store any code. Only analysis results are temporarily cached.
+No. Repolyze analyzes repositories in real-time and does not store any code. Only analysis results are temporarily cached.
 
 </details>
 
@@ -661,14 +661,14 @@ Currently, only public repositories are supported. Private repository support is
 <details>
 <summary><b>What languages are supported?</b></summary>
 
-RepoGist can analyze repositories in any programming language including JavaScript, TypeScript, Python, Go, Rust, Java, and more.
+Repolyze can analyze repositories in any programming language including JavaScript, TypeScript, Python, Go, Rust, Java, and more.
 
 </details>
 
 <details>
 <summary><b>How accurate is the analysis?</b></summary>
 
-RepoGist uses advanced AI models for analysis. Results should be considered as helpful suggestions rather than absolute assessments.
+Repolyze uses advanced AI models for analysis. Results should be considered as helpful suggestions rather than absolute assessments.
 
 </details>
 
@@ -711,13 +711,13 @@ Special thanks to these amazing projects:
 
 ### ⭐ Show Your Support
 
-If you find RepoGist useful, please consider giving it a star!
+If you find Repolyze useful, please consider giving it a star!
 
-[![Star on GitHub](https://img.shields.io/github/stars/OssiumOfficial/Repo-Gist?style=for-the-badge&logo=github&label=Star&color=yellow)](https://github.com/OssiumOfficial/Repo-Gist)
+[![Star on GitHub](https://img.shields.io/github/stars/OssiumOfficial/Repolyze?style=for-the-badge&logo=github&label=Star&color=yellow)](https://github.com/OssiumOfficial/Repolyze)
 
 **Share with others:**
 
-[![Share on Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/intent/tweet?text=Check%20out%20RepoGist%20-%20AI-powered%20GitHub%20repo%20analyzer!&url=https://repo-gist.vercel.app)
-[![Share on LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://repo-gist.vercel.app)
+[![Share on Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/intent/tweet?text=Check%20out%20Repolyze%20-%20AI-powered%20GitHub%20repo%20analyzer!&url=https://repolyze.vercel.app)
+[![Share on LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://repolyze.vercel.app)
 
 </div>

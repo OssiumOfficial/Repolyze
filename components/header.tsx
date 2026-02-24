@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "./ui/theme-toggle";
-import RepoGistLogo from "./icons/repogist-logo";
+import RepolyzeLogo from "./icons/Repolyze-logo";
 import Link from "next/link";
 
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -45,10 +45,10 @@ export const HeroHeader = () => {
             <Link href="/" className="flex items-center gap-2 min-w-0">
               <div className="relative shrink-0">
                 <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full" />
-                <RepoGistLogo className="relative size-7 sm:size-8 text-primary" />
+                <RepolyzeLogo className="relative size-7 sm:size-8 text-primary" />
               </div>
               <h2 className="instrument-serif text-lg sm:text-xl md:text-2xl truncate">
-                RepoGist
+                Repolyze
               </h2>
             </Link>
 
@@ -58,7 +58,7 @@ export const HeroHeader = () => {
 
               <Button asChild variant="outline">
                 <Link
-                  href="https://github.com/Devsethi3/repo-gist"
+                  href="https://github.com/OssiumOfficial/repolyze"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

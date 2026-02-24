@@ -33,7 +33,7 @@ const instrumentSerif = Instrument_Serif({
   weight: ["400"],
 });
 
-const siteUrl = "https://repo-gist.vercel.app";
+const siteUrl = "https://repolyze.vercel.app";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -48,12 +48,12 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   // Basic Meta Tags
   title: {
-    default: "RepoGist | Analyze any public GitHub repository with AI",
-    template: "%s | RepoGist",
+    default: "Repolyze | Analyze any public GitHub repository with AI",
+    template: "%s | Repolyze",
   },
   description:
     "Analyze GitHub repositories with AI to uncover code quality issues, architecture insights, dependencies, and security vulnerabilities in seconds.",
-  applicationName: "RepoGist",
+  applicationName: "Repolyze",
   authors: [{ name: "ossium_live", url: "https://x.com/ossium_live" }],
   generator: "Next.js",
   keywords: [
@@ -72,8 +72,8 @@ export const metadata: Metadata = {
     "repository insights",
     "GitHub automation",
     "code health",
-    "RepoGist",
-    "repo gist",
+    "Repolyze",
+
     "github repo analyzer",
   ],
   referrer: "origin-when-cross-origin",
@@ -124,8 +124,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: siteUrl,
-    siteName: "RepoGist",
-    title: "RepoGist - Analyze any public GitHub repository with AI",
+    siteName: "Repolyze",
+    title: "Repolyze - Analyze any public GitHub repository with AI",
     description:
       "Analyze any GitHub repository with AI. Get instant insights on code quality, architecture, dependencies, and security vulnerabilities.",
     images: [
@@ -133,7 +133,7 @@ export const metadata: Metadata = {
         url: `${siteUrl}/og-image.png`,
         width: 1200,
         height: 630,
-        alt: "RepoGist - Analyze any public GitHub repository with AI",
+        alt: "Repolyze - Analyze any public GitHub repository with AI",
         type: "image/png",
       },
     ],
@@ -144,12 +144,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@ossium_live",
     creator: "@ossium_live",
-    title: "RepoGist - Analyze any public GitHub repository with AI",
+    title: "Repolyze - Analyze any public GitHub repository with AI",
     description:
       "Analyze any GitHub repository with AI. Get instant insights on code quality, architecture, and security.",
     images: {
       url: `${siteUrl}/og-image.png`,
-      alt: "RepoGist - Analyze any public GitHub repository with AI",
+      alt: "Repolyze - Analyze any public GitHub repository with AI",
     },
   },
 
@@ -162,7 +162,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "RepoGist",
+    title: "Repolyze",
   },
 
   // Format Detection
@@ -183,7 +183,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "RepoGist",
+  name: "Repolyze",
   description:
     "AI-powered GitHub repository analysis tool for developers. Get instant insights on code quality, architecture, dependencies, and security vulnerabilities.",
   url: siteUrl,
