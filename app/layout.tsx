@@ -33,7 +33,7 @@ const instrumentSerif = Instrument_Serif({
   weight: ["400"],
 });
 
-const siteUrl = "https://repolyze.vercel.app";
+const siteUrl = "https://repolyze.ossium.live";
 
 export const viewport: Viewport = {
   width: "device-width",

@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 
-const BASE_URL = "https://repolyze.vercel.app";
+const BASE_URL = "https://repolyze.ossium.live";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

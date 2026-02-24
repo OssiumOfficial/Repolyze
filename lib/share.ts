@@ -85,7 +85,7 @@ function formatNumber(num: number): string {
   return num.toLocaleString();
 }
 
-const SITE_URL = "https://repolyze.vercel.app";
+const SITE_URL = "https://repolyze.ossium.live";
 
 export function generateShareUrl(data: ShareCardData): string {
   const branchParam = data.branch

@@ -9,7 +9,7 @@
 
   **Now owned and maintained by Ossium**
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-black?style=for-the-badge)](https://repolyze.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-black?style=for-the-badge)](https://repolyze.ossium.live)
 [![GitHub Stars](https://img.shields.io/github/stars/OssiumOfficial/Repolyze?style=for-the-badge&logo=github&color=yellow)](https://github.com/OssiumOfficial/Repolyze)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen?style=for-the-badge)](CONTRIBUTING.md)
@@ -467,7 +467,7 @@ GET /api/branches?repo=owner/repo
 **cURL:**
 
 ```bash
-curl -X POST https://repolyze.vercel.app/api/analyze \
+curl -X POST https://repolyze.ossium.live/api/analyze \
   -H "Content-Type: application/json" \
   -d '{"repoUrl": "https://github.com/vercel/next.js", "branch": "canary"}'
 ```
@@ -717,7 +717,7 @@ If you find Repolyze useful, please consider giving it a star!
 
 **Share with others:**
 
-[![Share on Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/intent/tweet?text=Check%20out%20Repolyze%20-%20AI-powered%20GitHub%20repo%20analyzer!&url=https://repolyze.vercel.app)
-[![Share on LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://repolyze.vercel.app)
+[![Share on Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/intent/tweet?text=Check%20out%20Repolyze%20-%20AI-powered%20GitHub%20repo%20analyzer!&url=https://repolyze.ossium.live)
+[![Share on LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/sharing/share-offsite/?url=https://repolyze.ossium.live)
 
 </div>
