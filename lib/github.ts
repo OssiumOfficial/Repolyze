@@ -40,23 +40,6 @@ function getHeaders(): HeadersInit {
   return BASE_HEADERS;
 }
 
-async function fetchGitHub(url: string, init?: RequestInit): Promise<Response> {
-  const response = await fetch(url, { ...init, headers: getHeaders() });
-
-  if (response.status === 403 && process.env.GITHUB_TOKEN) {
-    // Only fall back to unauthenticated if it's a permission issue, not a rate limit.
-    // Unauthenticated requests have a much lower rate limit (60/hr vs 5,000/hr),
-    // so retrying without the token on a rate-limit 403 would always fail too.
-    const remaining = response.headers.get("x-ratelimit-remaining");
-    if (remaining === "0") {
-      return response;
-    }
-    return fetch(url, { ...init, headers: BASE_HEADERS });
-  }
-
-  return response;
-}
-
 /**
  * Fetch all branches for a repository
  */
@@ -70,30 +53,19 @@ export async function fetchRepoBranches(
 
   try {
     // Single request for most repos (< 100 branches)
-    const safeResponse = await fetchGitHub(
+    const response = await fetch(
       `${GITHUB_API_BASE}/repos/${owner}/${repo}/branches?per_page=${perPage}`,
-      { cache: "no-store" },
+      { headers: getHeaders(), cache: "no-store" },
     );
 
-    if (!safeResponse.ok) {
-      if (safeResponse.status === 404) {
+    if (!response.ok) {
+      if (response.status === 404) {
         throw new Error("Repository not found");
       }
-      if (safeResponse.status === 403) {
-        const remaining = safeResponse.headers.get("x-ratelimit-remaining");
-        if (remaining === "0") {
-          throw new Error(
-            "GitHub API rate limit exceeded. Please add a GITHUB_TOKEN or try later.",
-          );
-        }
-        throw new Error(
-          "Access forbidden. The repository may be private or your token may lack sufficient permissions.",
-        );
-      }
-      throw new Error(`Failed to fetch branches: ${safeResponse.statusText}`);
+      throw new Error(`Failed to fetch branches: ${response.statusText}`);
     }
 
-    const data: GitHubBranchResponse[] = await safeResponse.json();
+    const data: GitHubBranchResponse[] = await response.json();
 
     const branches: BranchInfo[] = data.slice(0, maxBranches).map((branch) => ({
       name: branch.name,
@@ -123,30 +95,28 @@ export async function fetchRepoMetadata(
   owner: string,
   repo: string,
 ): Promise<RepoMetadata> {
-  const safeResponse = await fetchGitHub(
-    `${GITHUB_API_BASE}/repos/${owner}/${repo}`,
-    { cache: "no-store" },
-  );
+  const response = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
+    headers: getHeaders(),
+    cache: "no-store",
+  });
 
-  if (!safeResponse.ok) {
-    if (safeResponse.status === 404) {
+  if (!response.ok) {
+    if (response.status === 404) {
       throw new Error("Repository not found. Please check the URL.");
     }
-    if (safeResponse.status === 403) {
-      const remaining = safeResponse.headers.get("x-ratelimit-remaining");
+    if (response.status === 403) {
+      const remaining = response.headers.get("x-ratelimit-remaining");
       if (remaining === "0") {
         throw new Error(
           "GitHub API rate limit exceeded. Please add a GITHUB_TOKEN or try later.",
         );
       }
-      throw new Error(
-        "Access forbidden. The repository may be private or your token may lack sufficient permissions.",
-      );
+      throw new Error("Access forbidden. The repository may be private.");
     }
-    throw new Error(`Failed to fetch repository: ${safeResponse.statusText}`);
+    throw new Error(`Failed to fetch repository: ${response.statusText}`);
   }
 
-  const data = await safeResponse.json();
+  const data = await response.json();
 
   return {
     name: data.name,
@@ -215,14 +185,13 @@ export async function fetchRepoTree(
 
   for (const targetBranch of branchesToTry) {
     try {
-      const encodedBranch = encodeURIComponent(targetBranch);
-      const safeResponse = await fetchGitHub(
-        `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${encodedBranch}?recursive=1`,
-        { cache: "no-store" },
+      const response = await fetch(
+        `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${targetBranch}?recursive=1`,
+        { headers: getHeaders(), cache: "no-store" },
       );
 
-      if (safeResponse.ok) {
-        const data: GitHubTreeResponse = await safeResponse.json();
+      if (response.ok) {
+        const data: GitHubTreeResponse = await response.json();
 
         // Filter and limit in single pass
         const filteredItems: GitHubTreeItem[] = [];
@@ -237,26 +206,13 @@ export async function fetchRepoTree(
         return buildFileTree(filteredItems);
       }
 
-      if (safeResponse.status === 404) {
+      if (response.status === 404) {
         lastError = new Error(`Branch '${targetBranch}' not found`);
         continue;
       }
 
-      if (safeResponse.status === 403) {
-        const remaining = safeResponse.headers.get("x-ratelimit-remaining");
-        if (remaining === "0") {
-          throw new Error(
-            "GitHub API rate limit exceeded. Please add a GITHUB_TOKEN or try later.",
-          );
-        }
-        lastError = new Error(
-          "Access forbidden. The repository may be private or your token may lack sufficient permissions.",
-        );
-        continue;
-      }
-
       throw new Error(
-        `Failed to fetch repository tree: ${safeResponse.statusText}`,
+        `Failed to fetch repository tree: ${response.statusText}`,
       );
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
@@ -390,7 +346,6 @@ export async function fetchImportantFiles(
   branch?: string,
 ): Promise<Record<string, string>> {
   const targetBranch = branch || "main";
-  const encodedBranch = encodeURIComponent(targetBranch);
   const contents: Record<string, string> = {};
   let totalSize = 0;
   const maxTotalSize = 100000; // 100KB total
@@ -400,13 +355,13 @@ export async function fetchImportantFiles(
     file: string,
   ): Promise<{ file: string; content: string } | null> => {
     try {
-      const safeResponse = await fetchGitHub(
-        `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${file}?ref=${encodedBranch}`,
-        { cache: "no-store" },
+      const response = await fetch(
+        `${GITHUB_API_BASE}/repos/${owner}/${repo}/contents/${file}?ref=${targetBranch}`,
+        { headers: getHeaders(), cache: "no-store" },
       );
 
-      if (safeResponse.ok) {
-        const data = await safeResponse.json();
+      if (response.ok) {
+        const data = await response.json();
         if (data.size <= 50000 && data.encoding === "base64") {
           const content = Buffer.from(data.content, "base64").toString("utf-8");
           return { file, content: content.slice(0, maxFileSize) };
