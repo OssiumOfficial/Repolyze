@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   description:
     "Analyze GitHub repositories with AI to uncover code quality issues, architecture insights, dependencies, and security vulnerabilities in seconds.",
   applicationName: "Repolyze",
-  authors: [{ name: "ossium_live", url: "https://x.com/ossium_live" }],
+  authors: [{ name: "Ossium Inc.", url: "https://x.com/ossium_live" }],
   generator: "Next.js",
   keywords: [
     "GitHub",
@@ -73,7 +73,6 @@ export const metadata: Metadata = {
     "GitHub automation",
     "code health",
     "Repolyze",
-
     "github repo analyzer",
   ],
   referrer: "origin-when-cross-origin",
@@ -228,6 +227,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <script defer src="https://cloud.umami.is/script.js" data-website-id="6e029032-21a0-4877-852d-b2bd209fd575"></script>
       <body
         className={cn(
           geistSans.variable,
