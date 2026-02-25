@@ -25,14 +25,18 @@ const TweetCard = forwardRef<HTMLDivElement, TweetCardProps>(
       >
         {/* Header */}
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          <Avatar src={tweet.user.avatar} name={tweet.user.name} />
+          <Avatar src={tweet.user.avatar} name={tweet.user.name} isOrg={tweet.user.isOrg} />
           <div className="flex flex-col min-w-0 flex-1 overflow-hidden">
             <div className="flex items-center gap-1 min-w-0">
               <span className="text-xs sm:text-sm font-semibold text-foreground truncate">
                 {tweet.user.name}
               </span>
               {tweet.user.isVerified && (
-                <VerifiedBadge size={14} className="sm:w-4 sm:h-4" />
+                <VerifiedBadge
+                  size={14}
+                  className="sm:w-4 sm:h-4"
+                  tone={tweet.user.isOrg ? "org" : "default"}
+                />
               )}
             </div>
             <a

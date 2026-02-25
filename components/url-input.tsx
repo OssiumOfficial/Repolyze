@@ -147,7 +147,26 @@ export function UrlInput({ onAnalyze, isLoading }: UrlInputProps) {
         </AnimatePresence>
 
         <p className="text-xs text-muted-foreground/50 text-center px-4">
-          Enter a GitHub repository (e.g., ig-imanish/mx-icons or full URL)
+          Enter a GitHub repository (e.g.,{" "}
+          <span className="relative inline-flex items-center group">
+            <button
+              type="button"
+              onClick={() => {
+                setUrl("ig-imanish/mx-icons");
+                if (error) setError(null);
+              }}
+              className="underline underline-offset-2 text-foreground/70 hover:text-foreground transition-colors"
+            >
+              ig-imanish/mx-icons
+            </button>
+            <span
+              role="tooltip"
+              className="pointer-events-none absolute left-1/2 top-full z-10 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-[11px] text-foreground/80 shadow-md opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+            >
+              click to add this repo for analyzing.
+            </span>
+          </span>
+          {" "}or full URL)
         </p>
       </form>
     </motion.div>

@@ -5,7 +5,8 @@ export interface Tweet {
     name: string;
     username: string;
     avatar: string;
-    isVerified?: boolean; 
+    isVerified?: boolean;
+    isOrg?: boolean;
   };
 }
 

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface AvatarProps {
   src: string;
   name: string;
   size?: "sm" | "md" | "lg";
+  isOrg?: boolean;
 }
 
 const sizeClasses = {
@@ -12,9 +14,16 @@ const sizeClasses = {
   lg: "w-12 h-12 text-base",
 };
 
-const Avatar: React.FC<AvatarProps> = ({ src, name, size = "md" }) => {
+const sizePixels = {
+  sm: 32,
+  md: 40,
+  lg: 48,
+};
+
+const Avatar: React.FC<AvatarProps> = ({ src, name, size = "md", isOrg = false }) => {
   const [hasError, setHasError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const shapeClass = isOrg ? "rounded-md" : "rounded-full";
 
   const initials = name
     .split(" ")
@@ -42,7 +51,7 @@ const Avatar: React.FC<AvatarProps> = ({ src, name, size = "md" }) => {
       <div
         className={`${sizeClasses[size]} ${getColorFromName(
           name
-        )} rounded-full flex items-center justify-center text-primary-foreground font-medium shrink-0`}
+        )} ${shapeClass} flex items-center justify-center text-primary-foreground font-medium shrink-0`}
       >
         {initials}
       </div>
@@ -53,16 +62,18 @@ const Avatar: React.FC<AvatarProps> = ({ src, name, size = "md" }) => {
     <div className={`${sizeClasses[size]} relative shrink-0`}>
       {isLoading && (
         <div
-          className={`absolute inset-0 rounded-full bg-muted animate-pulse`}
+          className={`absolute inset-0 ${shapeClass} bg-muted animate-pulse`}
         />
       )}
-      <img
+      <Image
         src={src}
         alt={name}
-        className={`w-full h-full rounded-full object-cover transition-opacity duration-300 ${
+        width={sizePixels[size]}
+        height={sizePixels[size]}
+        className={`w-full h-full ${shapeClass} object-cover transition-opacity duration-300 ${
           isLoading ? "opacity-0" : "opacity-100"
         }`}
-        onLoad={() => setIsLoading(false)}
+        onLoadingComplete={() => setIsLoading(false)}
         onError={() => {
           setHasError(true);
           setIsLoading(false);
