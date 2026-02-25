@@ -204,7 +204,7 @@ const jsonLd = {
     name: "Ossium Inc.",
     url: "https://x.com/ossium_inc",
   },
-  screenshot: `${siteUrl}/screenshot.png`,
+  screenshot: `${siteUrl}/og-image.png`,
   featureList: [
     "AI-powered code analysis",
     "Repository structure visualization",
