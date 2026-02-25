@@ -9,6 +9,7 @@ import Link from "next/link";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { GithubIcon } from "@hugeicons/core-free-icons";
+import { Coffee } from "lucide-react";
 
 export const HeroHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -100,6 +101,18 @@ export const HeroHeader = () => {
 
             {/* Right actions */}
             <div className="flex items-center gap-2 shrink-0">
+                            <Button asChild variant="outline" size="sm">
+                              <Link
+                                href="https://www.buymeacoffee.com/manixh"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5"
+                              >
+                                <Coffee className="w-4 h-4 text-foreground/70" />
+                                <span className="hidden sm:inline">Donate</span>
+                              </Link>
+                            </Button>
+
               <ThemeToggle />
 
               <Button asChild variant="outline">
