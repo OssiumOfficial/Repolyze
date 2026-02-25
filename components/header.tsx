@@ -10,6 +10,7 @@ import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { GithubIcon } from "@hugeicons/core-free-icons";
 import { Coffee } from "lucide-react";
+import { AuthButton } from "@/components/auth-button";
 
 export const HeroHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -112,6 +113,8 @@ export const HeroHeader = () => {
                                 <span className="hidden sm:inline">Donate</span>
                               </Link>
                             </Button>
+
+              <AuthButton />
 
               <ThemeToggle />
 

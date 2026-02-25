@@ -1,5 +1,9 @@
 packages:
   - .
+
 ignoredBuiltDependencies:
+  - '@prisma/engines'
+  - core-js
+  - prisma
   - sharp
   - unrs-resolver
