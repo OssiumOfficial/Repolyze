@@ -3,6 +3,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+html {
+  overflow-x: hidden;
+}
+
 *::selection {
   background-color: var(--primary);
   color: var(--primary-foreground);

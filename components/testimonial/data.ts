@@ -24,4 +24,16 @@ export const tweets: Tweet[] = [
       isOrg: true,
     },
   },
+   {
+    id: "3",
+    content: "Wanna be here? Donate Pls!",
+    user: {
+      name: "Buy Me A Coffee",
+      username: "buymeacoffee",
+      avatar:
+        "https://pbs.twimg.com/profile_images/1877558418489356288/CIzNmBCV_400x400.png",
+      isVerified: true,
+      isOrg: true,
+    },
+  },
 ];

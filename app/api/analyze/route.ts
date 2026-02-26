@@ -22,6 +22,11 @@ import { analyzeCodeMetrics, calculateScores } from "./code-analyzer";
 import { generateAutomations } from "./automation-generator";
 import { generateRefactors } from "./refactor-generator";
 import { HealthCheckResponse, ErrorResponse } from "./types";
+import {
+  checkAnalysisRateLimit,
+  recordAnalysisRequest,
+  cleanupOldRequests,
+} from "@/lib/analysis-rate-limit";
 
 const MAX_BODY_SIZE = 10 * 1024;
 
@@ -34,14 +39,43 @@ export async function POST(request: Request) {
   }
 
   const clientIP = getClientIP(request);
-  const rateLimit = checkRateLimit(clientIP);
 
+  // Per-minute burst rate limit (existing, in-memory)
+  const rateLimit = checkRateLimit(clientIP);
   if (!rateLimit.allowed) {
     return Response.json(
       {
         error: "Too many requests. Please try again later.",
       } satisfies ErrorResponse,
       { status: 429, headers: { "Retry-After": "60" } },
+    );
+  }
+
+  // Daily IP-based rate limit (DB-backed) — anonymous: 3/day, logged-in: unlimited
+  let dailyLimit: Awaited<ReturnType<typeof checkAnalysisRateLimit>>;
+  try {
+    dailyLimit = await checkAnalysisRateLimit(request, clientIP);
+  } catch (err) {
+    console.error("Rate limit DB check failed, allowing request:", err);
+    dailyLimit = {
+      allowed: true,
+      remaining: 1,
+      limit: 3,
+      isAuthenticated: false,
+      userId: null,
+    };
+  }
+
+  if (!dailyLimit.allowed) {
+    return Response.json(
+      {
+        error:
+          "Daily analysis limit reached. Sign in for unlimited analyses.",
+        code: "DAILY_LIMIT_REACHED",
+        limit: dailyLimit.limit,
+        remaining: 0,
+      },
+      { status: 429 },
     );
   }
 
@@ -134,6 +168,17 @@ export async function POST(request: Request) {
         metrics: codeMetrics,
       },
     );
+
+    // Record the analysis in DB for rate-limiting (fire-and-forget)
+    const repoUrl = `https://github.com/${owner}/${repo}`;
+    recordAnalysisRequest(clientIP, repoUrl, dailyLimit.userId).catch((err) =>
+      console.error("Failed to record analysis request:", err),
+    );
+
+    // Periodically cleanup old records (~1% of requests)
+    if (Math.random() < 0.01) {
+      cleanupOldRequests().catch((err) => console.error("Failed to cleanup old requests:", err));
+    }
 
     return new Response(stream, {
       headers: getStreamHeaders(rateLimit.remaining),

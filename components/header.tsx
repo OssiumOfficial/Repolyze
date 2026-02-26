@@ -9,6 +9,8 @@ import Link from "next/link";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { GithubIcon } from "@hugeicons/core-free-icons";
+import { Coffee } from "lucide-react";
+import { AuthButton } from "@/components/auth-button";
 
 export const HeroHeader = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -83,7 +85,7 @@ export const HeroHeader = () => {
       transition-all duration-300
       overflow-hidden
       `,
-            isScrolled && "max-w-4xl px-3 sm:px-4 lg:px-5"
+            isScrolled && "max-w-4xl px-3 sm:px-4 lg:px-5",
           )}
         >
           <div className="flex items-center justify-between gap-2 py-3 lg:py-4">
@@ -99,10 +101,24 @@ export const HeroHeader = () => {
             </Link>
 
             {/* Right actions */}
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              <Button asChild variant="outline" size="sm">
+                <Link
+                  href="https://www.buymeacoffee.com/manixh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5"
+                >
+                  <Coffee className="w-4 h-4 text-foreground/70" />
+                  <span className="hidden sm:inline">Donate</span>
+                </Link>
+              </Button>
+
+              <AuthButton />
+
               <ThemeToggle />
 
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" size="sm">
                 <Link
                   href="https://github.com/OssiumOfficial/repolyze"
                   target="_blank"
@@ -116,7 +132,7 @@ export const HeroHeader = () => {
                   />{" "}
                   <span className="hidden sm:inline">GitHub</span>
                   {stars !== null && (
-                    <span className="text-xs text-muted-foreground font-normal">
+                    <span className="hidden sm:inline text-xs text-muted-foreground font-normal">
                       ⭐ {stars.toLocaleString()}
                     </span>
                   )}

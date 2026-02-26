@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { AnalysisProvider } from "@/context/analysis-context";
 import "./fonts.css";
 import { ThemeProvider } from "@/context/theme-provider";
+import { SessionProvider } from "next-auth/react";
 import Script from "next/script";
 
 const geistSans = Geist({
@@ -204,7 +205,7 @@ const jsonLd = {
     name: "Ossium Inc.",
     url: "https://x.com/ossium_inc",
   },
-  screenshot: `${siteUrl}/screenshot.png`,
+  screenshot: `${siteUrl}/og-image.png`,
   featureList: [
     "AI-powered code analysis",
     "Repository structure visualization",
@@ -229,12 +230,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <Script defer src="https://cloud.umami.is/script.js" data-website-id={`${process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}`}></Script>
       <body
+        suppressHydrationWarning
         className={cn(
           geistSans.variable,
           geistMono.variable,
           jetBrainsMono.variable,
           instrumentSerif.variable,
-          "antialiased"
+          "antialiased overflow-x-hidden"
         )}
       >
         <Script
@@ -243,6 +245,7 @@ export default function RootLayout({
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <SessionProvider>
         <AnalysisProvider>
           <ThemeProvider
             attribute="class"
@@ -253,6 +256,7 @@ export default function RootLayout({
             {children}
           </ThemeProvider>
         </AnalysisProvider>
+        </SessionProvider>
       </body>
     </html>
   );

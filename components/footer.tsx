@@ -57,6 +57,14 @@ export function Footer() {
               <p className="text-xs text-muted-foreground jetbrains-mono text-center sm:text-left">
                 © {new Date().getFullYear()} <Link href="https://ossium.live" className="hover:underline">Ossium Inc.</Link> All rights reserved.
               </p>
+              <div className="flex items-center gap-4">
+                <Link href="/terms" className="text-xs text-muted-foreground hover:text-foreground transition-colors jetbrains-mono">
+                  Terms
+                </Link>
+                <Link href="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors jetbrains-mono">
+                  Privacy
+                </Link>
+              </div>
             </div>
           </div>
         </div>

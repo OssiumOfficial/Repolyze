@@ -15,6 +15,10 @@ interface AnalysisCache {
   [key: string]: StoredAnalysis; // key format: "owner/repo" or "owner/repo:branch"
 }
 
+function normalizeRepoName(repoFullName: string): string {
+  return repoFullName.toLowerCase();
+}
+
 /**
  * Generate cache key from repo name and optional branch
  */
@@ -62,6 +66,30 @@ export const analysisStorage = {
             return fallbackEntry.data;
           }
         }
+
+        // Fallback: case-insensitive match and most recent repo entry
+        if (!branch) {
+          const target = normalizeRepoName(repoFullName);
+          const now = Date.now();
+          const candidates = Object.entries(parsed)
+            .map(([cacheKey, cachedEntry]) => ({
+              cacheKey,
+              cachedEntry,
+              parsedKey: parseCacheKey(cacheKey),
+            }))
+            .filter(({ cachedEntry, parsedKey }) => {
+              return (
+                cachedEntry.expiresAt > now &&
+                normalizeRepoName(parsedKey.repoFullName) === target
+              );
+            })
+            .sort((a, b) => b.cachedEntry.timestamp - a.cachedEntry.timestamp);
+
+          if (candidates.length > 0) {
+            return candidates[0].cachedEntry.data;
+          }
+        }
+
         return null;
       }
 
