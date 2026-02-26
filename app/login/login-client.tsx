@@ -16,7 +16,7 @@ export function LoginClient() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6 py-4 sm:p-4">
       <div className="fixed inset-0 -z-10 overflow-hidden">
         <div className="absolute -top-1/2 left-1/2 -translate-x-1/2 w-200 h-200 bg-primary/5 rounded-full blur-3xl" />
       </div>
@@ -35,15 +35,15 @@ export function LoginClient() {
           Back
         </button>
         <Card className="border-border/50 shadow-xl shadow-primary/5">
-          <CardHeader className="text-center space-y-4 pb-2">
+          <CardHeader className="text-center space-y-4 pb-2 px-4 sm:px-6">
             <Link href="/" className="inline-flex items-center justify-center gap-2">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full" />
-                <RepolyzeLogo className="relative size-15 text-primary" />
+                <RepolyzeLogo className="relative size-12 sm:size-15 text-primary" />
               </div>
             </Link>
             <div>
-              <h1 className="text-2xl font-medium instrument-serif tracking-wider">
+              <h1 className="text-xl sm:text-2xl font-medium instrument-serif tracking-wider">
                 Sign in to Repolyze
               </h1>
               <p className="text-xs text-muted-foreground mt-1">
@@ -52,7 +52,7 @@ export function LoginClient() {
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-3 pt-0">
+          <CardContent className="space-y-3 pt-0 px-4 sm:px-6">
             <Button
               variant="outline"
               className="w-full h-11 gap-3 cursor-pointer"
@@ -60,10 +60,10 @@ export function LoginClient() {
             >
               <HugeiconsIcon
                 icon={GithubIcon}
-                className="w-5 h-5"
+                className="w-5 h-5 shrink-0"
                 strokeWidth={1.5}
               />
-              Continue with GitHub
+              <span className="truncate">Continue with GitHub</span>
             </Button>
 
             <Button
@@ -89,7 +89,7 @@ export function LoginClient() {
                   fill="#EA4335"
                 />
               </svg>
-              Continue with Google
+              <span className="truncate">Continue with Google</span>
             </Button>
 
             <div className="pt-3 border-t border-border/50">

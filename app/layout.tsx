@@ -236,7 +236,7 @@ export default function RootLayout({
           geistMono.variable,
           jetBrainsMono.variable,
           instrumentSerif.variable,
-          "antialiased"
+          "antialiased overflow-x-hidden"
         )}
       >
         <Script

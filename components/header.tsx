@@ -101,7 +101,7 @@ export const HeroHeader = () => {
             </Link>
 
             {/* Right actions */}
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                             <Button asChild variant="outline" size="sm">
                               <Link
                                 href="https://www.buymeacoffee.com/manixh"
@@ -118,7 +118,7 @@ export const HeroHeader = () => {
 
               <ThemeToggle />
 
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" size="sm">
                 <Link
                   href="https://github.com/OssiumOfficial/repolyze"
                   target="_blank"
@@ -132,7 +132,7 @@ export const HeroHeader = () => {
                   />{" "}
                   <span className="hidden sm:inline">GitHub</span>
                   {stars !== null && (
-                    <span className="text-xs text-muted-foreground font-normal">
+                    <span className="hidden sm:inline text-xs text-muted-foreground font-normal">
                       ⭐ {stars.toLocaleString()}
                     </span>
                   )}
