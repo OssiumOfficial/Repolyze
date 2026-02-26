@@ -85,7 +85,7 @@ export const HeroHeader = () => {
       transition-all duration-300
       overflow-hidden
       `,
-            isScrolled && "max-w-4xl px-3 sm:px-4 lg:px-5"
+            isScrolled && "max-w-4xl px-3 sm:px-4 lg:px-5",
           )}
         >
           <div className="flex items-center justify-between gap-2 py-3 lg:py-4">
@@ -102,17 +102,17 @@ export const HeroHeader = () => {
 
             {/* Right actions */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                            <Button asChild variant="outline" size="sm">
-                              <Link
-                                href="https://www.buymeacoffee.com/manixh"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-1.5"
-                              >
-                                <Coffee className="w-4 h-4 text-foreground/70" />
-                                <span className="hidden sm:inline">Donate</span>
-                              </Link>
-                            </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link
+                  href="https://www.buymeacoffee.com/manixh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5"
+                >
+                  <Coffee className="w-4 h-4 text-foreground/70" />
+                  <span className="hidden sm:inline">Donate</span>
+                </Link>
+              </Button>
 
               <AuthButton />
 
