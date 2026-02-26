@@ -32,7 +32,7 @@ export function AuthButton() {
     fetch("/api/auth/usage")
       .then((r) => r.json())
       .then(setUsage)
-      .catch(() => {});
+      .catch((error) => console.error("Failed to fetch usage data:", error));
   }, []);
 
   // Loading state

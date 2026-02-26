@@ -22,7 +22,7 @@ export async function GET(request: Request) {
   }
 
   const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
+  startOfDay.setUTCHours(0, 0, 0, 0);
 
   const todayCount = await prisma.analysisRequest.count({
     where: {

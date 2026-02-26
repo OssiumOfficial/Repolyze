@@ -37,7 +37,7 @@ export async function checkAnalysisRateLimit(
 
   // Anonymous: count unique analysis requests from this IP today
   const startOfDay = new Date();
-  startOfDay.setHours(0, 0, 0, 0);
+  startOfDay.setUTCHours(0, 0, 0, 0);
 
   const todayCount = await prisma.analysisRequest.count({
     where: {

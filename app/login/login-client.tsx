@@ -28,20 +28,20 @@ export function LoginClient() {
             <Link href="/" className="inline-flex items-center justify-center gap-2">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full" />
-                <RepolyzeLogo className="relative size-10 text-primary" />
+                <RepolyzeLogo className="relative size-15 text-primary" />
               </div>
             </Link>
             <div>
               <h1 className="text-2xl font-medium instrument-serif tracking-wider">
                 Sign in to Repolyze
               </h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Get unlimited repository analyses
+              <p className="text-xs text-muted-foreground mt-1">
+                Sign in to Get unlimited repository analyses
               </p>
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-3 pt-4">
+          <CardContent className="space-y-3 pt-0">
             <Button
               variant="outline"
               className="w-full h-11 gap-3 cursor-pointer"
@@ -83,8 +83,8 @@ export function LoginClient() {
 
             <div className="pt-3 border-t border-border/50">
               <p className="text-xs text-center text-muted-foreground">
-                Without signing in, you can analyze up to{" "}
-                <span className="text-foreground font-medium">3 repos per day</span>.
+                By continuing, you agree to our <Link href="/terms" className="underline">Terms</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.{" "}
+               
               </p>
             </div>
           </CardContent>

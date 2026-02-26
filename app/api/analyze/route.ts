@@ -177,7 +177,7 @@ export async function POST(request: Request) {
 
     // Periodically cleanup old records (~1% of requests)
     if (Math.random() < 0.01) {
-      cleanupOldRequests().catch(() => {});
+      cleanupOldRequests().catch((err) => console.error("Failed to cleanup old requests:", err));
     }
 
     return new Response(stream, {

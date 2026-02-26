@@ -32,7 +32,8 @@ async function getGitHubData(owner: string, repo: string) {
       stars: data.stargazers_count,
       language: data.language || "Unknown",
     };
-  } catch {
+  } catch (error) {
+    console.error("Failed to fetch GitHub data:", error);
     return null;
   }
 }
@@ -70,7 +71,7 @@ export async function generateMetadata({
     repo
   )}&owner=${encodeURIComponent(owner)}&stars=${
     github ? formatStars(github.stars) : "0"
-  }&language=${encodeURIComponent(github?.language || "Unknown")}&score=85`;
+  }&language=${encodeURIComponent(github?.language || "Unknown")}`;
 
   return {
     metadataBase: new URL(BASE_URL),
