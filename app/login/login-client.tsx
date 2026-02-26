@@ -1,16 +1,20 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import RepolyzeLogo from "@/components/icons/Repolyze-logo";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { GithubIcon } from "@hugeicons/core-free-icons";
 
 export function LoginClient() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="fixed inset-0 -z-10 overflow-hidden">
@@ -23,6 +27,13 @@ export function LoginClient() {
         transition={{ duration: 0.4 }}
         className="w-full max-w-sm"
       >
+        <button
+          onClick={() => router.back()}
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4 cursor-pointer"
+        >
+          <ArrowLeft className="size-4" />
+          Back
+        </button>
         <Card className="border-border/50 shadow-xl shadow-primary/5">
           <CardHeader className="text-center space-y-4 pb-2">
             <Link href="/" className="inline-flex items-center justify-center gap-2">
