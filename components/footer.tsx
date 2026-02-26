@@ -3,6 +3,7 @@ import { GithubIcon, TwitterIcon } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import RepolyzeLogo from "./icons/Repolyze-logo";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -46,6 +47,19 @@ export function Footer() {
                   <SocialLink href="https://x.com/ossium_inc" label="Twitter">
                     <TwitterIcon className="size-5" />
                   </SocialLink>
+                   <span className="text-xs text-muted-foreground jetbrains-mono">
+                    Built With 💞 by <Link href="https://ossium.live" className="hover:underline">Ossium Inc.</Link>
+                  </span>
+                </div>
+
+                <div className="flex items-end">
+                  <Image
+                    src="/repolyze-banner.gif"
+                    alt="repolyze banner"
+                    width={280}
+                    height={100}
+                  />
+                 
                 </div>
               </div>
             </div>
