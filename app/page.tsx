@@ -21,6 +21,43 @@ function HomeContent() {
     }
   }, [searchParams, analyze]);
 
+  // After Polar checkout success, sync subscription and reload to reflect Pro
+  useEffect(() => {
+    if (searchParams.get("upgrade") === "success") {
+      // Remove the query params from URL immediately
+      const url = new URL(window.location.href);
+      url.searchParams.delete("upgrade");
+      url.searchParams.delete("customer_session_token");
+      window.history.replaceState({}, "", url.pathname);
+
+      // Sync with retries — Polar may take a moment to activate the subscription
+      const trySync = async (attempt = 1): Promise<void> => {
+        const res = await fetch("/api/polar/sync", { method: "POST" });
+        const data = await res.json();
+        console.log(`Polar sync attempt ${attempt}:`, data);
+
+        if (data.plan === "pro") {
+          window.location.reload();
+          return;
+        }
+
+        // Retry up to 3 times with increasing delay
+        if (attempt < 3) {
+          await new Promise((r) => setTimeout(r, attempt * 2000));
+          return trySync(attempt + 1);
+        }
+
+        // Final fallback — reload anyway (webhook may have updated it)
+        window.location.reload();
+      };
+
+      // Wait 1.5s before first attempt to let Polar process
+      setTimeout(() => {
+        trySync().catch((err) => console.error("Polar sync failed:", err));
+      }, 1500);
+    }
+  }, [searchParams]);
+
   return (
     <div className="w-full relative jetbrains-mono">
       <div className="fixed inset-0 w-full h-full pointer-events-none -z-10">
