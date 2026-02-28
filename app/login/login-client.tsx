@@ -11,6 +11,7 @@ import { ArrowLeft } from "lucide-react";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { GithubIcon } from "@hugeicons/core-free-icons";
+import Image from "next/image";
 
 export function LoginClient() {
   const router = useRouter();
@@ -34,17 +35,31 @@ export function LoginClient() {
           <ArrowLeft className="size-4" />
           Back
         </button>
-        <Card className="border-border/50 shadow-xl shadow-primary/5">
+        <Card className="border-border/50 shadow-xl shadow-primary/5 pt-0">
+          {/* Full-width image banner */}
+          <div className="relative h-28 sm:h-32 overflow-hidden">
+            <Image
+              src="/repolyze-auth-banner.png" // ← put your image in public/
+              alt="Repolyze analysis illustration"
+              width={100}
+              height={100}
+              unoptimized
+              className="object-cover w-full h-full brightness-95"
+            />
+          </div>
           <CardHeader className="text-center space-y-4 pb-2 px-4 sm:px-6">
-            <Link href="/" className="inline-flex items-center justify-center gap-2">
+            {/* <Link
+              href="/"
+              className="inline-flex items-center justify-center gap-2"
+            >
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/20 blur-lg rounded-full" />
                 <RepolyzeLogo className="relative size-12 sm:size-15 text-primary" />
               </div>
-            </Link>
+            </Link> */}
             <div>
               <h1 className="text-xl sm:text-2xl font-medium instrument-serif tracking-wider">
-                Sign in to Repolyze
+                Repolyze Login
               </h1>
               <p className="text-xs text-muted-foreground mt-1">
                 Sign in to Get unlimited repository analyses
@@ -94,8 +109,15 @@ export function LoginClient() {
 
             <div className="pt-3 border-t border-border/50">
               <p className="text-xs text-center text-muted-foreground">
-                By continuing, you agree to our <Link href="/terms" className="underline">Terms</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.{" "}
-               
+                By continuing, you agree to our{" "}
+                <Link href="/terms" className="underline">
+                  Terms
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="underline">
+                  Privacy Policy
+                </Link>
+                .{" "}
               </p>
             </div>
           </CardContent>

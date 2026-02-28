@@ -77,6 +77,11 @@ export interface StreamEventRefactors {
   data: GeneratedRefactor[];
 }
 
+export interface StreamEventTier {
+  type: "tier";
+  data: string; // UserTier
+}
+
 export type StreamEvent =
   | StreamEventMetadata
   | StreamEventContent
@@ -84,7 +89,8 @@ export type StreamEvent =
   | StreamEventDone
   | StreamEventScores
   | StreamEventAutomations
-  | StreamEventRefactors;
+  | StreamEventRefactors
+  | StreamEventTier;
 
 export type RepoMetadata = Awaited<ReturnType<typeof fetchRepoMetadata>>;
 export type FileStats = ReturnType<typeof calculateFileStats>;

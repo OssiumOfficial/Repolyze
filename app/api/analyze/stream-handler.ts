@@ -3,6 +3,7 @@ import { RepoMetadata, FileStats, StreamEvent } from "./types";
 import { CodeMetrics } from "./code-analyzer";
 import { GeneratedAutomation } from "./automation-generator";
 import { GeneratedRefactor } from "./refactor-generator";
+import { UserTier } from "@/lib/tiers";
 
 const encoder = new TextEncoder();
 
@@ -44,9 +45,18 @@ export function createAnalysisStream(
   availableBranches: BranchInfo[],
   textStream: AsyncIterable<string>,
   preComputed: PreComputedData,
+  tier: UserTier = "anonymous",
 ): ReadableStream {
   return new ReadableStream({
     async start(controller) {
+      // Send user tier info first so client knows what to gate
+      controller.enqueue(
+        encodeStreamEvent({
+          type: "tier",
+          data: tier,
+        }),
+      );
+
       // Send metadata
       controller.enqueue(
         encodeStreamEvent({

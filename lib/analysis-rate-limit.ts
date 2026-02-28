@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-
-const ANON_DAILY_LIMIT = 3;
+import { UserTier, getTierLimits } from "@/lib/tiers";
 
 interface RateLimitCheck {
   allowed: boolean;
@@ -9,12 +8,14 @@ interface RateLimitCheck {
   limit: number;
   isAuthenticated: boolean;
   userId: string | null;
+  tier: UserTier;
 }
 
 /**
- * Check if the request is allowed based on IP + auth.
- * - Authenticated users: unlimited
- * - Anonymous users: 3 unique repos per day per IP
+ * Check if the request is allowed based on user tier.
+ * - Anonymous users: 1 unique repo per day per IP
+ * - Free users: 3 per day
+ * - Pro users: 44 per day
  */
 export async function checkAnalysisRateLimit(
   request: Request,
@@ -24,37 +25,50 @@ export async function checkAnalysisRateLimit(
   const session = await auth();
   const userId = session?.user?.id ?? null;
 
-  // Authenticated users get unlimited access
+  let tier: UserTier = "anonymous";
+
   if (userId) {
-    return {
-      allowed: true,
-      remaining: Infinity,
-      limit: Infinity,
-      isAuthenticated: true,
-      userId,
-    };
+    // Fetch user plan from DB
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { plan: true, planExpiresAt: true },
+    });
+
+    if (user?.plan === "pro") {
+      // Check if plan hasn't expired
+      if (!user.planExpiresAt || user.planExpiresAt > new Date()) {
+        tier = "pro";
+      } else {
+        tier = "free";
+      }
+    } else {
+      tier = "free";
+    }
   }
 
-  // Anonymous: count unique analysis requests from this IP today
+  const limits = getTierLimits(tier);
+  const dailyLimit = limits.dailyAnalyses;
+
+  // Count today's usage
   const startOfDay = new Date();
   startOfDay.setUTCHours(0, 0, 0, 0);
 
   const todayCount = await prisma.analysisRequest.count({
     where: {
-      ip,
-      userId: null,
+      ...(userId ? { userId } : { ip, userId: null }),
       createdAt: { gte: startOfDay },
     },
   });
 
-  const remaining = Math.max(0, ANON_DAILY_LIMIT - todayCount);
+  const remaining = Math.max(0, dailyLimit - todayCount);
 
   return {
-    allowed: todayCount < ANON_DAILY_LIMIT,
+    allowed: todayCount < dailyLimit,
     remaining,
-    limit: ANON_DAILY_LIMIT,
-    isAuthenticated: false,
-    userId: null,
+    limit: dailyLimit,
+    isAuthenticated: !!userId,
+    userId,
+    tier,
   };
 }
 

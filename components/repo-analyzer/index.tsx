@@ -14,6 +14,7 @@ import { IssuesPanel, SuggestedIssue } from "@/components/issues-panel";
 import { AnalysisHeader } from "@/components/analysis-header";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { RecentAnalyses } from "@/components/recent-analyses";
+import { FeatureGate } from "@/components/feature-gate";
 import { useAnalysis } from "@/hooks/use-analysis";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,6 +49,7 @@ export function RepoAnalyzer() {
     analyzeBranch,
     status,
     result,
+    tier,
     reset,
     refresh,
     isLoading,
@@ -276,6 +278,7 @@ ${insight.affectedFiles.map((f) => `- \`${f}\``).join("\n")}`
                   availableBranches={result.availableBranches}
                   onBranchChange={analyzeBranch}
                   isLoading={isLoading}
+                  tier={tier}
                 />
               </motion.section>
 
@@ -289,9 +292,15 @@ ${insight.affectedFiles.map((f) => `- \`${f}\``).join("\n")}`
                 <SectionHeader title="Analysis Overview" />
                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   {result.scores && <ScoreCard scores={result.scores} />}
-                  {result.insights && result.insights.length > 0 && (
-                    <AIInsights insights={result.insights} />
-                  )}
+                  <FeatureGate
+                    tier={tier}
+                    feature="aiInsights"
+                    featureLabel="AI-powered code insights and recommendations"
+                  >
+                    {result.insights && result.insights.length > 0 && (
+                      <AIInsights insights={result.insights} />
+                    )}
+                  </FeatureGate>
                 </div>
               </motion.section>
 
@@ -304,19 +313,25 @@ ${insight.affectedFiles.map((f) => `- \`${f}\``).join("\n")}`
               >
                 <SectionHeader title="Data Flow" icon={WorkflowSquare10Icon} />
                 <div className="mt-4">
-                  {result.dataFlow?.nodes &&
-                  result.dataFlow.nodes.length > 0 ? (
-                    <DataFlowDiagram
-                      nodes={result.dataFlow.nodes}
-                      edges={result.dataFlow.edges || []}
-                    />
-                  ) : (
-                    <EmptyState
-                      icon={WorkflowSquare10Icon}
-                      title="No Data Flow Information"
-                      description="Data flow visualization is not available for this repository."
-                    />
-                  )}
+                  <FeatureGate
+                    tier={tier}
+                    feature="dataFlow"
+                    featureLabel="Visual data flow diagram between components"
+                  >
+                    {result.dataFlow?.nodes &&
+                    result.dataFlow.nodes.length > 0 ? (
+                      <DataFlowDiagram
+                        nodes={result.dataFlow.nodes}
+                        edges={result.dataFlow.edges || []}
+                      />
+                    ) : (
+                      <EmptyState
+                        icon={WorkflowSquare10Icon}
+                        title="No Data Flow Information"
+                        description="Data flow visualization is not available for this repository."
+                      />
+                    )}
+                  </FeatureGate>
                 </div>
               </motion.section>
 
@@ -464,10 +479,16 @@ ${insight.affectedFiles.map((f) => `- \`${f}\``).join("\n")}`
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.2 }}
                       >
-                        <IssuesPanel
-                          repoFullName={result.metadata?.fullName || ""}
-                          suggestedIssues={suggestedIssues}
-                        />
+                        <FeatureGate
+                          tier={tier}
+                          feature="issues"
+                          featureLabel="Auto-generated GitHub issues from analysis"
+                        >
+                          <IssuesPanel
+                            repoFullName={result.metadata?.fullName || ""}
+                            suggestedIssues={suggestedIssues}
+                          />
+                        </FeatureGate>
                       </motion.div>
                     </TabsContent>
                     {/* <TabsContent
