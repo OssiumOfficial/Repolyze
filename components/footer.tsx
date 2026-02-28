@@ -65,6 +65,17 @@ export function Footer() {
                 <Link href="/privacy" className="text-xs text-muted-foreground hover:text-foreground transition-colors jetbrains-mono">
                   Privacy
                 </Link>
+                <span className="text-xs text-muted-foreground jetbrains-mono">
+                  - This site is powered by{" "}
+                  <a
+                    href="https://www.netlify.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-foreground transition-colors underline underline-offset-2"
+                  >
+                    Netlify
+                  </a>
+                </span>
               </div>
             </div>
           </div>

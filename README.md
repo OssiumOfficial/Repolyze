@@ -10,12 +10,13 @@
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Visit_Site-black?style=for-the-badge)](https://repolyze.ossium.live)
 [![GitHub Stars](https://img.shields.io/github/stars/OssiumOfficial/Repolyze?style=for-the-badge&logo=github&color=yellow)](https://github.com/OssiumOfficial/Repolyze)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](./LICENSE)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg?style=for-the-badge)](./CODE_OF_CONDUCT.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-Support-orange?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white)](https://www.buymeacoffee.com/manixh)
 
   <br />
 
-[Features](#-features) • [Quick Start](#-quick-start) • [API Reference](#-api-reference) • [Contributing](#-contributing) • [License](#-license)
+[Features](#-features) • [Quick Start](#-quick-start) • [API Reference](#-api-reference) • [Contributing](#-contributing) • [Code of Conduct](./CODE_OF_CONDUCT.md) • [License](#-license)
 
   <br />
 
