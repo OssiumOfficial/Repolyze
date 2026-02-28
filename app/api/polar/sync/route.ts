@@ -6,7 +6,7 @@ import { getPolarClient } from "@/lib/polar";
  * POST /api/polar/sync
  *
  * Manually sync the user's subscription status from Polar.
- * This is called after a successful checkout redirect as a fallback
+ * Called after a successful checkout redirect as a fallback
  * in case the webhook hasn't fired yet (e.g. localhost, slow webhook).
  */
 export async function POST() {
@@ -19,9 +19,19 @@ export async function POST() {
   try {
     const polar = getPolarClient();
 
-    // Search for active subscriptions by customer email
+    // Find the Polar customer by email
+    const customers = await polar.customers.list({
+      email: session.user.email,
+    });
+
+    const customer = customers.result?.items?.[0];
+    if (!customer) {
+      return Response.json({ synced: true, plan: "free" });
+    }
+
+    // Find active subscriptions for this customer
     const subscriptions = await polar.subscriptions.list({
-      customerEmail: session.user.email,
+      customerId: customer.id,
       active: true,
     });
 
