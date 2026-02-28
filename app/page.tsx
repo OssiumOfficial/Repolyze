@@ -4,6 +4,7 @@ import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Footer } from "@/components/footer";
 import { HeroHeader } from "@/components/header";
+import { PromoBanner } from "@/components/promo-banner";
 import { RepoAnalyzer } from "@/components/repo-analyzer";
 import { useAnalysis } from "@/hooks/use-analysis";
 import { Sparkles } from "lucide-react";
@@ -60,6 +61,9 @@ function HomeContent() {
 
   return (
     <div className="w-full relative jetbrains-mono">
+      {/* Promo Banner — above everything including the navbar */}
+      <PromoBanner />
+
       <div className="fixed inset-0 w-full h-full pointer-events-none -z-10">
         <div className="fixed inset-0 -z-10">
           {/* Base gradient */}

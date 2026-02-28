@@ -1,9 +1,8 @@
 import { cn } from "@/lib/utils";
 import { GithubIcon, TwitterIcon } from "lucide-react";
 import Link from "next/link";
-import { buttonVariants } from "./ui/button";
 import RepolyzeLogo from "./icons/Repolyze-logo";
-import Image from "next/image";
+import { buttonVariants } from "./ui/button";
 
 export function Footer() {
   return (
