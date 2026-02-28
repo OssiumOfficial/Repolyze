@@ -9,6 +9,7 @@ import {
   BranchInfo,
 } from "@/lib/types";
 import { analysisStorage } from "@/lib/storage";
+import { UserTier, canAccessFeature } from "@/lib/tiers";
 
 const GITHUB_URL_REGEX =
   /(?:https?:\/\/)?(?:www\.)?github\.com\/([^\/]+\/[^\/\s?#]+)/;
@@ -29,13 +30,38 @@ const LOADING_MESSAGES = [
   "Almost done...",
 ];
 
+/**
+ * Strip gated data from the result based on user tier.
+ * This ensures gated content is never stored in React state or localStorage.
+ */
+function stripGatedData(
+  data: Partial<AnalysisResult>,
+  tier: UserTier,
+): Partial<AnalysisResult> {
+  const stripped = { ...data };
+
+  // AI Insights: pro only
+  if (!canAccessFeature(tier, "aiInsights")) {
+    stripped.insights = undefined;
+  }
+
+  // Data Flow: pro only
+  if (!canAccessFeature(tier, "dataFlow")) {
+    stripped.dataFlow = undefined;
+  }
+
+  return stripped;
+}
+
 export function useAnalysis() {
   const {
     status,
     result,
+    tier,
     setStatus,
     setResult,
     updateResult,
+    setTier,
     reset: contextReset,
     isLoading,
     isComplete,
@@ -47,6 +73,7 @@ export function useAnalysis() {
   const [currentRepoUrl, setCurrentRepoUrl] = useState<string | null>(null);
   const [currentBranch, setCurrentBranch] = useState<string | undefined>();
   const abortRef = useRef<AbortController | null>(null);
+  const tierRef = useRef<UserTier>("anonymous");
 
   const analyze = useCallback(
     async (url: string, branch?: string, skipCache = false) => {
@@ -108,6 +135,7 @@ export function useAnalysis() {
         let buffer = "";
         let aiContent = "";
         let currentResult: Partial<AnalysisResult> = {};
+        let streamTier: UserTier = "anonymous";
 
         setStatus({
           stage: "fetching",
@@ -129,6 +157,11 @@ export function useAnalysis() {
               const data = JSON.parse(line.slice(6));
 
               switch (data.type) {
+                case "tier":
+                  streamTier = data.data as UserTier;
+                  tierRef.current = streamTier;
+                  setTier(streamTier);
+                  break;
                 case "metadata": {
                   const {
                     metadata,
@@ -193,11 +226,13 @@ export function useAnalysis() {
                   throw new Error(data.data);
                 case "done": {
                   const final = processFinalResult(aiContent, currentResult);
-                  updateResult(final);
+                  // Strip gated data based on tier BEFORE storing
+                  const gated = stripGatedData(final, streamTier);
+                  updateResult(gated);
                   if (currentResult.metadata?.fullName) {
                     analysisStorage.set(
                       currentResult.metadata.fullName,
-                      final as AnalysisResult,
+                      gated as AnalysisResult,
                       currentResult.branch,
                     );
                   }
@@ -227,7 +262,7 @@ export function useAnalysis() {
         abortRef.current = null;
       }
     },
-    [setStatus, setResult, updateResult],
+    [setStatus, setResult, updateResult, setTier],
   );
 
   const analyzeBranch = useCallback(
@@ -270,6 +305,7 @@ export function useAnalysis() {
     clearCache,
     status,
     result,
+    tier,
     isLoading,
     isComplete,
     hasError,

@@ -1,5 +1,6 @@
 import { IconSvgElement } from "@hugeicons/react";
 import { RepoMetadata, AnalysisResult, BranchInfo } from "@/lib/types";
+import { UserTier } from "@/lib/tiers";
 
 export interface AnalysisHeaderProps {
   metadata: RepoMetadata;
@@ -10,6 +11,7 @@ export interface AnalysisHeaderProps {
   availableBranches?: BranchInfo[];
   onBranchChange?: (branch: string) => void;
   isLoading?: boolean;
+  tier?: UserTier;
 }
 
 export interface ExtendedAnalysis {

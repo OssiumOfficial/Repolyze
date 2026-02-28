@@ -51,7 +51,7 @@ export async function POST(request: Request) {
     );
   }
 
-  // Daily IP-based rate limit (DB-backed) — anonymous: 3/day, logged-in: unlimited
+  // Daily tiered rate limit (DB-backed) — anon: 1/day, free: 3/day, pro: 44/day
   let dailyLimit: Awaited<ReturnType<typeof checkAnalysisRateLimit>>;
   try {
     dailyLimit = await checkAnalysisRateLimit(request, clientIP);
@@ -60,20 +60,26 @@ export async function POST(request: Request) {
     dailyLimit = {
       allowed: true,
       remaining: 1,
-      limit: 3,
+      limit: 1,
       isAuthenticated: false,
       userId: null,
+      tier: "anonymous",
     };
   }
 
   if (!dailyLimit.allowed) {
+    const upgradeMsg = dailyLimit.tier === "anonymous"
+      ? "Daily limit reached. Sign in to get more analyses."
+      : dailyLimit.tier === "free"
+        ? "Daily limit reached. Upgrade to Pro for 44 analyses per day."
+        : "Daily analysis limit reached.";
     return Response.json(
       {
-        error:
-          "Daily analysis limit reached. Sign in for unlimited analyses.",
+        error: upgradeMsg,
         code: "DAILY_LIMIT_REACHED",
         limit: dailyLimit.limit,
         remaining: 0,
+        tier: dailyLimit.tier,
       },
       { status: 429 },
     );
@@ -167,6 +173,7 @@ export async function POST(request: Request) {
         refactors: generatedRefactors,
         metrics: codeMetrics,
       },
+      dailyLimit.tier,
     );
 
     // Record the analysis in DB for rate-limiting (fire-and-forget)

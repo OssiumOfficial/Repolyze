@@ -19,6 +19,12 @@ model User {
   sessions      Session[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  // ─── Polar.sh Subscription ───────────────────────
+  plan              String    @default("free") // "free" | "pro"
+  polarCustomerId   String?   @unique
+  polarSubscriptionId String?
+  planExpiresAt     DateTime?
 }
 
 model Account {

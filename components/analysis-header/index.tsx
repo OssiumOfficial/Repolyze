@@ -50,6 +50,7 @@ export function AnalysisHeader({
   availableBranches,
   onBranchChange,
   isLoading = false,
+  tier = "anonymous",
 }: AnalysisHeaderProps) {
   const [copied, setCopied] = useState(false);
   const [shareModalOpen, setShareModalOpen] = useState(false);
@@ -152,7 +153,7 @@ export function AnalysisHeader({
 
             {/* Desktop Actions */}
             <div className="hidden sm:flex items-start gap-2 shrink-0">
-              <ExportActions result={shareResult} />
+              <ExportActions result={shareResult} tier={tier} />
 
               <div className="w-px h-10 bg-border/50 mx-1" />
 
@@ -333,7 +334,7 @@ export function AnalysisHeader({
 
           {/* Mobile Actions */}
           <div className="flex sm:hidden gap-2 mt-4">
-            <ExportActions result={shareResult} className="flex-1" />
+            <ExportActions result={shareResult} tier={tier} className="flex-1" />
           </div>
 
           {/* Mobile Secondary Actions */}

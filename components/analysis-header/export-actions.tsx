@@ -21,36 +21,47 @@ import { cn } from "@/lib/utils";
 import { AnalysisResult } from "@/lib/types";
 import { copySummary } from "@/lib/share";
 import { downloadPDFReport } from "@/lib/pdf-export";
+import { UserTier, canAccessFeature } from "@/lib/tiers";
+import { Lock } from "lucide-react";
+import { signIn } from "next-auth/react";
 
 interface ExportActionsProps {
   result: Partial<AnalysisResult>;
+  tier?: UserTier;
   className?: string;
 }
 
 type CopyState = "idle" | "text" | "markdown";
 
-export function ExportActions({ result, className }: ExportActionsProps) {
+export function ExportActions({ result, tier = "anonymous", className }: ExportActionsProps) {
   const [copyState, setCopyState] = useState<CopyState>("idle");
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
+  const canDownloadText = canAccessFeature(tier, "downloadText");
+  const canDownloadMarkdown = canAccessFeature(tier, "downloadMarkdown");
+  const canDownloadPdf = canAccessFeature(tier, "downloadPdf");
+
   const handleCopyText = useCallback(async () => {
+    if (!canDownloadText) { signIn(); return; }
     const success = await copySummary(result, "text");
     if (success) {
       setCopyState("text");
       setTimeout(() => setCopyState("idle"), 2500);
     }
-  }, [result]);
+  }, [result, canDownloadText]);
 
   const handleCopyMarkdown = useCallback(async () => {
+    if (!canDownloadMarkdown) { signIn(); return; }
     const success = await copySummary(result, "markdown");
     if (success) {
       setCopyState("markdown");
       setTimeout(() => setCopyState("idle"), 2500);
     }
-  }, [result]);
+  }, [result, canDownloadMarkdown]);
 
   const handleDownloadPDF = useCallback(async () => {
+    if (!canDownloadPdf) { signIn(); return; }
     if (!result.metadata) return;
 
     setDownloading(true);
@@ -65,7 +76,7 @@ export function ExportActions({ result, className }: ExportActionsProps) {
     } finally {
       setDownloading(false);
     }
-  }, [result]);
+  }, [result, canDownloadPdf]);
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -87,7 +98,8 @@ export function ExportActions({ result, className }: ExportActionsProps) {
                 "h-8 w-8 min-w-8 p-0 shrink-0",
                 "transition-colors duration-200",
                 copyState === "text" &&
-                  "text-primary border-primary/50 bg-primary/5"
+                  "text-primary border-primary/50 bg-primary/5",
+                !canDownloadText && "opacity-60"
               )}
             >
               <AnimatePresence mode="wait">
@@ -119,7 +131,7 @@ export function ExportActions({ result, className }: ExportActionsProps) {
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="text-xs hidden lg:block">
-            {copyState === "text" ? "Copied!" : "Copy as Plain Text"}
+            {!canDownloadText ? "Sign in to copy" : copyState === "text" ? "Copied!" : "Copy as Plain Text"}
           </TooltipContent>
         </Tooltip>
 
@@ -135,7 +147,8 @@ export function ExportActions({ result, className }: ExportActionsProps) {
                 "h-8 flex-1 min-w-0 gap-1.5",
                 "transition-colors duration-200",
                 copyState === "markdown" &&
-                  "text-primary border-primary/50 bg-primary/5"
+                  "text-primary border-primary/50 bg-primary/5",
+                !canDownloadMarkdown && "opacity-60"
               )}
             >
               <AnimatePresence mode="wait">
@@ -176,7 +189,7 @@ export function ExportActions({ result, className }: ExportActionsProps) {
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="text-xs hidden lg:block">
-            {copyState === "markdown" ? "Copied!" : "Copy as Markdown"}
+            {!canDownloadMarkdown ? "Sign in to copy" : copyState === "markdown" ? "Copied!" : "Copy as Markdown"}
           </TooltipContent>
         </Tooltip>
 
@@ -194,7 +207,8 @@ export function ExportActions({ result, className }: ExportActionsProps) {
               className={cn(
                 "h-8 flex-1 min-w-0 gap-1.5",
                 "transition-colors duration-200",
-                downloadSuccess && "text-primary border-primary/50 bg-primary/5"
+                downloadSuccess && "text-primary border-primary/50 bg-primary/5",
+                !canDownloadPdf && "opacity-60"
               )}
             >
               <AnimatePresence mode="wait">
@@ -252,7 +266,9 @@ export function ExportActions({ result, className }: ExportActionsProps) {
             </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="text-xs hidden lg:block">
-            {downloading
+            {!canDownloadPdf
+              ? "Sign in to download"
+              : downloading
               ? "Generating PDF..."
               : downloadSuccess
               ? "Downloaded!"
