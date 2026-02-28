@@ -116,13 +116,13 @@ export function AuthButton() {
         {usage.tier === "pro" ? (
           <DropdownMenuItem className="gap-2 text-xs text-amber-500" disabled>
             <Crown className="w-3.5 h-3.5" />
-            Pro Plan · {usage.remaining}/{usage.limit} analyses today
+            Pro · {usage.remaining}/{usage.limit} analyses today
           </DropdownMenuItem>
         ) : (
           <>
             <DropdownMenuItem className="gap-2 text-xs text-muted-foreground" disabled>
               <Zap className="w-3.5 h-3.5" />
-              Free Plan · {usage.remaining}/{usage.limit} analyses today
+              Free · {usage.remaining}/{usage.limit} analyses today
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             {/* Pro upgrade card */}
@@ -156,6 +156,12 @@ export function AuthButton() {
           </>
         )}
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild className="gap-2 cursor-pointer">
+          <Link href="/account">
+            <User className="w-3.5 h-3.5" />
+            Account
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => signOut({ callbackUrl: "/" })}
           className="gap-2 cursor-pointer"
