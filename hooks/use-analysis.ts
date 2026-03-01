@@ -27,7 +27,10 @@ const LOADING_MESSAGES = [
   "Analyzing patterns...",
   "Checking architecture...",
   "Generating insights...",
-  "Almost done...",
+  "Evaluating code quality...",
+  "Building recommendations...",
+  "Preparing results...",
+  "Finalizing analysis...",
 ];
 
 /**
@@ -215,11 +218,18 @@ export function useAnalysis() {
                   break;
                 case "content":
                   aiContent += data.data;
-                  const idx = Math.min(Math.floor(aiContent.length / 800), 4);
+                  // Asymptotic progress: starts fast, slows near 98%.
+                  // Never hard-caps, so the bar always keeps moving.
+                  const len = aiContent.length;
+                  const contentProgress = 50 + 48 * (1 - Math.exp(-len / 4000));
+                  const msgIdx = Math.min(
+                    Math.floor(len / 600),
+                    LOADING_MESSAGES.length - 1,
+                  );
                   setStatus({
                     stage: "analyzing",
-                    progress: Math.min(50 + (aiContent.length / 3000) * 40, 90),
-                    currentStep: LOADING_MESSAGES[idx],
+                    progress: Math.min(contentProgress, 98),
+                    currentStep: LOADING_MESSAGES[msgIdx],
                   });
                   break;
                 case "error":

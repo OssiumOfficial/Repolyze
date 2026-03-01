@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -61,8 +61,168 @@ interface LoadingSkeletonProps {
   status: StreamingAnalysis;
 }
 
+// ─── Elapsed time tracker ────────────────────────────────────────────
+
+function useElapsedSeconds(stage: string): number {
+  const [elapsed, setElapsed] = useState(0);
+  const startRef = useRef(0);
+
+  // Reset timer when stage changes to a loading stage
+  useEffect(() => {
+    if (stage === "fetching" || stage === "analyzing") {
+      startRef.current = Date.now();
+
+      // Use immediate interval tick so elapsed resets to 0 on first tick
+      const interval = setInterval(() => {
+        setElapsed(Math.floor((Date.now() - startRef.current) / 1000));
+      }, 1000);
+
+      // Fire once immediately to reset
+      const timeout = setTimeout(() => {
+        setElapsed(0);
+      }, 0);
+
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
+    }
+  }, [stage]);
+
+  return elapsed;
+}
+
+// ─── Apology messages for long waits ─────────────────────────────────
+
+interface ApologyMessage {
+  emoji: string;
+  text: string;
+}
+
+const APOLOGY_MESSAGES: { after: number; message: ApologyMessage }[] = [
+  {
+    after: 15,
+    message: {
+      emoji: "🙏",
+      text: "We're running on free-tier AI models to keep Repolyze free for everyone. Thanks for your patience — it's worth the wait!",
+    },
+  },
+  {
+    after: 30,
+    message: {
+      emoji: "💛",
+      text: "Still working! Free AI models can be a bit slow, but we'd rather keep this free than charge you. Hang tight!",
+    },
+  },
+  {
+    after: 50,
+    message: {
+      emoji: "🫶",
+      text: "We know this is taking a while — sorry about that. We use free AI infrastructure so everyone can analyze repos without paying a cent.",
+    },
+  },
+  {
+    after: 75,
+    message: {
+      emoji: "☕",
+      text: "Grab a coffee — the AI is doing its thing! Running on free models means slower speeds, but it also means Repolyze stays free for you.",
+    },
+  },
+  {
+    after: 100,
+    message: {
+      emoji: "🌟",
+      text: "Almost there, we promise! Thank you for being patient with our free-tier setup. Your support means a lot to this open-source project.",
+    },
+  },
+];
+
+function getApologyMessage(elapsedSeconds: number): ApologyMessage | null {
+  // Show nothing for the first 15 seconds
+  if (elapsedSeconds < APOLOGY_MESSAGES[0].after) return null;
+
+  // Find the latest applicable message
+  let result: ApologyMessage | null = null;
+  for (const entry of APOLOGY_MESSAGES) {
+    if (elapsedSeconds >= entry.after) {
+      result = entry.message;
+    }
+  }
+  return result;
+}
+
+/**
+ * Smoothly animate the progress bar so it never appears stuck.
+ * Uses requestAnimationFrame to gradually tick toward the target,
+ * with a slow creep during the AI streaming phase so the bar
+ * always appears to be moving.
+ */
+function useSmoothProgress(target: number, isComplete: boolean): number {
+  const [display, setDisplay] = useState(target);
+  const rafRef = useRef<number>(0);
+  const displayRef = useRef(target);
+  const targetRef = useRef(target);
+
+  // Sync target ref in effect
+  useEffect(() => {
+    targetRef.current = target;
+  }, [target]);
+
+  // Animation loop — only runs when NOT complete
+  useEffect(() => {
+    if (isComplete) {
+      // Ensure cleanup
+      cancelAnimationFrame(rafRef.current);
+      return;
+    }
+
+    let lastTime = performance.now();
+
+    const tick = (now: number) => {
+      const dt = (now - lastTime) / 1000; // seconds
+      lastTime = now;
+
+      const current = displayRef.current;
+      const t = targetRef.current;
+      const gap = t - current;
+
+      if (gap > 0.1) {
+        // Smoothly approach target — faster when far, slower when close
+        const step = Math.max(gap * 2.5 * dt, 0.05 * dt);
+        displayRef.current = Math.min(current + step, t);
+      } else if (t >= 50 && t < 99) {
+        // Target hasn't moved but we're in the AI streaming zone:
+        // creep forward very slowly so the bar never looks stuck.
+        const ceiling = Math.min(t + 3, 98.5);
+        if (current < ceiling) {
+          displayRef.current = Math.min(current + 0.3 * dt, ceiling);
+        }
+      }
+
+      setDisplay(displayRef.current);
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [isComplete]);
+
+  // When complete, override with 100 immediately (no effect setState needed)
+  if (isComplete) {
+    return 100;
+  }
+
+  return display;
+}
+
 export function LoadingSkeleton({ status }: LoadingSkeletonProps) {
   const quote = useRotatingQuote(9000);
+  const isComplete = status.stage === "complete";
+  const smoothProgress = useSmoothProgress(status.progress, isComplete);
+  const elapsed = useElapsedSeconds(status.stage);
+
+  // Apology messages that cycle when analysis takes long
+  const apologyMessage = getApologyMessage(elapsed);
 
   return (
     <div className="space-y-6 sm:space-y-8 lg:space-y-10 w-full max-w-full overflow-hidden">
@@ -84,11 +244,30 @@ export function LoadingSkeleton({ status }: LoadingSkeletonProps) {
         </div>
 
         <div className="w-full max-w-xs space-y-2">
-          <Progress value={status.progress} className="h-1.5" />
+          <Progress value={smoothProgress} className="h-1.5" />
           <p className="text-[10px] sm:text-xs text-muted-foreground text-center tabular-nums">
-            {Math.round(status.progress)}% complete
+            {Math.round(smoothProgress)}% complete
           </p>
         </div>
+
+        {/* Apology message when analysis takes a while */}
+        <AnimatePresence mode="wait">
+          {apologyMessage && (
+            <motion.div
+              key={apologyMessage.text}
+              initial={{ opacity: 0, y: 8, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.97 }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="max-w-sm text-center px-4 py-3 rounded-xl bg-amber-500/5 dark:bg-amber-400/5 border border-amber-500/15 dark:border-amber-400/10"
+            >
+              <p className="text-xs sm:text-[13px] leading-relaxed text-amber-800/80 dark:text-amber-300/80">
+                <span className="mr-1">{apologyMessage.emoji}</span>
+                {apologyMessage.text}
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Rotating Quote */}
         <AnimatePresence mode="wait">
