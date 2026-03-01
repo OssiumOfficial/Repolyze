@@ -1,6 +1,12 @@
 import { FileNode, FileStats, RepoMetadata, BranchInfo } from "./types";
 import { getLanguageFromExtension, getFileExtension } from "./utils";
 import { MAX_TREE_ITEMS, MAX_FILE_TREE_DEPTH } from "./constants";
+import {
+  metadataCache,
+  treeCache,
+  branchesCache,
+  filesCache,
+} from "./server-cache";
 
 const GITHUB_API_BASE = "https://api.github.com";
 
@@ -48,6 +54,10 @@ export async function fetchRepoBranches(
   repo: string,
   defaultBranch?: string,
 ): Promise<BranchInfo[]> {
+  const cacheKey = `${owner}/${repo}`;
+  const cached = branchesCache.get(cacheKey) as BranchInfo[] | null;
+  if (cached) return cached;
+
   const perPage = 100;
   const maxBranches = 100;
 
@@ -78,13 +88,16 @@ export async function fetchRepoBranches(
     }));
 
     // Sort: default branch first, then protected, then alphabetically
-    return branches.sort((a, b) => {
+    const sorted = branches.sort((a, b) => {
       if (a.isDefault) return -1;
       if (b.isDefault) return 1;
       if (a.protected && !b.protected) return -1;
       if (!a.protected && b.protected) return 1;
       return a.name.localeCompare(b.name);
     });
+
+    branchesCache.set(cacheKey, sorted);
+    return sorted;
   } catch (error) {
     console.error("Error fetching branches:", error);
     return [];
@@ -95,6 +108,10 @@ export async function fetchRepoMetadata(
   owner: string,
   repo: string,
 ): Promise<RepoMetadata> {
+  const cacheKey = `${owner}/${repo}`;
+  const cached = metadataCache.get(cacheKey);
+  if (cached) return cached as RepoMetadata;
+
   const response = await fetch(`${GITHUB_API_BASE}/repos/${owner}/${repo}`, {
     headers: getHeaders(),
     cache: "no-store",
@@ -118,7 +135,7 @@ export async function fetchRepoMetadata(
 
   const data = await response.json();
 
-  return {
+  const metadata: RepoMetadata = {
     name: data.name,
     fullName: data.full_name,
     description: data.description,
@@ -141,6 +158,9 @@ export async function fetchRepoMetadata(
       type: data.owner.type,
     },
   };
+
+  metadataCache.set(cacheKey, metadata);
+  return metadata;
 }
 
 // Pre-compiled regex for performance
@@ -180,6 +200,10 @@ export async function fetchRepoTree(
   repo: string,
   branch?: string,
 ): Promise<FileNode[]> {
+  const cacheKey = `${owner}/${repo}:${branch || "_default"}`;
+  const cached = treeCache.get(cacheKey) as FileNode[] | null;
+  if (cached) return cached;
+
   const branchesToTry = branch ? [branch] : ["main", "master"];
   let lastError: Error | null = null;
 
@@ -203,7 +227,9 @@ export async function fetchRepoTree(
           }
         }
 
-        return buildFileTree(filteredItems);
+        const result = buildFileTree(filteredItems);
+        treeCache.set(cacheKey, result);
+        return result;
       }
 
       if (response.status === 404) {
@@ -346,6 +372,10 @@ export async function fetchImportantFiles(
   branch?: string,
 ): Promise<Record<string, string>> {
   const targetBranch = branch || "main";
+  const cacheKey = `${owner}/${repo}:${targetBranch}`;
+  const cached = filesCache.get(cacheKey);
+  if (cached) return cached;
+
   const contents: Record<string, string> = {};
   let totalSize = 0;
   const maxTotalSize = 100000; // 100KB total
@@ -373,8 +403,8 @@ export async function fetchImportantFiles(
     return null;
   };
 
-  // Fetch in parallel batches
-  const batchSize = 10;
+  // Fetch in parallel batches — increased batch size for speed
+  const batchSize = 15;
   for (
     let i = 0;
     i < IMPORTANT_FILES.length && totalSize < maxTotalSize;
@@ -391,6 +421,7 @@ export async function fetchImportantFiles(
     }
   }
 
+  filesCache.set(cacheKey, contents);
   return contents;
 }
 

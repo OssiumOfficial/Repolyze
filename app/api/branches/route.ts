@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
 
     const { owner, repo } = validateAndParseUrl(url);
 
+    // Both use server-side cache
     const metadata = await fetchRepoMetadata(owner, repo);
     const branches = await fetchRepoBranches(
       owner,
@@ -31,10 +32,18 @@ export async function POST(request: NextRequest) {
       metadata.defaultBranch
     );
 
-    return Response.json({
-      branches,
-      defaultBranch: metadata.defaultBranch,
-    });
+    return Response.json(
+      {
+        branches,
+        defaultBranch: metadata.defaultBranch,
+      },
+      {
+        headers: {
+          "Cache-Control":
+            "public, s-maxage=300, stale-while-revalidate=600",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching branches:", error);
     return Response.json(

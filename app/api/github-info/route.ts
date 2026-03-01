@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { fetchRepoMetadata } from "@/lib/github";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -13,38 +14,29 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const response = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}`,
+    // Uses the server-side cache (5 min TTL)
+    const data = await fetchRepoMetadata(owner, repo);
+
+    return NextResponse.json(
+      {
+        name: data.name,
+        fullName: data.fullName,
+        description: data.description,
+        stars: data.stars,
+        forks: data.forks,
+        language: data.language,
+        owner: {
+          login: data.owner.login,
+          avatarUrl: data.owner.avatarUrl,
+        },
+      },
       {
         headers: {
-          Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-          Accept: "application/vnd.github.v3+json",
+          "Cache-Control":
+            "public, s-maxage=300, stale-while-revalidate=600",
         },
-        next: { revalidate: 3600 }, // Cache for 1 hour
       }
     );
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: "Repository not found" },
-        { status: 404 }
-      );
-    }
-
-    const data = await response.json();
-
-    return NextResponse.json({
-      name: data.name,
-      fullName: data.full_name,
-      description: data.description,
-      stars: data.stargazers_count,
-      forks: data.forks_count,
-      language: data.language,
-      owner: {
-        login: data.owner.login,
-        avatarUrl: data.owner.avatar_url,
-      },
-    });
   } catch (error) {
     console.error("GitHub API error:", error);
     return NextResponse.json(

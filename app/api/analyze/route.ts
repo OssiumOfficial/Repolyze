@@ -12,12 +12,15 @@ import {
   isConfigured,
   hasGitHubToken,
   MODEL_ID,
-  AI_CONFIG,
 } from "./config";
 import { checkRateLimit, getClientIP } from "./rate-limit";
 import { parseRequestBody, validateAndParseUrl } from "./validators";
 import { buildPrompt, prepareFilesContent } from "./prompt-builder";
-import { createAnalysisStream, getStreamHeaders } from "./stream-handler";
+import {
+  createAnalysisStream,
+  createCachedAnalysisStream,
+  getStreamHeaders,
+} from "./stream-handler";
 import { analyzeCodeMetrics, calculateScores } from "./code-analyzer";
 import { generateAutomations } from "./automation-generator";
 import { generateRefactors } from "./refactor-generator";
@@ -27,8 +30,15 @@ import {
   recordAnalysisRequest,
   cleanupOldRequests,
 } from "@/lib/analysis-rate-limit";
+import {
+  analysisResultCache,
+} from "@/lib/server-cache";
 
 const MAX_BODY_SIZE = 10 * 1024;
+
+// In-flight request deduplication: if repo X is already being analyzed,
+// subsequent requests wait for the first to finish and then get the cached result.
+const inFlightRequests = new Map<string, Promise<void>>();
 
 export async function POST(request: Request) {
   if (!isConfigured()) {
@@ -114,13 +124,43 @@ export async function POST(request: Request) {
 
     const parsedBody = parseRequestBody(body);
     const { owner, repo } = validateAndParseUrl(parsedBody.url);
+
+    // ─── Check analysis result cache (serves repeat requests instantly) ───
+    const metadata = await fetchRepoMetadata(owner, repo);
+    const targetBranch = parsedBody.branch || metadata.defaultBranch;
+    const analysisCacheKey = `${owner}/${repo}:${targetBranch}`;
+
+    const cachedResult = analysisResultCache.get(analysisCacheKey);
+    if (cachedResult) {
+      // Serve cached result as a stream (instant, no AI call)
+      const cachedStream = createCachedAnalysisStream(cachedResult, dailyLimit.tier);
+      return new Response(cachedStream, {
+        headers: getStreamHeaders(rateLimit.remaining),
+      });
+    }
+
+    // ─── In-flight deduplication: wait if same repo is already being analyzed ───
+    const inFlight = inFlightRequests.get(analysisCacheKey);
+    if (inFlight) {
+      try {
+        await inFlight;
+        // Now the result should be cached
+        const afterWait = analysisResultCache.get(analysisCacheKey);
+        if (afterWait) {
+          const cachedStream = createCachedAnalysisStream(afterWait, dailyLimit.tier);
+          return new Response(cachedStream, {
+            headers: getStreamHeaders(rateLimit.remaining),
+          });
+        }
+      } catch {
+        // First request failed, proceed with our own analysis
+      }
+    }
+
     const openrouter = getOpenRouterClient();
     const model = openrouter.chat(MODEL_ID);
 
-    const metadata = await fetchRepoMetadata(owner, repo);
-    const targetBranch = parsedBody.branch || metadata.defaultBranch;
-
-    // Parallel fetch
+    // Parallel fetch (all cached individually too)
     const [tree, importantFiles, branches] = await Promise.all([
       fetchRepoTree(owner, repo, targetBranch),
       fetchImportantFiles(owner, repo, targetBranch),
@@ -160,13 +200,36 @@ export async function POST(request: Request) {
       maxOutputTokens: 3000, // Reduced from 4000
     });
 
+    // Collect AI content for caching while streaming
+    const aiContentChunks: string[] = [];
+    let resolveInFlight: () => void;
+    let rejectInFlight: (err: Error) => void;
+    const inFlightPromise = new Promise<void>((resolve, reject) => {
+      resolveInFlight = resolve;
+      rejectInFlight = reject;
+    });
+    inFlightRequests.set(analysisCacheKey, inFlightPromise);
+
+    const cachingTextStream = (async function* () {
+      try {
+        for await (const chunk of result.textStream) {
+          aiContentChunks.push(chunk);
+          yield chunk;
+        }
+      } catch (err) {
+        rejectInFlight!(err instanceof Error ? err : new Error(String(err)));
+        inFlightRequests.delete(analysisCacheKey);
+        throw err;
+      }
+    })();
+
     const stream = createAnalysisStream(
       metadata,
       tree,
       fileStats,
       targetBranch,
       branches,
-      result.textStream,
+      cachingTextStream,
       {
         scores: calculatedScores,
         automations: generatedAutomations,
@@ -174,6 +237,23 @@ export async function POST(request: Request) {
         metrics: codeMetrics,
       },
       dailyLimit.tier,
+      // onComplete: cache the full result and resolve in-flight
+      () => {
+        analysisResultCache.set(analysisCacheKey, {
+          metadata,
+          fileTree: tree,
+          fileStats,
+          branch: targetBranch,
+          availableBranches: branches,
+          scores: calculatedScores,
+          automations: generatedAutomations,
+          refactors: generatedRefactors,
+          aiContent: aiContentChunks.join(""),
+          tier: dailyLimit.tier,
+        });
+        resolveInFlight!();
+        inFlightRequests.delete(analysisCacheKey);
+      },
     );
 
     // Record the analysis in DB for rate-limiting (fire-and-forget)

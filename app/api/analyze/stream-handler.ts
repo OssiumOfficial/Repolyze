@@ -4,6 +4,7 @@ import { CodeMetrics } from "./code-analyzer";
 import { GeneratedAutomation } from "./automation-generator";
 import { GeneratedRefactor } from "./refactor-generator";
 import { UserTier } from "@/lib/tiers";
+import { CachedAnalysisResult } from "@/lib/server-cache";
 
 const encoder = new TextEncoder();
 
@@ -46,6 +47,7 @@ export function createAnalysisStream(
   textStream: AsyncIterable<string>,
   preComputed: PreComputedData,
   tier: UserTier = "anonymous",
+  onComplete?: () => void,
 ): ReadableStream {
   return new ReadableStream({
     async start(controller) {
@@ -110,6 +112,50 @@ export function createAnalysisStream(
       }
 
       controller.enqueue(encodeStreamEvent({ type: "done" }));
+      controller.close();
+
+      // Cache the completed result
+      onComplete?.();
+    },
+  });
+}
+
+/**
+ * Create a stream from a cached analysis result.
+ * Sends all data instantly (no AI call needed).
+ * Data is trusted since it was stored from a previous valid analysis.
+ */
+export function createCachedAnalysisStream(
+  cached: CachedAnalysisResult,
+  tier: UserTier = "anonymous",
+): ReadableStream {
+  return new ReadableStream({
+    start(controller) {
+      const send = (event: { type: string; data?: unknown }) =>
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify(event)}\n\n`),
+        );
+
+      send({ type: "tier", data: tier });
+      send({
+        type: "metadata",
+        data: {
+          metadata: cached.metadata,
+          fileTree: cached.fileTree,
+          fileStats: cached.fileStats,
+          branch: cached.branch,
+          availableBranches: cached.availableBranches,
+        },
+      });
+      send({ type: "scores", data: cached.scores });
+      send({ type: "automations", data: cached.automations });
+      send({ type: "refactors", data: cached.refactors });
+
+      if (cached.aiContent) {
+        send({ type: "content", data: cached.aiContent });
+      }
+
+      send({ type: "done" });
       controller.close();
     },
   });
