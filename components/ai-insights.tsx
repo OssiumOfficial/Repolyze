@@ -224,6 +224,18 @@ function InsightItem({ insight, isExpanded, onToggle }: InsightItemProps) {
               >
                 {/* Full description if needed (optional) could go here if line-clamp above isn't enough context */}
 
+                {/* Code Reference — new deep analysis field */}
+                {insight.codeReference && (
+                  <div className="mt-3 pt-3 border-t border-border/40">
+                    <span className="text-xs text-muted-foreground/60 block mb-1.5">
+                      Code reference
+                    </span>
+                    <p className="text-sm text-muted-foreground leading-relaxed italic">
+                      {insight.codeReference}
+                    </p>
+                  </div>
+                )}
+
                 {/* Affected Files */}
                 {insight.affectedFiles && insight.affectedFiles.length > 0 && (
                   <div className="mt-3 pt-3 border-t border-border/40">

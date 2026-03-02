@@ -161,11 +161,13 @@ export async function POST(request: Request) {
     const model = openrouter.chat(MODEL_ID);
 
     // Parallel fetch (all cached individually too)
-    const [tree, importantFiles, branches] = await Promise.all([
+    const [tree, branches] = await Promise.all([
       fetchRepoTree(owner, repo, targetBranch),
-      fetchImportantFiles(owner, repo, targetBranch),
       fetchRepoBranches(owner, repo, metadata.defaultBranch),
     ]);
+
+    // Fetch important files with tree context for smart discovery
+    const importantFiles = await fetchImportantFiles(owner, repo, targetBranch, tree);
 
     // Fast metrics computation
     const codeMetrics = analyzeCodeMetrics(tree, importantFiles);
@@ -184,8 +186,8 @@ export async function POST(request: Request) {
     );
 
     const fileStats = calculateFileStats(tree);
-    const compactTree = createCompactTreeString(tree, 40); // Reduced from 50
-    const filesContent = prepareFilesContent(importantFiles, 6, 2500); // Reduced limits
+    const compactTree = createCompactTreeString(tree, 80); // Increased for deeper structure visibility
+    const filesContent = prepareFilesContent(importantFiles, 15, 5000); // More files, more content per file
 
     const prompt = buildPrompt(
       { metadata, fileStats, compactTree, filesContent, branch: targetBranch },
@@ -196,8 +198,8 @@ export async function POST(request: Request) {
     const result = await streamText({
       model,
       prompt,
-      temperature: 0.4, // Lower for faster, more consistent output
-      maxOutputTokens: 3000, // Reduced from 4000
+      temperature: 0.3, // Lower for more precise, grounded analysis
+      maxOutputTokens: 8000, // Increased significantly for deep analysis
     });
 
     // Collect AI content for caching while streaming

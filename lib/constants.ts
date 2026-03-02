@@ -50,5 +50,5 @@ export const SCORE_THRESHOLDS = {
 };
 
 export const MAX_CHAT_MESSAGES = 50;
-export const MAX_FILE_TREE_DEPTH = 6;
-export const MAX_TREE_ITEMS = 500;
+export const MAX_FILE_TREE_DEPTH = 8;
+export const MAX_TREE_ITEMS = 1000;

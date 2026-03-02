@@ -1,5 +1,10 @@
 import { FileNode } from "@/lib/types";
 
+export interface DetectedPattern {
+  name: string;
+  files: string[];
+}
+
 export interface CodeMetrics {
   hasTests: boolean;
   testFileCount: number;
@@ -27,6 +32,11 @@ export interface CodeMetrics {
   };
   missingEssentials: string[];
   existingAutomations: string[];
+  // New deep-analysis fields
+  entryPoints: string[];
+  designPatterns: DetectedPattern[];
+  keyAbstractions: string[];
+  moduleConnections: string[];
 }
 
 // Pre-compiled patterns
@@ -153,6 +163,18 @@ export function analyzeCodeMetrics(
   if (hasSecurityConfig) existingAutomations.push("Dependabot");
   if (paths.some((p) => /\.husky\//.test(p))) existingAutomations.push("Husky");
 
+  // ─── Deep Analysis: Entry Points ───
+  const entryPoints = detectEntryPoints(paths, fileContents);
+
+  // ─── Deep Analysis: Design Patterns ───
+  const designPatterns = detectDesignPatterns(paths, fileContents);
+
+  // ─── Deep Analysis: Key Abstractions ───
+  const keyAbstractions = detectKeyAbstractions(fileContents);
+
+  // ─── Deep Analysis: Module Connections ───
+  const moduleConnections = detectModuleConnections(fileContents);
+
   return {
     hasTests: testFileCount > 0,
     testFileCount,
@@ -176,6 +198,10 @@ export function analyzeCodeMetrics(
     codePatterns: { hasErrorHandling, hasLogging, hasValidation },
     missingEssentials,
     existingAutomations,
+    entryPoints,
+    designPatterns,
+    keyAbstractions,
+    moduleConnections,
   };
 }
 
@@ -188,6 +214,275 @@ function flattenPaths(tree: FileNode[]): string[] {
     if (node.children) stack.push(...node.children);
   }
   return paths;
+}
+
+/**
+ * Detect entry points: main files, server start files, CLI commands, etc.
+ */
+function detectEntryPoints(
+  paths: string[],
+  fileContents: Record<string, string>,
+): string[] {
+  const entryPoints: string[] = [];
+
+  // Check package.json for explicit entry points
+  const pkg = fileContents["package.json"];
+  if (pkg) {
+    try {
+      const parsed = JSON.parse(pkg);
+      if (parsed.main) entryPoints.push(`package.json main: ${parsed.main}`);
+      if (parsed.module) entryPoints.push(`package.json module: ${parsed.module}`);
+      if (parsed.bin) {
+        const bins = typeof parsed.bin === "string" ? { [parsed.name]: parsed.bin } : parsed.bin;
+        for (const [name, path] of Object.entries(bins)) {
+          entryPoints.push(`CLI binary "${name}": ${path}`);
+        }
+      }
+      if (parsed.scripts) {
+        const importantScripts = ["start", "dev", "build", "serve", "main"];
+        for (const script of importantScripts) {
+          if (parsed.scripts[script]) {
+            entryPoints.push(`npm run ${script}: ${parsed.scripts[script]}`);
+          }
+        }
+      }
+    } catch {}
+  }
+
+  // Detect common entry point files
+  const entryPatterns: [RegExp, string][] = [
+    [/^(src\/)?index\.(ts|js|tsx|jsx)$/, "Application entry"],
+    [/^(src\/)?main\.(ts|js|tsx|jsx|py|go|rs)$/, "Application entry"],
+    [/^(src\/)?app\.(ts|js|tsx|jsx|py)$/, "Application entry"],
+    [/^(src\/)?server\.(ts|js)$/, "Server entry"],
+    [/^app\/layout\.(tsx|jsx)$/, "Next.js root layout"],
+    [/^app\/page\.(tsx|jsx)$/, "Next.js home page"],
+    [/^pages\/_app\.(tsx|jsx)$/, "Next.js app wrapper"],
+    [/^cmd\/.*\/main\.go$/, "Go CLI command"],
+    [/^src\/main\.rs$/, "Rust entry"],
+    [/^manage\.py$/, "Django management"],
+    [/^Makefile$/, "Build system entry"],
+    [/^CMakeLists\.txt$/, "CMake build entry"],
+    [/^SConstruct$/, "SCons build entry"],
+  ];
+
+  for (const path of paths) {
+    for (const [pattern, label] of entryPatterns) {
+      if (pattern.test(path)) {
+        entryPoints.push(`${label}: ${path}`);
+      }
+    }
+  }
+
+  return [...new Set(entryPoints)].slice(0, 12);
+}
+
+/**
+ * Detect design patterns from code structure and contents.
+ */
+function detectDesignPatterns(
+  paths: string[],
+  fileContents: Record<string, string>,
+): DetectedPattern[] {
+  const patterns: DetectedPattern[] = [];
+
+  // Singleton pattern
+  const singletonFiles: string[] = [];
+  // Factory pattern
+  const factoryFiles: string[] = [];
+  // Observer/Event pattern
+  const observerFiles: string[] = [];
+  // Middleware/Chain pattern
+  const middlewareFiles: string[] = [];
+  // MVC/Component pattern
+  const mvcFiles: string[] = [];
+  // Repository/DAO pattern
+  const repositoryFiles: string[] = [];
+  // Strategy pattern
+  const strategyFiles: string[] = [];
+  // Builder pattern
+  const builderFiles: string[] = [];
+
+  for (const [file, content] of Object.entries(fileContents)) {
+    // Singleton: getInstance, private constructor, single instance
+    if (/getInstance\s*\(|\.instance\b|private\s+(static\s+)?constructor/i.test(content)) {
+      singletonFiles.push(file);
+    }
+
+    // Factory: createXxx, Factory class, produce/build methods
+    if (/factory/i.test(file) || /class\s+\w*[Ff]actory|create[A-Z]\w+\s*\(/i.test(content)) {
+      factoryFiles.push(file);
+    }
+
+    // Observer: addEventListener, on/emit, subscribe, EventEmitter
+    if (/EventEmitter|\.on\(|\.emit\(|subscribe\(|addEventListener|observer/i.test(content)) {
+      observerFiles.push(file);
+    }
+
+    // Middleware: app.use, middleware chain, next()
+    if (/middleware/i.test(file) || /app\.use\(|\.use\(\s*\w+\)|next\(\)/i.test(content)) {
+      middlewareFiles.push(file);
+    }
+
+    // Repository/DAO
+    if (/repository|dao/i.test(file) || /class\s+\w*(Repository|DAO)\b/i.test(content)) {
+      repositoryFiles.push(file);
+    }
+
+    // Strategy
+    if (/strategy/i.test(file) || /class\s+\w*Strategy\b|interface\s+\w*Strategy\b/i.test(content)) {
+      strategyFiles.push(file);
+    }
+
+    // Builder
+    if (/builder/i.test(file) || /class\s+\w*Builder\b|\.build\(\)|\.setName\(|\.with[A-Z]/i.test(content)) {
+      builderFiles.push(file);
+    }
+  }
+
+  // MVC detection from directory structure
+  const hasModels = paths.some((p) => /models?\//i.test(p));
+  const hasViews = paths.some((p) => /views?\/|pages?\//i.test(p));
+  const hasControllers = paths.some((p) => /controllers?\//i.test(p));
+  const hasComponents = paths.some((p) => /components?\//i.test(p));
+  const hasRoutes = paths.some((p) => /routes?\//i.test(p));
+  const hasServices = paths.some((p) => /services?\//i.test(p));
+
+  if (hasModels && hasViews && hasControllers) {
+    mvcFiles.push("models/", "views/", "controllers/");
+  }
+  if (hasComponents) mvcFiles.push("components/");
+  if (hasRoutes) mvcFiles.push("routes/");
+
+  // ECS (Entity Component System) - common in game engines
+  const hasECS = paths.some((p) => /systems?\//i.test(p)) && hasComponents;
+
+  // Compile results
+  if (singletonFiles.length > 0) patterns.push({ name: "Singleton", files: singletonFiles.slice(0, 3) });
+  if (factoryFiles.length > 0) patterns.push({ name: "Factory", files: factoryFiles.slice(0, 3) });
+  if (observerFiles.length > 0) patterns.push({ name: "Observer/Event-Driven", files: observerFiles.slice(0, 3) });
+  if (middlewareFiles.length > 0) patterns.push({ name: "Middleware Chain", files: middlewareFiles.slice(0, 3) });
+  if (mvcFiles.length > 0) patterns.push({ name: hasComponents ? "Component-Based Architecture" : "MVC", files: mvcFiles.slice(0, 4) });
+  if (repositoryFiles.length > 0) patterns.push({ name: "Repository Pattern", files: repositoryFiles.slice(0, 3) });
+  if (strategyFiles.length > 0) patterns.push({ name: "Strategy Pattern", files: strategyFiles.slice(0, 3) });
+  if (builderFiles.length > 0) patterns.push({ name: "Builder Pattern", files: builderFiles.slice(0, 3) });
+  if (hasECS) patterns.push({ name: "Entity-Component-System", files: ["systems/", "components/"] });
+  if (hasServices) patterns.push({ name: "Service Layer", files: ["services/"] });
+
+  return patterns;
+}
+
+/**
+ * Detect key abstractions: classes, interfaces, exported modules.
+ */
+function detectKeyAbstractions(
+  fileContents: Record<string, string>,
+): string[] {
+  const abstractions: string[] = [];
+
+  for (const [file, content] of Object.entries(fileContents)) {
+    // Extract class declarations
+    const classMatches = content.matchAll(/(?:export\s+)?(?:abstract\s+)?class\s+(\w+)/g);
+    for (const match of classMatches) {
+      abstractions.push(`class ${match[1]} (${file})`);
+    }
+
+    // Extract interface declarations (TypeScript)
+    const interfaceMatches = content.matchAll(/(?:export\s+)?interface\s+(\w+)/g);
+    for (const match of interfaceMatches) {
+      abstractions.push(`interface ${match[1]} (${file})`);
+    }
+
+    // Extract type declarations
+    const typeMatches = content.matchAll(/(?:export\s+)?type\s+(\w+)\s*[=<]/g);
+    for (const match of typeMatches) {
+      abstractions.push(`type ${match[1]} (${file})`);
+    }
+
+    // Extract Go structs
+    const structMatches = content.matchAll(/type\s+(\w+)\s+struct\s*\{/g);
+    for (const match of structMatches) {
+      abstractions.push(`struct ${match[1]} (${file})`);
+    }
+
+    // Extract Rust structs/enums/traits
+    const rustMatches = content.matchAll(/pub\s+(?:struct|enum|trait)\s+(\w+)/g);
+    for (const match of rustMatches) {
+      abstractions.push(`${match[0].split(" ")[1]} ${match[1]} (${file})`);
+    }
+
+    // Extract Python classes
+    const pyClassMatches = content.matchAll(/class\s+(\w+)\s*[\(:\[]/g);
+    for (const match of pyClassMatches) {
+      if (!abstractions.some((a) => a.includes(`class ${match[1]}`))) {
+        abstractions.push(`class ${match[1]} (${file})`);
+      }
+    }
+  }
+
+  return abstractions.slice(0, 30);
+}
+
+/**
+ * Detect import/dependency connections between internal modules.
+ */
+function detectModuleConnections(
+  fileContents: Record<string, string>,
+): string[] {
+  const connections: string[] = [];
+  const importMap = new Map<string, string[]>();
+
+  for (const [file, content] of Object.entries(fileContents)) {
+    const imports: string[] = [];
+
+    // ES imports: import ... from "./something"
+    const esImports = content.matchAll(/import\s+.*?\s+from\s+['"]([^'"]+)['"]/g);
+    for (const match of esImports) {
+      const target = match[1];
+      if (target.startsWith(".") || target.startsWith("@/")) {
+        imports.push(target);
+      }
+    }
+
+    // Go imports
+    const goImports = content.matchAll(/import\s+(?:\(\s*)?"([^"]+)"/g);
+    for (const match of goImports) {
+      imports.push(match[1]);
+    }
+
+    // Python imports
+    const pyImports = content.matchAll(/from\s+(\S+)\s+import|import\s+(\S+)/g);
+    for (const match of pyImports) {
+      const target = match[1] || match[2];
+      if (target && !target.startsWith("__") && target !== "os" && target !== "sys") {
+        imports.push(target);
+      }
+    }
+
+    // Rust use statements
+    const rustUses = content.matchAll(/use\s+(crate::\S+|super::\S+)/g);
+    for (const match of rustUses) {
+      imports.push(match[1]);
+    }
+
+    if (imports.length > 0) {
+      importMap.set(file, imports);
+    }
+  }
+
+  // Summarize connections
+  for (const [file, imports] of importMap) {
+    const internalImports = imports.filter(
+      (i) => i.startsWith(".") || i.startsWith("@/") || i.startsWith("crate::") || i.startsWith("super::"),
+    );
+    if (internalImports.length > 0) {
+      connections.push(
+        `${file} → ${internalImports.slice(0, 5).join(", ")}${internalImports.length > 5 ? ` (+${internalImports.length - 5} more)` : ""}`,
+      );
+    }
+  }
+
+  return connections.slice(0, 20);
 }
 
 function assessReadme(

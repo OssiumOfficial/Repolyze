@@ -344,32 +344,177 @@ const IMPORTANT_FILES = [
   "CHANGELOG.md",
   "CONTRIBUTING.md",
   "LICENSE",
-  // Source files
+  // Source files — JavaScript/TypeScript
   "src/index.ts",
   "src/index.js",
   "src/main.ts",
   "src/main.js",
   "src/app.ts",
   "src/app.js",
+  "src/server.ts",
+  "src/server.js",
   "app/page.tsx",
   "app/layout.tsx",
   "pages/index.tsx",
   "pages/_app.tsx",
   "lib/utils.ts",
   "src/lib/utils.ts",
+  "src/config.ts",
+  "src/types.ts",
+  "src/constants.ts",
+  // Source files — Python
   "main.py",
   "app.py",
+  "src/__init__.py",
+  "src/main.py",
+  "app/__init__.py",
+  "config.py",
+  "settings.py",
+  // Source files — Go
   "main.go",
+  "cmd/main.go",
+  "internal/server/server.go",
+  "pkg/api/api.go",
+  // Source files — Rust
   "src/main.rs",
+  "src/lib.rs",
+  // Source files — C/C++
+  "src/main.cpp",
+  "src/main.c",
+  "include/types.h",
+  "CMakeLists.txt",
+  "SConstruct",
+  "SCsub",
+  // Source files — Java/Kotlin
+  "src/main/java/Main.java",
+  "build.gradle.kts",
+  // Ruby
+  "Gemfile",
+  "config/routes.rb",
+  "app/controllers/application_controller.rb",
 ];
 
 /**
- * Fetch important files from a specific branch
+ * Discover additional high-value source files by scanning the tree.
+ * Finds files that are likely core implementation files rather than configs/assets.
+ */
+function discoverSourceFiles(tree: FileNode[], maxExtra: number = 12): string[] {
+  const discovered: string[] = [];
+  const existingSet = new Set(IMPORTANT_FILES.map((f) => f.toLowerCase()));
+
+  // Priority directories that likely contain core logic
+  const priorityDirs = [
+    /^src\//,
+    /^lib\//,
+    /^core\//,
+    /^engine\//,
+    /^internal\//,
+    /^pkg\//,
+    /^app\//,
+    /^server\//,
+    /^api\//,
+    /^modules?\//,
+    /^services?\//,
+    /^controllers?\//,
+    /^commands?\//,
+    /^handlers?\//,
+  ];
+
+  // Source file extensions
+  const sourceExts = /\.(ts|tsx|js|jsx|py|go|rs|cpp|c|h|hpp|java|kt|rb|swift|cs)$/;
+
+  // File name patterns that suggest important files
+  const importantFilePatterns = [
+    /index\.(ts|js|tsx|jsx)$/,
+    /mod\.(rs|go)$/,
+    /types?\.(ts|js)$/,
+    /config\.(ts|js|py)$/,
+    /router\.(ts|js|tsx|jsx)$/,
+    /routes?\.(ts|js|tsx|jsx|rb)$/,
+    /schema\.(ts|js|py|prisma|graphql|gql)$/,
+    /model[s]?\.(ts|js|py)$/,
+    /handler[s]?\.(ts|js|go)$/,
+    /middleware\.(ts|js|go)$/,
+    /server\.(ts|js|go|py)$/,
+    /client\.(ts|js|tsx|jsx)$/,
+    /manager\.(ts|js|cpp|h)$/,
+    /engine\.(ts|js|cpp|h|rs)$/,
+    /core\.(ts|js|cpp|h|rs)$/,
+    /utils?\.(ts|js|py|go)$/,
+    /helpers?\.(ts|js|py)$/,
+    /context\.(ts|tsx|js|jsx)$/,
+    /store\.(ts|tsx|js|jsx)$/,
+    /state\.(ts|tsx|js|jsx)$/,
+    /hooks?\.(ts|tsx|js|jsx)$/,
+    /provider[s]?\.(ts|tsx|js|jsx)$/,
+    /register\.(cpp|h|rs|go)$/,
+    /plugin\.(ts|js|cpp|h)$/,
+  ];
+
+  const candidates: { path: string; priority: number }[] = [];
+
+  function walk(nodes: FileNode[], depth: number) {
+    if (depth > 5) return; // Don't go too deep
+    for (const node of nodes) {
+      if (node.type === "file" && sourceExts.test(node.name)) {
+        if (existingSet.has(node.path.toLowerCase())) continue;
+
+        let priority = 0;
+
+        // Boost files in priority directories
+        for (const dirPattern of priorityDirs) {
+          if (dirPattern.test(node.path)) {
+            priority += 3;
+            break;
+          }
+        }
+
+        // Boost files matching important patterns
+        for (const namePattern of importantFilePatterns) {
+          if (namePattern.test(node.name)) {
+            priority += 2;
+            break;
+          }
+        }
+
+        // Boost files at lower depth (closer to root = more likely core)
+        priority += Math.max(0, 4 - depth);
+
+        // Boost larger files (more logic), but not too large (generated)
+        if (node.size && node.size > 500 && node.size < 50000) {
+          priority += 1;
+        }
+
+        if (priority > 0) {
+          candidates.push({ path: node.path, priority });
+        }
+      }
+      if (node.children) {
+        walk(node.children, depth + 1);
+      }
+    }
+  }
+
+  walk(tree, 0);
+
+  // Sort by priority descending, take top N
+  candidates.sort((a, b) => b.priority - a.priority);
+  for (const candidate of candidates.slice(0, maxExtra)) {
+    discovered.push(candidate.path);
+  }
+
+  return discovered;
+}
+
+/**
+ * Fetch important files from a specific branch.
+ * Now also discovers additional source files from the tree for deeper analysis.
  */
 export async function fetchImportantFiles(
   owner: string,
   repo: string,
   branch?: string,
+  tree?: FileNode[],
 ): Promise<Record<string, string>> {
   const targetBranch = branch || "main";
   const cacheKey = `${owner}/${repo}:${targetBranch}`;
@@ -378,8 +523,19 @@ export async function fetchImportantFiles(
 
   const contents: Record<string, string> = {};
   let totalSize = 0;
-  const maxTotalSize = 100000; // 100KB total
-  const maxFileSize = 8000; // 8KB per file
+  const maxTotalSize = 200000; // 200KB total (doubled from 100KB)
+  const maxFileSize = 12000; // 12KB per file (increased from 8KB)
+
+  // Build the full file list: known important files + discovered source files
+  const allFiles = [...IMPORTANT_FILES];
+  if (tree) {
+    const discovered = discoverSourceFiles(tree, 15);
+    for (const file of discovered) {
+      if (!allFiles.includes(file)) {
+        allFiles.push(file);
+      }
+    }
+  }
 
   const fetchFile = async (
     file: string,
@@ -407,10 +563,10 @@ export async function fetchImportantFiles(
   const batchSize = 15;
   for (
     let i = 0;
-    i < IMPORTANT_FILES.length && totalSize < maxTotalSize;
+    i < allFiles.length && totalSize < maxTotalSize;
     i += batchSize
   ) {
-    const batch = IMPORTANT_FILES.slice(i, i + batchSize);
+    const batch = allFiles.slice(i, i + batchSize);
     const results = await Promise.all(batch.map(fetchFile));
 
     for (const result of results) {
